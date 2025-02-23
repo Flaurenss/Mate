@@ -4,15 +4,19 @@
 
 const char* vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
+"out vec4 vertexColor;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   gl_Position = vec4(aPos, 1.0);\n"
+"   vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
 "}\0";
 const char* fragmentShaderSource = "#version 330 core\n"
+"in vec4 vertexColor;\n"
 "out vec4 FragColor;\n"
+"uniform vec4 ourColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"   FragColor = ourColor;\n"
 "}\n\0";
 
 void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -59,20 +63,21 @@ int main() {
 
 	// build and compile our shader program
 	// ------------------------------------
+	int nrAttributes;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 	unsigned int shaderProgram = createShaderProgram();
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f, // bottom left  
-		 0.5f, -0.5f, 0.0f, // bottom right 
-		-0.5f,  0.5f, 0.0f, // top left
-		 0.5f, 0.5f, 0.0f  // top right
+	-0.5f, -0.5f, 0.0f, //left
+	 0.0f,  0.5f, 0.0f, //top
+	 0.5f, -0.5f, 0.0f //right
 	};
 	unsigned int indices[] =
 	{
 		0, 1, 2,
-		1, 2, 3,
 	};
 
 	// Declare:
@@ -119,7 +124,16 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Render commands
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue)/2) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
 		glUseProgram(shaderProgram);
+		// Updated uniform on the currently used shader program:
+		if (vertexColorLocation != -1)
+		{
+			glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+		}
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 
