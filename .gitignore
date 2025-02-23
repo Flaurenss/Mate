@@ -1,3 +1,9 @@
+# External
+.vs
+
+# Project
+bin
+
 # Prerequisites
 *.d
 
