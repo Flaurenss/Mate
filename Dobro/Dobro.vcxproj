@@ -72,8 +72,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>E:\TFG\dependencies\includes;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\TFG\dependencies\lib\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\dependencies\includes;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\dependencies\lib\Debug;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\out\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin\int\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
