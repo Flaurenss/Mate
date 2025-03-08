@@ -13,7 +13,7 @@
 class Shader
 {
 public:
-
+    unsigned int ID;
 
     /// <summary>
     /// Reads and builds the shader.
@@ -48,7 +48,6 @@ public:
     /// <param name="value">The value.</param>
     void setFloat(const std::string& name, float value) const;
 private:
-    unsigned int ID;
     void checkShaderErrors(unsigned int id, std::string vertexType);
     void checkShaderProgramErrors(unsigned int id);
 };
