@@ -3,6 +3,7 @@
 #include "stb_image.h"
 #include <iostream>
 #include "Shader.h"
+#include <Vectors.h>
 
 void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -12,6 +13,10 @@ const int WIDTH = 800;
 const int HEIGHT = 600;
 
 int main() {
+	auto vector1 = Vector4(1, 2, 3, 1);
+	auto vecto2 = Vector4(1, 1, 1, 1);
+	auto m = vector1 - vecto2;
+	
 	glfwInit();
 
 	// OpenGl version to use, if user don't have it set it, will fail.

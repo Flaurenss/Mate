@@ -3,6 +3,8 @@
 
 # Project
 bin
+out
+dependencies
 
 # Prerequisites
 *.d
