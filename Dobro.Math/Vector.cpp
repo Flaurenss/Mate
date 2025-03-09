@@ -1,6 +1,8 @@
 #include "pch.h"
-#include "Vectors.h"
 #include "Math.h"
+#include "Vector.h"
+#include <stdexcept>
+#include <cassert>
 
 #pragma region Vector3
 Vector3::Vector3(float x, float y, float z) : x(x), y(y), z(z)
@@ -92,7 +94,14 @@ float Vector4::dot(const Vector4& a, const Vector4& b) const
 
 float& Vector4::operator[](int i)
 {
-	return ((&x)[i]);
+	assert(i >= 0 && i < 4);
+	switch (i) {
+		case 0: return x;
+		case 1: return y;
+		case 2: return z;
+		case 3: return w;
+		default: throw std::out_of_range("Index out of bounds");
+	}
 }
 
 Vector4 Vector4::operator-() const

@@ -1,0 +1,71 @@
+#pragma once
+#include "Vector.h";
+struct Matrix4
+{
+private:
+	float m[16];
+	const float DEG2RAD = 3.141593f / 180.0f;
+	const float RAD2DEG = 180.0f / 3.141593f;
+	const float EPSILON = 0.00001f;
+
+public:
+	/// <summary>
+	/// Matrix constructor, by default sets the identity.
+	/// </summary>
+	Matrix4();
+
+	Matrix4(float m00, float m01, float m02, float m03,
+		float m10, float m11, float m12, float m13, 
+		float m20, float m21, float m22, float m23, 
+		float m30, float m31, float m32, float m33);
+	
+	const float* get() const;
+
+	/// <summary>
+	/// Returns the identity matrix:
+	/// 1 0 0 0
+	/// 0 1 0 0 
+	/// 0 0 1 0 
+	/// 0 0 0 1
+	/// </summary>
+	/// <returns></returns>
+	Matrix4& identity();
+	/// <summary>
+	/// Translate operation based in:
+	/// Mr = Mt * M
+	/// Mr -> Matrix result.
+	/// Mt -> Translate matrix.
+	/// M -> Current matrix.
+	/// </summary>
+	/// <param name="vector">The vector that will be applied to the translation.</param>
+	/// <returns>The matrix translated based on the provided vector.</returns>
+	Matrix4& translate(Vector3& v);
+	
+	/// <summary>
+	/// Scale by a factor.
+	/// </summary>
+	/// <param name="f">The factor to scale.</param>
+	/// <returns>The matrix scaled.</returns>
+	Matrix4& scale(float f);
+
+	/// <summary>
+	/// Scale operation based in:
+	/// Mr = Ms * M
+	/// Mr -> Matrix result.
+	/// Ms -> Scale matrix.
+	/// M -> Current matrix.
+	/// </summary>
+	/// <param name="vector">The vector that will be applied to the translation.</param>
+	/// <returns>The matrix translated based on the provided vector.</returns>
+	Matrix4& scale(const Vector3& v);
+
+	Matrix4& rotate(const float degrees, const Vector3 axis);
+
+	// Operators
+	float& operator[](int index);
+	float operator[](const int index) const;
+
+	Vector4 operator*(const Vector4& v) const;
+	Matrix4 operator*(const Matrix4& m);
+};
+

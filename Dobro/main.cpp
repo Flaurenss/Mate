@@ -3,7 +3,8 @@
 #include "stb_image.h"
 #include <iostream>
 #include "Shader.h"
-#include <Vectors.h>
+#include <Vector.h>
+#include <Matrix.h>
 
 void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -13,10 +14,6 @@ const int WIDTH = 800;
 const int HEIGHT = 600;
 
 int main() {
-	auto vector1 = Vector4(1, 2, 3, 1);
-	auto vecto2 = Vector4(1, 1, 1, 1);
-	auto m = vector1 - vecto2;
-	
 	glfwInit();
 
 	// OpenGl version to use, if user don't have it set it, will fail.
@@ -55,10 +52,10 @@ int main() {
 	// ------------------------------------------------------------------
 	float vertices[] = {
 		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   2.0f, 2.0f,   // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   2.0f, 0.0f,   // bottom right
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
 		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 2.0f    // top left 
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
 	};
 	unsigned int indices[] =
 	{
@@ -180,6 +177,15 @@ int main() {
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 
+		auto rotateMatrix = Matrix4();
+		rotateMatrix.rotate((float)glfwGetTime() * 15.0f, Vector3(0.0f, 0.0f, 1.0));
+		auto scaleMatrix = Matrix4();
+		auto scale = sinf(glfwGetTime());
+		scaleMatrix.scale(scale);
+		auto result = scaleMatrix * rotateMatrix;
+		
+		unsigned int transformLoc = glGetUniformLocation(myShader.ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, result.get());
 		// Swap buffers, front for already rendered colors an the back one in order to avoid artifacts.
 		glfwSwapBuffers(window);
 		// Check if any event like mouse/keyboard input heppen
