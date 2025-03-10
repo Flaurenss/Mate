@@ -39,7 +39,7 @@ public:
 	/// </summary>
 	/// <param name="vector">The vector that will be applied to the translation.</param>
 	/// <returns>The matrix translated based on the provided vector.</returns>
-	Matrix4& translate(Vector3& v);
+	Matrix4& translate(const Vector3& v);
 	
 	/// <summary>
 	/// Scale by a factor.

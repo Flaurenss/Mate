@@ -33,7 +33,7 @@ Matrix4& Matrix4::identity()
 }
 
 
-Matrix4& Matrix4::translate(Vector3& v)
+Matrix4& Matrix4::translate(const Vector3& v)
 {
 	m[0] += m[3] * v.x;   m[4] += m[7] * v.x;   m[8] += m[11] * v.x;   m[12] += m[15] * v.x;
 	m[1] += m[3] * v.y;   m[5] += m[7] * v.y;   m[9] += m[11] * v.y;   m[13] += m[15] * v.y;
