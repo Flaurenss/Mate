@@ -61,11 +61,17 @@ public:
 
 	Matrix4& rotate(const float degrees, const Vector3 axis);
 
+	Matrix4& ortho(const float left, const float right, const float bottom, const float top, const float near, const float far);
+	Matrix4& perspective(const float fov, const float aspectRatio, const float near, const float far);
+
 	// Operators
 	float& operator[](int index);
 	float operator[](const int index) const;
 
+	Matrix4& operator=(const Matrix4& other);
 	Vector4 operator*(const Vector4& v) const;
 	Matrix4 operator*(const Matrix4& m);
+
+	void print();
 };
 

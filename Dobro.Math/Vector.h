@@ -9,7 +9,8 @@ struct Vector3
 	Vector3(float x, float y, float z);
 
 	// Utils
-	float lenght() const;
+	Vector3 normalize() const;
+	float length() const;
 	float dot(const Vector3& a, const Vector3& b) const;
 	Vector3 cross(const Vector3& a, const Vector3& b) const;
 

@@ -8,9 +8,18 @@
 Vector3::Vector3(float x, float y, float z) : x(x), y(y), z(z)
 { }
 
-float Vector3::lenght() const
+Vector3 Vector3::normalize() const
 {
-	return sqrtf(x * x + y * y + z * z);
+	float len = length();
+	if (len == 0.0f) return Vector3(0, 0, 0); // Handle zero-length vector
+
+	float invLen = 1.0f / len;
+	return Vector3(x * invLen, y * invLen, z * invLen);
+}
+
+float Vector3::length() const
+{
+	return sqrtf((x * x) + (y * y) + (z * z));
 }
 
 float Vector3::dot(const Vector3& a, const Vector3& b) const

@@ -5,17 +5,20 @@
 #include "Shader.h"
 #include <Vector.h>
 #include <Matrix.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
 const char* TITLE = "Dobro";
-const int WIDTH = 800;
-const int HEIGHT = 600;
+const float WIDTH = 800;
+const float HEIGHT = 600;
+const float DEG2RAD = 3.141593f / 180.0f;
 
 int main() {
 	glfwInit();
-
 	// OpenGl version to use, if user don't have it set it, will fail.
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -41,6 +44,8 @@ int main() {
 		return -1;
 	}
 
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 	// build and compile our shader program
 	// ------------------------------------
 	int nrAttributes;
@@ -51,26 +56,56 @@ int main() {
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 	float vertices[] = {
-		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-	};
-	unsigned int indices[] =
-	{
-		0, 1, 2,
-		3, 0, 2
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
 	// Declare:
 	// Vertex Array Object
 	// Vertex Buffer Object
 	// Element Buffer Object
-	unsigned int VBO, VAO, EBO;
+	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 
 	// Binds the current VBO to the actual VAO and tells how to be interpret it. 
 	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
@@ -78,17 +113,19 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	/*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
 	//Vertex position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	
 	// Vertex color
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	//glEnableVertexAttribArray(1);
+	 
 	// Vertex texture
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 	// Unbind VBO, VAO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -154,6 +191,30 @@ int main() {
 	myShader.setInt("texture1", 0);
 	myShader.setInt("texture2", 1);
 
+	Vector3 cubePositions[] = {
+		Vector3(0.0f,  0.0f,  0.0f),
+		Vector3(2.0f,  5.0f, -15.0f),
+		Vector3(-1.5f, -2.2f, -2.5f),
+		Vector3(-3.8f, -2.0f, -12.3f),
+		Vector3(2.4f, -0.4f, -3.5f),
+		Vector3(-1.7f,  3.0f, -7.5f),
+		Vector3(1.3f, -2.0f, -2.5f),
+		Vector3(1.5f,  2.0f, -2.5f),
+		Vector3(1.5f,  0.2f, -1.5f),
+		Vector3(-1.3f,  1.0f, -1.5f)
+	};
+	glm::vec3 cubePositionsGLM[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
 	// Frame loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -161,7 +222,7 @@ int main() {
 		processInput(window);
 		
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render commands
 		//float timeValue = glfwGetTime();
@@ -175,17 +236,33 @@ int main() {
 
 		myShader.use();
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(VAO);
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			float angle = 20.0f * i;
+			auto normalizedC = Vector3(0.0f, 0.0f, 1.0f).normalize();
 
-		auto rotateMatrix = Matrix4();
-		rotateMatrix.rotate((float)glfwGetTime() * 15.0f, Vector3(0.0f, 0.0f, 1.0));
-		auto scaleMatrix = Matrix4();
-		auto scale = sinf(glfwGetTime());
-		scaleMatrix.scale(scale);
-		auto result = scaleMatrix * rotateMatrix;
+			Matrix4 modelC = Matrix4().identity();
+			modelC.rotate(angle, normalizedC);
+			modelC.translate(cubePositions[i]);
+
+			unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, modelC.get());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+ 
+		glm::mat4 view = glm::mat4(1.0f);
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
 		
-		unsigned int transformLoc = glGetUniformLocation(myShader.ID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, result.get());
+		auto projection = Matrix4();
+		projection.perspective(45.0f, WIDTH/HEIGHT, 0.1f, 100.0f);
+
+		// note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+		int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
+		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.get());
+		
 		// Swap buffers, front for already rendered colors an the back one in order to avoid artifacts.
 		glfwSwapBuffers(window);
 		// Check if any event like mouse/keyboard input heppen
@@ -194,7 +271,6 @@ int main() {
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
 	//glDeleteProgram(shaderProgram);
 
 	glfwTerminate();

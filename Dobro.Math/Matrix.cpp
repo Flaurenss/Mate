@@ -1,6 +1,7 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Math.h"
 #include "Matrix.h"
+#include <iostream>
 
 Matrix4::Matrix4()
 {
@@ -94,6 +95,57 @@ Matrix4& Matrix4::rotate(const float degrees, const Vector3 axis)
     return *this;
 }
 
+Matrix4& Matrix4::ortho(const float left, const float right, const float bottom, const float top, const float near, const float far)
+{
+    // TODO: apply to current global m
+    Matrix4 m;
+    // Scaling
+    m[0] = 2 / (right - left);
+    m[5] = 2 / (top - bottom);
+    m[10] = -2 / (far - near);
+    // Translation
+    m[12] = - (right + left) / (right - left);
+    m[13] = - (top + bottom) / (top - bottom);
+    m[14] = - (far + near) / (far - near);
+    return m;
+}
+
+/// <summary>
+/// Perspectice projection matrix.
+/// For a clearer explanation please check:
+/// https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/opengl-perspective-projection-matrix.html
+/// </summary>
+/// <param name="fov">The field of view.</param>
+/// <param name="aspect">The aspect ratio.</param>
+/// <param name="near">The near value.</param>
+/// <param name="far">The far value.</param>
+/// <returns>The perspective projection matrix.</returns>
+Matrix4& Matrix4::perspective(const float fov, const float aspectRatio, const float near, const float far)
+{
+    Matrix4 p;
+    auto rad = fov * DEG2RAD;
+    auto top = tanf(rad * 0.5f) * near;
+    auto bottom = -top;
+    auto right = top * aspectRatio;
+    auto left = -right;
+    
+    p[0] = (2 * near) / (right - left);
+    
+    p[5] = (2 * near) / (top - bottom);
+    
+    p[8] = (right + left) / (right - left);
+    p[9] = (top + bottom) / (top - bottom);
+    p[10] = -(far + near) / (far - near);
+    p[11] = -1;
+    
+    p[14] = -(2 * far * near) / (far - near);
+    p[15] = 0.0f;
+
+    *this = p * (*this);
+
+    return *this;
+}
+
 float& Matrix4::operator[](int index)
 {
     return m[index];
@@ -104,6 +156,15 @@ float Matrix4::operator[](const int index) const
     return m[index];
 }
 
+Matrix4& Matrix4::operator=(const Matrix4& other)
+{
+    if (this != &other) { // Prevent self-assignment
+        for (int i = 0; i < 16; i++) {
+            m[i] = other.m[i];
+        }
+    }
+    return *this;
+}
 
 Vector4 Matrix4::operator*(const Vector4& v) const
 {
@@ -129,4 +190,12 @@ Matrix4 Matrix4::operator*(const Matrix4& n)
     }
 
     return result;
+}
+
+void Matrix4::print()
+{
+    std::cout << "Custom Rotation Matrix:" << std::endl;
+    for (int i = 0; i < 16; i++) {
+        std::cout << m[i] << ((i % 4 == 3) ? "\n" : " ");
+    }
 }
