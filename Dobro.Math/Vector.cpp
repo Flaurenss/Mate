@@ -27,7 +27,7 @@ float Vector3::dot(const Vector3& a, const Vector3& b) const
 	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
 }
 
-Vector3 Vector3::cross(const Vector3& a, const Vector3& b) const
+Vector3 Vector3::cross(const Vector3& a, const Vector3& b)
 {
 	return Vector3(
 		(a.y * b.z) - (a.z * b.y),
@@ -60,7 +60,15 @@ Vector3 Vector3::operator+(Vector3& v) const
 	);
 }
 
-Vector3 Vector3::operator-(Vector3& v) const
+Vector3& Vector3::operator+=(const Vector3& v)
+{
+	x += v.x;
+	y += v.y;
+	z += v.z;
+	return *this;
+}
+
+Vector3 Vector3::operator-(const Vector3& v) const
 {
 	return Vector3(
 		x - v.x,
@@ -68,13 +76,38 @@ Vector3 Vector3::operator-(Vector3& v) const
 		z - v.z);
 }
 
-Vector3 Vector3::operator*(Vector3& v) const
+Vector3& Vector3::operator-=(const Vector3& v)
+{
+	x -= v.x;
+	y -= v.y;
+	z -= v.z;
+	return *this;
+}
+
+Vector3 Vector3::operator*(float v) const
+{
+	return Vector3(x*v, y*v, z*v);
+}
+
+Vector3 operator*(float scalar, const Vector3& v) {
+	return Vector3(v.x * scalar, v.y * scalar, v.z * scalar);
+}
+
+Vector3 Vector3::operator*(const Vector3& v) const
 {
 	return Vector3(
 		x * v.x,
 		y * v.y,
 		z * v.z
 	);
+}
+
+Vector3& Vector3::operator*=(const Vector3& v)
+{
+	x *= v.x;
+	y *= v.y;
+	z *= v.z;
+	return *this;
 }
 
 Vector3 Vector3::operator/(Vector3& v) const

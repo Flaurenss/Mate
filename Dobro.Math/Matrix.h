@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Vector.h";
+
 struct Matrix4
 {
 private:
@@ -63,6 +65,8 @@ public:
 
 	Matrix4& ortho(const float left, const float right, const float bottom, const float top, const float near, const float far);
 	Matrix4& perspective(const float fov, const float aspectRatio, const float near, const float far);
+
+	static Matrix4 lookAt(const Vector3 position, const Vector3 target, const Vector3 up);
 
 	// Operators
 	float& operator[](int index);

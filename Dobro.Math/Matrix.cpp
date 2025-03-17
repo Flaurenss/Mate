@@ -107,7 +107,10 @@ Matrix4& Matrix4::ortho(const float left, const float right, const float bottom,
     m[12] = - (right + left) / (right - left);
     m[13] = - (top + bottom) / (top - bottom);
     m[14] = - (far + near) / (far - near);
-    return m;
+
+    *this = m * (*this);
+
+    return *this;
 }
 
 /// <summary>
@@ -144,6 +147,32 @@ Matrix4& Matrix4::perspective(const float fov, const float aspectRatio, const fl
     *this = p * (*this);
 
     return *this;
+}
+
+Matrix4 Matrix4::lookAt(const Vector3 position, const Vector3 target, const Vector3 up)
+{
+    auto zAxis = (position - target).normalize();
+    auto xAxis = Vector3::cross(up.normalize(), zAxis);
+    auto yAxis = Vector3::cross(zAxis, xAxis);
+
+    Matrix4 rotation = Matrix4();
+    Matrix4 translation = Matrix4();
+
+    rotation[0] = xAxis.x;
+    rotation[4] = xAxis.y;
+    rotation[8] = xAxis.z;
+    rotation[1] = yAxis.x;
+    rotation[5] = yAxis.y;
+    rotation[9] = yAxis.z;
+    rotation[2] = zAxis.x;
+    rotation[6] = zAxis.y;
+    rotation[10] = zAxis.z;
+
+    translation[12] = -position.x;
+    translation[13] = -position.y;
+    translation[14] = -position.z;
+
+    return translation * rotation;
 }
 
 float& Matrix4::operator[](int index)

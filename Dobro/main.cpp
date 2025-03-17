@@ -17,6 +17,17 @@ const float WIDTH = 800;
 const float HEIGHT = 600;
 const float DEG2RAD = 3.141593f / 180.0f;
 
+float deltaTime = 0.0f;	// Time between current frame and last frame
+float lastFrame = 0.0f; // Time of last frame
+
+//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+//glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+Vector3 cameraPos = Vector3(0.0f, 0.0f, 3.0f);
+Vector3 cameraFront = Vector3(0.0f, 0.0f, -1.0f);
+Vector3 cameraUp = Vector3(0.0f, 1.0f, 0.0f);
+
 int main() {
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.
@@ -218,6 +229,10 @@ int main() {
 	// Frame loop
 	while (!glfwWindowShouldClose(window))
 	{
+		float currentFrame = static_cast<float>(glfwGetTime());
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+		std::cout << deltaTime << std::endl;
 		// input
 		processInput(window);
 		
@@ -250,11 +265,12 @@ int main() {
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, modelC.get());
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
- 
-		glm::mat4 view = glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+		Matrix4 view;
+		view = Matrix4::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
 		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.get());
 		
 		auto projection = Matrix4();
 		projection.perspective(45.0f, WIDTH/HEIGHT, 0.1f, 100.0f);
@@ -285,6 +301,7 @@ int main() {
 /// <param name="height">The desired height.</param>
 void Framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+	std::cout << width << "x" << height << std::endl;
 	glViewport(0, 0, width, height);
 }
 
@@ -298,4 +315,18 @@ void processInput(GLFWwindow* window)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
+	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		cameraPos += cameraSpeed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		cameraPos -= cameraSpeed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		cameraPos -= cameraSpeed * (Vector3::cross(cameraFront, cameraUp)).normalize();
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		cameraPos += cameraSpeed * (Vector3::cross(cameraFront, cameraUp)).normalize();
+	if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		cameraPos += cameraSpeed * cameraUp;
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+		cameraPos -= cameraSpeed * cameraUp;
 }
