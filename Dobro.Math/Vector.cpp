@@ -51,7 +51,7 @@ Vector3 Vector3::operator+(float v) const
 	return Vector3(x + v, y + v, z + v);
 }
 
-Vector3 Vector3::operator+(Vector3& v) const
+Vector3 Vector3::operator+(const Vector3& v) const
 {
 	return Vector3(
 		x + v.x,

@@ -5,10 +5,8 @@
 #include "Shader.h"
 #include <Vector.h>
 #include <Matrix.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <MathUtils.h>
+#include "Camera.h"
 
 void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -225,18 +223,7 @@ int main() {
 		Vector3(1.5f,  0.2f, -1.5f),
 		Vector3(-1.3f,  1.0f, -1.5f)
 	};
-	glm::vec3 cubePositionsGLM[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
+	Camera* camera = new Camera(cameraPos, cameraUp);
 	// Frame loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -263,7 +250,7 @@ int main() {
 		myShader.use();
 		glBindVertexArray(VAO);
 		glBindVertexArray(VAO);
-		for (unsigned int i = 0; i < 10; i++)
+		for (unsigned int i = 0; i < 1; i++)
 		{
 			float angle = 20.0f * i;
 			auto normalizedC = Vector3(0.0f, 0.0f, 1.0f).normalize();
@@ -271,14 +258,16 @@ int main() {
 			Matrix4 modelC = Matrix4().identity();
 			modelC.rotate(angle, normalizedC);
 			modelC.translate(cubePositions[i]);
+			
+			/*Vector3 cubePos = cameraPos + Vector3(0, -4.0f, cameraFront * 1.5f);
+			modelC.translate(cubePos);*/
 
 			unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, modelC.get());
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		Matrix4 view = Matrix4::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		//glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		Matrix4 view = camera->GetViewMatrix();
 
 		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.get());
@@ -328,7 +317,6 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 	}
 	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
-
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		cameraPos += cameraSpeed * cameraFront;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
