@@ -8,9 +8,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <MathUtils.h>
 
 void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 const char* TITLE = "Dobro";
 const float WIDTH = 800;
@@ -20,9 +22,12 @@ const float DEG2RAD = 3.141593f / 180.0f;
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
-//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-//glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+// Mouse params in the middle of the screen
+bool firstMouse = true;
+float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+float pitch = 0.0f;
+float lastX = 800.0f / 2.0;
+float lastY = 600.0 / 2.0;
 
 Vector3 cameraPos = Vector3(0.0f, 0.0f, 3.0f);
 Vector3 cameraFront = Vector3(0.0f, 0.0f, -1.0f);
@@ -31,8 +36,8 @@ Vector3 cameraUp = Vector3(0.0f, 1.0f, 0.0f);
 int main() {
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	// Btw Intermediate/Core profile, we set the last one:
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
@@ -189,9 +194,15 @@ int main() {
 	}
 	stbi_image_free(data);
 
+	// Hide mouse - focus mode
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	// Set rendering viewport callback
 	glfwSetFramebufferSizeCallback(window, Framebuffer_size_callback);
 	
+	// Set mouse movement callback
+	glfwSetCursorPosCallback(window, mouse_callback);
+
 	// Draw primitives configuration
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -232,7 +243,7 @@ int main() {
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		std::cout << deltaTime << std::endl;
+		//std::cout << deltaTime << std::endl;
 		// input
 		processInput(window);
 		
@@ -266,11 +277,12 @@ int main() {
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		Matrix4 view;
-		view = Matrix4::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		Matrix4 view = Matrix4::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		//glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.get());
+		//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		
 		auto projection = Matrix4();
 		projection.perspective(45.0f, WIDTH/HEIGHT, 0.1f, 100.0f);
@@ -329,4 +341,39 @@ void processInput(GLFWwindow* window)
 		cameraPos += cameraSpeed * cameraUp;
 	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
 		cameraPos -= cameraSpeed * cameraUp;
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
+	lastX = xpos;
+	lastY = ypos;
+
+	const float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 80.0f)
+		pitch = 80.0f;
+	if (pitch < -80.0f)
+		pitch = -80.0f;
+
+	Vector3 direction = Vector3();
+	direction.x = cos(MathUtils::radians(yaw)) * cos(MathUtils::radians(pitch));
+	direction.y = sin(MathUtils::radians(pitch));
+	direction.z = sin(MathUtils::radians(yaw)) * cos(MathUtils::radians(pitch));
+	cameraFront = direction.normalize();
+	//cameraFront = glm::vec3(direction.x, direction.y, direction.z);
 }

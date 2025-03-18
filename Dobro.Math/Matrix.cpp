@@ -152,7 +152,7 @@ Matrix4& Matrix4::perspective(const float fov, const float aspectRatio, const fl
 Matrix4 Matrix4::lookAt(const Vector3 position, const Vector3 target, const Vector3 up)
 {
     auto zAxis = (position - target).normalize();
-    auto xAxis = Vector3::cross(up.normalize(), zAxis);
+    auto xAxis = Vector3::cross(up.normalize(), zAxis).normalize();
     auto yAxis = Vector3::cross(zAxis, xAxis);
 
     Matrix4 rotation = Matrix4();
