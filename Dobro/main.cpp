@@ -31,6 +31,8 @@ Vector3 cameraPos = Vector3(0.0f, 0.0f, 3.0f);
 Vector3 cameraFront = Vector3(0.0f, 0.0f, -1.0f);
 Vector3 cameraUp = Vector3(0.0f, 1.0f, 0.0f);
 
+Camera camera(cameraPos, cameraUp);
+
 int main() {
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.
@@ -223,7 +225,7 @@ int main() {
 		Vector3(1.5f,  0.2f, -1.5f),
 		Vector3(-1.3f,  1.0f, -1.5f)
 	};
-	Camera* camera = new Camera(cameraPos, cameraUp);
+
 	// Frame loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -267,7 +269,7 @@ int main() {
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		Matrix4 view = camera->GetViewMatrix();
+		Matrix4 view = camera.GetViewMatrix();
 
 		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.get());
@@ -316,19 +318,15 @@ void processInput(GLFWwindow* window)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
-	float cameraSpeed = static_cast<float>(2.5 * deltaTime);
+
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cameraPos += cameraSpeed * cameraFront;
+		camera.ProcessKeyboardMovement(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cameraPos -= cameraSpeed * cameraFront;
+		camera.ProcessKeyboardMovement(BACKWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraPos -= cameraSpeed * (Vector3::cross(cameraFront, cameraUp)).normalize();
+		camera.ProcessKeyboardMovement(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cameraPos += cameraSpeed * (Vector3::cross(cameraFront, cameraUp)).normalize();
-	if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		cameraPos += cameraSpeed * cameraUp;
-	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-		cameraPos -= cameraSpeed * cameraUp;
+		camera.ProcessKeyboardMovement(RIGHT, deltaTime);
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -340,28 +338,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		firstMouse = false;
 	}
 
-
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
 	lastX = xpos;
 	lastY = ypos;
 
-	const float sensitivity = 0.1f;
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	yaw += xoffset;
-	pitch += yoffset;
-
-	if (pitch > 80.0f)
-		pitch = 80.0f;
-	if (pitch < -80.0f)
-		pitch = -80.0f;
-
-	Vector3 direction = Vector3();
-	direction.x = cos(MathUtils::radians(yaw)) * cos(MathUtils::radians(pitch));
-	direction.y = sin(MathUtils::radians(pitch));
-	direction.z = sin(MathUtils::radians(yaw)) * cos(MathUtils::radians(pitch));
-	cameraFront = direction.normalize();
-	//cameraFront = glm::vec3(direction.x, direction.y, direction.z);
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
