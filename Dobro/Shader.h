@@ -25,28 +25,28 @@ public:
     /// <summary>
     /// Use/activate the shader.
     /// </summary>
-    void use();
+    void Use();
 
     /// <summary>
     /// Set boolean uniform.
     /// </summary>
     /// <param name="name">The uniform name.</param>
     /// <param name="value">The value.</param>
-    void setBool(const std::string& name, bool value) const;
+    void SetBool(const std::string& name, bool value) const;
     
     /// <summary>
     /// Set integer uniform.
     /// </summary>
     /// <param name="name">The uniform name.</param>
     /// <param name="value">The value.</param>
-    void setInt(const std::string& name, int value) const;
+    void SetInt(const std::string& name, int value) const;
 
     /// <summary>
     /// Set float uniform.
     /// </summary>
     /// <param name="name">The uniform name.</param>
     /// <param name="value">The value.</param>
-    void setFloat(const std::string& name, float value) const;
+    void SetFloat(const std::string& name, float value) const;
 private:
     void checkShaderErrors(unsigned int id, std::string vertexType);
     void checkShaderProgramErrors(unsigned int id);
