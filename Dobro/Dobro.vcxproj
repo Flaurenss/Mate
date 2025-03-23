@@ -149,7 +149,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FbxImporterExperimental.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="GltfImporter.cpp" />
+    <ClCompile Include="IModelImporter.cpp" />
     <ClCompile Include="IRenderable.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -177,6 +180,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FbxImporterExperimental.h" />
+    <ClInclude Include="GltfImporter.h" />
+    <ClInclude Include="IModelImporter.h" />
     <ClInclude Include="IRenderable.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />

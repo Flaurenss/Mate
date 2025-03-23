@@ -45,6 +45,15 @@
     <ClCompile Include="ufbx.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FbxImporterExperimental.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IModelImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GltfImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
@@ -74,6 +83,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ufbx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxImporterExperimental.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IModelImporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GltfImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
