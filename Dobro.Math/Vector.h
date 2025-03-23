@@ -48,6 +48,7 @@ struct Vector4
 
 	// Operators
 	float& operator[](int i);
+	float operator[](int i) const;
 	Vector4 operator-() const;
 	Vector4 operator+(float v) const;
 	Vector4 operator+(Vector4& v) const;

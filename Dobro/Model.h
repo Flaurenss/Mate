@@ -15,8 +15,10 @@ private:
 
     void LoadModel(std::string path);
     void ProcessNode(ufbx_node* node, const ufbx_scene* scene);
-    void ProcessMesh(ufbx_mesh* mesh, const ufbx_scene* scene);
-    Mesh ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh);
+    void ProcessMesh(ufbx_mesh* mesh, const ufbx_scene* scene, const ufbx_matrix& transform);
+    Mesh ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh, const ufbx_matrix& transform);
     std::vector<Texture> LoadMaterialTextures(ufbx_material* mat, ufbx_material_pbr_map type,
         std::string typeName);
+
+    unsigned int LoadTexture(const char* path);
 };

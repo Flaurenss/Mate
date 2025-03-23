@@ -11,6 +11,6 @@ out vec2 TextCoord;
 
 void main()
 {
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
     TextCoord = aTextCoord;
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
 };

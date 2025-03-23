@@ -15,10 +15,12 @@ struct Texture {
 	unsigned int id;
 	// Diffuse or specular
 	std::string type;
+	bool valid;
+	Vector4 defaultColor;
 };
 
-const std::string DIFFUSE_NAME = "texture.diffuse";
-const std::string SPECULAR_NAME = "texture.specular";
+const std::string DIFFUSE_NAME = "texture_diffuse";
+const std::string SPECULAR_NAME = "texture_specular";
 
 class Mesh : public IRenderable
 {

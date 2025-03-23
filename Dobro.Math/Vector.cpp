@@ -146,6 +146,18 @@ float& Vector4::operator[](int i)
 	}
 }
 
+float Vector4::operator[](int i) const
+{
+	assert(i >= 0 && i < 4);
+	switch (i) {
+		case 0: return x;
+		case 1: return y;
+		case 2: return z;
+		case 3: return w;
+		default: throw std::out_of_range("Index out of bounds");
+	}
+}
+
 Vector4 Vector4::operator-() const
 {
 	return Vector4(-x, -y, -z, -w);

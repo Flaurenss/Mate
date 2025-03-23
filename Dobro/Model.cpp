@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "ufbx.h"
+#include "stb_image.h"
 
 Model::Model(const std::string& path)
 {
@@ -43,9 +44,10 @@ void Model::LoadModel(std::string path)
 
 void Model::ProcessNode(ufbx_node* node, const ufbx_scene* scene)
 {
+    ufbx_matrix nodeToWorld = node->node_to_world;
     if (node->mesh)
     {
-        ProcessMesh(node->mesh, scene);
+        ProcessMesh(node->mesh, scene, nodeToWorld);
     }
 
     // Process children
@@ -55,7 +57,7 @@ void Model::ProcessNode(ufbx_node* node, const ufbx_scene* scene)
     }
 }
 
-void Model::ProcessMesh(ufbx_mesh* mesh, const ufbx_scene* scene)
+void Model::ProcessMesh(ufbx_mesh* mesh, const ufbx_scene* scene, const ufbx_matrix& transform)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -65,11 +67,11 @@ void Model::ProcessMesh(ufbx_mesh* mesh, const ufbx_scene* scene)
     for (auto partIndex = 0; partIndex < mesh->material_parts.count; partIndex ++)
     {
         ufbx_mesh_part& part = mesh->material_parts.data[partIndex];
-        meshes.push_back(ProcessPart(part, mesh));
+        meshes.push_back(ProcessPart(part, mesh, transform));
     }
 }
 
-Mesh Model::ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh)
+Mesh Model::ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh, const ufbx_matrix& transform)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -87,12 +89,14 @@ Mesh Model::ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh)
             uint32_t index = indices[i];
 
             Vertex v;
-            auto& vertexPosition = mesh->vertex_position[index];
+            auto vertexPosition = ufbx_get_vertex_vec3(&mesh->vertex_position, index);
+            vertexPosition = ufbx_transform_position(&transform, vertexPosition);
             v.Position = Vector3(vertexPosition.x, vertexPosition.y, vertexPosition.z);
             
             if (mesh->vertex_normal.exists)
             {
-                auto& vertexNormal = mesh->vertex_normal[index];
+                auto vertexNormal = ufbx_get_vertex_vec3(&mesh->vertex_normal, index);
+                vertexNormal = ufbx_transform_direction(&transform, vertexNormal);
                 v.Normal = Vector3(vertexNormal.x, vertexNormal.y, vertexNormal.z);
             }
 
@@ -120,12 +124,12 @@ Mesh Model::ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh)
     // Trim to only unique vertices.
     vertices.resize(num_vertices);
     
-    //TODO: process materials
+    // Process materials
     if (mesh->materials.count > 0)
     {
         auto material = mesh->materials[part.index];
-        LoadMaterialTextures(material, UFBX_MATERIAL_PBR_BASE_COLOR, DIFFUSE_NAME);
-        LoadMaterialTextures(material, UFBX_MATERIAL_PBR_DIFFUSE_ROUGHNESS, DIFFUSE_NAME);
+        auto diffuseMaps = LoadMaterialTextures(material, UFBX_MATERIAL_PBR_BASE_COLOR, DIFFUSE_NAME);
+        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
     }
     
     return Mesh(vertices, indices, textures);
@@ -136,37 +140,72 @@ std::vector<Texture> Model::LoadMaterialTextures(ufbx_material* material, ufbx_m
     std::vector<Texture> textures;
     switch (type)
     {
-        case UFBX_MATERIAL_PBR_BASE_COLOR: // aka albedo aka diffuse color
+        case UFBX_MATERIAL_PBR_BASE_COLOR:
         {
+            Texture texture;
             ufbx_material_map const& materialMap = material->pbr.base_color;
             if (materialMap.has_value)
             {
                 const ufbx_material_map& baseFactorMaterialMap = material->pbr.base_color;
                 float baseFactor = baseFactorMaterialMap.has_value ? baseFactorMaterialMap.value_real : 1.0f;
+                
+                auto color = baseFactorMaterialMap.value_vec4;
+                texture.defaultColor = Vector4(color.x, color.y, color.z, color.w);
+                
                 if (materialMap.texture)
                 {
-                    auto m = 100;
-                    //if (auto texture = LoadTexture(materialMap, Texture::USE_SRGB))
-                    //{
-                    //    //materialTextures[PbrMaterial::DIFFUSE_MAP_INDEX] = texture;
-                    //    //pbrMaterialProperties.m_Features |= PbrMaterial::HAS_DIFFUSE_MAP;
-                    //    //pbrMaterialProperties.m_DiffuseColor.r = baseFactor;
-                    //    //pbrMaterialProperties.m_DiffuseColor.g = baseFactor;
-                    //    //pbrMaterialProperties.m_DiffuseColor.b = baseFactor;
-                    //    //pbrMaterialProperties.m_DiffuseColor.a = baseFactor;
-                    //}
+                    texture.valid = true;
+                    texture.id = LoadTexture(materialMap.texture->filename.data);
                 }
-                else // constant material property
+                else
                 {
-                    //pbrMaterialProperties.m_DiffuseColor.r = materialMap.value_vec4.x * baseFactor;
-                    //pbrMaterialProperties.m_DiffuseColor.g = materialMap.value_vec4.y * baseFactor;
-                    //pbrMaterialProperties.m_DiffuseColor.b = materialMap.value_vec4.z * baseFactor;
-                    //pbrMaterialProperties.m_DiffuseColor.a = materialMap.value_vec4.w * baseFactor;
+                    texture.valid = false;
                 }
             }
+            textures.push_back(texture);
             break;
         }
     }
 
     return textures;
+}
+
+unsigned int Model::LoadTexture(const char* path)
+{
+    //string filename = string(path);
+    //filename = directory + '/' + filename;
+
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
+
+    return textureID;
 }

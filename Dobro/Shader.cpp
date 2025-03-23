@@ -79,6 +79,11 @@ void Shader::SetFloat(const std::string& name, float value) const
     glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
+void Shader::SetVec4(const std::string& name, const Vector4& value) const
+{
+    glUniform4f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z, value.w);
+}
+
 void Shader::checkShaderErrors(unsigned int id, std::string vertexType)
 {
     int success;

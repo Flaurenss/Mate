@@ -10,6 +10,8 @@
 #include <sstream>
 #include <iostream>
 
+#include <Vector.h>
+
 class Shader
 {
 public:
@@ -47,6 +49,8 @@ public:
     /// <param name="name">The uniform name.</param>
     /// <param name="value">The value.</param>
     void SetFloat(const std::string& name, float value) const;
+
+    void SetVec4(const std::string& name, const Vector4& value) const;
 private:
     void checkShaderErrors(unsigned int id, std::string vertexType);
     void checkShaderProgramErrors(unsigned int id);
