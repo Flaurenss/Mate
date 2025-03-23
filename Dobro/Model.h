@@ -17,6 +17,6 @@ private:
     void ProcessNode(ufbx_node* node, const ufbx_scene* scene);
     void ProcessMesh(ufbx_mesh* mesh, const ufbx_scene* scene);
     Mesh ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh);
-    /*std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
-        std::string typeName);*/
+    std::vector<Texture> LoadMaterialTextures(ufbx_material* mat, ufbx_material_pbr_map type,
+        std::string typeName);
 };

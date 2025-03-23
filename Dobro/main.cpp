@@ -71,8 +71,11 @@ int main() {
 
 	// Test model importer
 	//auto model = new Model("cube.fbx");
-	//auto model = new Model("E:/TFG/Models/1.fbx");
-	auto model = new Model("E:/TFG/Models/Backpack/backpack.obj");
+	//auto model = new Model("E:/TFG/Models/Kenney/Models/FBX format/character-male-f.fbx");
+	auto model = new Model("E:/TFG/Third_Binaries/ModelImporterTests/ufbx-master/data/blender_282_suzanne_and_transform_7400_binary.fbx");
+	//auto model = new Model("E:/TFG/Models/Shiba/source/1.fbx");
+	//auto model = new Model("E:/TFG/Models/penguin.fbx");
+	//auto model = new Model("E:/TFG/Models/Backpack/backpack.obj");
 
 	// Hide mouse - focus mode
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

@@ -17,6 +17,9 @@ struct Texture {
 	std::string type;
 };
 
+const std::string DIFFUSE_NAME = "texture.diffuse";
+const std::string SPECULAR_NAME = "texture.specular";
+
 class Mesh : public IRenderable
 {
 public:
@@ -28,8 +31,6 @@ public:
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 	virtual void Draw(Shader& shader);
 private:
-	const std::string diffuseName = "texture.diffuse";
-	const std::string specularName = "texture.specular";
 
 	// Vertex Array Object: stores pointers to elements from VBO
 	unsigned int VAO;

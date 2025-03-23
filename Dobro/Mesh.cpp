@@ -21,11 +21,11 @@ void Mesh::Draw(Shader& shader)
 		glActiveTexture(GL_TEXTURE0 + i);
 		std::string number;
 		std::string name = textures[i].type;
-		if (name == diffuseName)
+		if (name == DIFFUSE_NAME)
 		{
 			number = std::to_string(diffuseNr++);
 		}
-		else if (name == specularName)
+		else if (name == SPECULAR_NAME)
 		{
 			number = std::to_string(specularNr++);
 		}
