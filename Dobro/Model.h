@@ -12,6 +12,7 @@ public:
 private:
     std::string modelPath;
     std::vector<Mesh> meshes;
+    std::vector<Texture> loadedTextures;
 
     void LoadModel(std::string path);
     void ProcessNode(ufbx_node* node, const ufbx_scene* scene);

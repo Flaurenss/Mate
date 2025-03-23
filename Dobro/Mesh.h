@@ -8,7 +8,9 @@
 struct Vertex {
 	Vector3 Position;
 	Vector3 Normal;
-	Vector3 TexureCoordinate;
+	Vector2 TexureCoordinate;
+	/*Vector3 Tangent;
+	Vector3 Bitangent;*/
 };
 
 struct Texture {
@@ -17,6 +19,7 @@ struct Texture {
 	std::string type;
 	bool valid;
 	Vector4 defaultColor;
+	std::string filePath;
 };
 
 const std::string DIFFUSE_NAME = "texture_diffuse";

@@ -14,8 +14,8 @@ void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 const char* TITLE = "Dobro";
-const float WIDTH = 800;
-const float HEIGHT = 600;
+const float WIDTH = 1920;
+const float HEIGHT = 1080;
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
@@ -40,9 +40,6 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	// Btw Intermediate/Core profile, we set the last one:
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
 
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, NULL, NULL);
 	if (window == NULL)
@@ -68,14 +65,14 @@ int main() {
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
 	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 	//unsigned int shaderProgram = createShaderProgram();
-
+	stbi_set_flip_vertically_on_load(false);
 	// Test model importer
 	//auto model = new Model("cube.fbx");
 	//auto model = new Model("E:/TFG/Models/Kenney/Models/FBX format/character-male-f.fbx");
 	//auto model = new Model("E:/TFG/Third_Binaries/ModelImporterTests/ufbx-master/data/blender_282_suzanne_and_transform_7400_binary.fbx");
 	//auto model = new Model("E:/TFG/Models/Shiba/source/1.fbx");
-	auto model = new Model("E:/TFG/Models/penguin.fbx");
-	//auto model = new Model("E:/TFG/Models/Backpack/backpack.obj");
+	//auto model = new Model("E:/TFG/Models/penguin.fbx");
+	auto model = new Model("E:/TFG/Models/Backpack/backpack.obj");
 
 	// Hide mouse - focus mode
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

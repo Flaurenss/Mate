@@ -30,18 +30,19 @@ void Mesh::Draw(Shader& shader)
 			number = std::to_string(specularNr++);
 		}
 
+		shader.SetBool("valid", textures[i].valid);
 		if (textures[i].valid)
 		{
-			shader.SetBool("valid", true);
-			shader.SetInt(("material." + name + number).c_str(), i);
 			glBindTexture(GL_TEXTURE_2D, textures[i].id);
-			glActiveTexture(GL_TEXTURE0);
+			shader.SetInt(("material." + name + number).c_str(), i);
 		}
 		else
 		{
 			shader.SetBool("valid", false);
 			shader.SetVec4("defaultColor", textures[i].defaultColor);
 		}
+
+		glActiveTexture(GL_TEXTURE0);
 	}
 
 	// Draw mesh

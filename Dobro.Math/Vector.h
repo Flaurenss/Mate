@@ -1,5 +1,14 @@
 #pragma once
 
+struct Vector2
+{
+	float x, y;
+
+	Vector2() = default;
+
+	Vector2(float x, float y);
+};
+
 struct Vector3
 {
 	float x, y, z;

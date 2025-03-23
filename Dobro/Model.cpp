@@ -22,7 +22,6 @@ void Model::LoadModel(std::string path)
     opts.load_external_files = true;
     opts.target_unit_meters = 1.0f;
     opts.generate_missing_normals = true;
-    opts.generate_missing_normals = true;
 
     ufbx_error error;
     ufbx_scene* scene = ufbx_load_file(path.c_str(), &opts, &error);
@@ -88,28 +87,28 @@ Mesh Model::ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh, const ufbx_matrix&
         for (size_t i = 0; i < num_tris * 3; i++) {
             uint32_t index = indices[i];
 
-            Vertex v;
+            Vertex vertex;
             auto vertexPosition = ufbx_get_vertex_vec3(&mesh->vertex_position, index);
             vertexPosition = ufbx_transform_position(&transform, vertexPosition);
-            v.Position = Vector3(vertexPosition.x, vertexPosition.y, vertexPosition.z);
+            vertex.Position = Vector3(vertexPosition.x, vertexPosition.y, vertexPosition.z);
             
             if (mesh->vertex_normal.exists)
             {
                 auto vertexNormal = ufbx_get_vertex_vec3(&mesh->vertex_normal, index);
                 vertexNormal = ufbx_transform_direction(&transform, vertexNormal);
-                v.Normal = Vector3(vertexNormal.x, vertexNormal.y, vertexNormal.z);
+                vertex.Normal = Vector3(vertexNormal.x, vertexNormal.y, vertexNormal.z);
             }
 
             if (mesh->vertex_uv.exists)
             {
-                auto& vertexUV = mesh->vertex_uv[index];
-                v.TexureCoordinate = Vector3(vertexUV.x, vertexUV.y, 0);
+                auto vertexUV = ufbx_get_vertex_vec2(&mesh->vertex_uv, index);
+                vertex.TexureCoordinate = Vector2(vertexUV.x, vertexUV.y);
             }
             else
             {
-                v.TexureCoordinate = Vector3();
+                vertex.TexureCoordinate = Vector2();
             }
-            vertices.push_back(v);
+            vertices.push_back(vertex);
         }
     }
     // Should have written all the vertices.
@@ -143,6 +142,7 @@ std::vector<Texture> Model::LoadMaterialTextures(ufbx_material* material, ufbx_m
         case UFBX_MATERIAL_PBR_BASE_COLOR:
         {
             Texture texture;
+            texture.type = DIFFUSE_NAME;
             ufbx_material_map const& materialMap = material->pbr.base_color;
             if (materialMap.has_value)
             {
@@ -151,18 +151,29 @@ std::vector<Texture> Model::LoadMaterialTextures(ufbx_material* material, ufbx_m
                 
                 auto color = baseFactorMaterialMap.value_vec4;
                 texture.defaultColor = Vector4(color.x, color.y, color.z, color.w);
-                
+
                 if (materialMap.texture)
                 {
-                    texture.valid = true;
-                    texture.id = LoadTexture(materialMap.texture->filename.data);
-                }
-                else
-                {
-                    texture.valid = false;
+                    bool skip = false;
+                    for (unsigned int j = 0; j < loadedTextures.size(); j++)
+                    {
+                        if (std::strcmp(loadedTextures[j].filePath.data(), materialMap.texture->filename.data) == 0)
+                        {
+                            textures.push_back(loadedTextures[j]);
+                            skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
+                            break;
+                        }
+                    }
+                    if (!skip)
+                    {
+                        texture.filePath = materialMap.texture->filename.data;
+                        texture.valid = true;
+                        texture.id = LoadTexture(materialMap.texture->filename.data);
+                        textures.push_back(texture);
+                        loadedTextures.push_back(texture);
+                    }
                 }
             }
-            textures.push_back(texture);
             break;
         }
     }
@@ -172,9 +183,6 @@ std::vector<Texture> Model::LoadMaterialTextures(ufbx_material* material, ufbx_m
 
 unsigned int Model::LoadTexture(const char* path)
 {
-    //string filename = string(path);
-    //filename = directory + '/' + filename;
-
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
