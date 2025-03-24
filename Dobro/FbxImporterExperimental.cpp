@@ -1,7 +1,7 @@
 #include "FbxImporterExperimental.h"
 #include "stb_image.h"
 
-std::vector<Mesh> FbxImporterExperimental::Load(std::string path)
+std::vector<Mesh> FbxImporterExperimental::Load(const std::string& path)
 {
     ufbx_load_opts opts = { };
     opts.target_axes = ufbx_axes_right_handed_y_up;
@@ -13,8 +13,8 @@ std::vector<Mesh> FbxImporterExperimental::Load(std::string path)
     ufbx_scene* scene = ufbx_load_file(path.c_str(), &opts, &error);
     if (!scene)
     {
-        std::cout << "Failed to load scene: %s\n" << error.description.data;
-        throw;
+        std::cerr << "Failed to load scene: " << error.description.data;
+        return meshes;
     }
 
     for (ufbx_node* node : scene->nodes)

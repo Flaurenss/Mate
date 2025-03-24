@@ -94,6 +94,9 @@
     <ClInclude Include="GltfImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cgltf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="Shaders\fragmentShader.fs" />
@@ -102,9 +105,6 @@
       <Filter>Resource Files</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="Resources\cat.png">
-      <Filter>Resource Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="Resources\cube.fbx">
       <Filter>Resource Files</Filter>
     </CopyFileToFolders>
   </ItemGroup>

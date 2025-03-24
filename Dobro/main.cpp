@@ -72,7 +72,11 @@ int main() {
 	//auto model = new Model("E:/TFG/Third_Binaries/ModelImporterTests/ufbx-master/data/blender_282_suzanne_and_transform_7400_binary.fbx");
 	//auto model = new Model("E:/TFG/Models/Shiba/source/1.fbx");
 	//auto model = new Model("E:/TFG/Models/penguin.fbx");
-	auto model = new Model("E:/TFG/Models/Backpack/backpack.obj");
+	//auto model = new Model("E:/TFG/Models/Backpack/backpack.obj");
+	//auto model = new Model("C:/Users/loren/Downloads/glTF-Sample-Models-main/glTF-Sample-Models-main/2.0/Avocado/glTF/Avocado.gltf");
+	//auto model = new Model("C:/Users/loren/Downloads/glTF-Sample-Models-main/glTF-Sample-Models-main/2.0/Avocado/glTF-Draco/Avocado.bin");
+	//auto model = new Model("C:/Users/loren/Downloads/glTF-Sample-Models-main/glTF-Sample-Models-main/2.0/ABeautifulGame/glTF/ABeautifulGame.gltf");
+	auto model = new Model("C:/Users/loren/Downloads/glTF-Sample-Models-main/glTF-Sample-Models-main/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
 
 	// Hide mouse - focus mode
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

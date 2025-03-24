@@ -1,10 +1,12 @@
 #include "Model.h"
 #include "ufbx.h"
+#include "GltfImporter.h"
 #include "stb_image.h"
 
 Model::Model(const std::string& path)
 {
-    modelImporter = new FbxImporterExperimental();
+    //modelImporter = new FbxImporterExperimental();
+    modelImporter = new GltfImporter();
     meshes = modelImporter->Load(path);
 }
 

@@ -174,12 +174,10 @@
       <FileType>Document</FileType>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="Resources\cube.fbx">
-      <FileType>Document</FileType>
-    </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="cgltf.h" />
     <ClInclude Include="FbxImporterExperimental.h" />
     <ClInclude Include="GltfImporter.h" />
     <ClInclude Include="IModelImporter.h" />

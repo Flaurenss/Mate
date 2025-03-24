@@ -9,8 +9,6 @@ struct Vertex {
 	Vector3 Position;
 	Vector3 Normal;
 	Vector2 TexureCoordinate;
-	/*Vector3 Tangent;
-	Vector3 Bitangent;*/
 };
 
 struct Texture {
