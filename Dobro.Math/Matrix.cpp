@@ -9,9 +9,9 @@ Matrix4::Matrix4()
 }
 
 Matrix4::Matrix4(float m00, float m01, float m02, float m03,
-	float m10, float m11, float m12, float m13,
-	float m20, float m21, float m22, float m23,
-	float m30, float m31, float m32, float m33)
+	            float m10, float m11, float m12, float m13,
+	            float m20, float m21, float m22, float m23,
+	            float m30, float m31, float m32, float m33)
 {
 	m[0] = m00;  m[4] = m10;  m[8] = m20;  m[12] = m30;
 	m[1] = m01;  m[5] = m11;  m[9] = m21;  m[13] = m31;
@@ -173,6 +173,37 @@ Matrix4 Matrix4::lookAt(const Vector3 position, const Vector3 target, const Vect
     translation[14] = -position.z;
 
     return translation * rotation;
+}
+
+// Based on https://www.geometrictools.com/GTE/Mathematics/Rotation.h
+Matrix4 Matrix4::ToMatrix(const float x, const float y, const float z, const float w)
+{
+    Matrix4 r;
+
+    float twoX = 2 * x;
+    float twoY = 2 * y;
+    float twoZ = 2 * z;
+    float twoXX = twoX * x;
+    float twoXY = twoX * y;
+    float twoXZ = twoX * z;
+    float twoXW = twoX * w;
+    float twoYY = twoY * y;
+    float twoYZ = twoY * z;
+    float twoYW = twoY * w;
+    float twoZZ = twoZ * z;
+    float twoZW = twoZ * w;
+
+    r[0] = 1 - twoYY - twoZZ;
+    r[4] = twoXY - twoZW;
+    r[8] = twoXZ + twoYW;
+    r[1] = twoXY + twoZW;
+    r[5] = 1 - twoXX - twoZZ;
+    r[9] = twoYZ - twoXW;
+    r[2] = twoXZ - twoYW;
+    r[6] = twoYZ + twoXW;
+    r[10] = 1 - twoXX - twoYY;
+
+    return r;
 }
 
 float& Matrix4::operator[](int index)
