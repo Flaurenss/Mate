@@ -30,45 +30,47 @@ std::vector<Mesh> GltfImporter::Load(const std::string& path)
     return meshes;
 }
 
-void GltfImporter::ProcessNode(cgltf_node* node, Matrix4 matrix)
+void GltfImporter::ProcessNode(cgltf_node* node, Matrix4 parent)
 {
     if (node->has_matrix)
     {
-        matrix = matrix * Matrix4(
-            node->matrix[0], node->matrix[4], node->matrix[8], node->matrix[12],
-            node->matrix[1], node->matrix[5], node->matrix[9], node->matrix[13],
-            node->matrix[2], node->matrix[6], node->matrix[10], node->matrix[14],
-            node->matrix[3], node->matrix[7], node->matrix[11], node->matrix[15]);
+        Matrix4 localMatrix = Matrix4(
+            node->matrix[0], node->matrix[1], node->matrix[2], node->matrix[3],
+            node->matrix[4], node->matrix[5], node->matrix[6], node->matrix[7],
+            node->matrix[8], node->matrix[9], node->matrix[10], node->matrix[11],
+            node->matrix[12], node->matrix[13], node->matrix[14], node->matrix[15]);
+        parent = parent * localMatrix;
     }
     else 
     {
         if (node->has_translation)
         {
-            auto translation = node->translation;
-            matrix.translate(Vector3(translation[0], translation[1], translation[2]));
+            cgltf_float* translation = node->translation;
+            parent.translate(Vector3(translation[0], translation[1], translation[2]));
         }
 
         if (node->has_rotation)
         {
-            auto rotation = node->rotation;
-            // TODO implement quaternions :(
+            cgltf_float* quaternion = node->rotation;
+            Matrix4 newRotation = Matrix4::ToMatrix(quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
+            parent = parent * newRotation;
         }
 
         if (node->has_scale)
         {
-            auto scale = node->scale;
-            matrix.scale(Vector3(scale[0], scale[1], scale[2]));
+            cgltf_float* scale = node->scale;
+            parent.scale(Vector3(scale[0], scale[1], scale[2]));
         }
     }
 
     if (node->mesh)
     {
-        ProcessMesh(node->mesh, matrix);
+        ProcessMesh(node->mesh, parent);
     }
 
     for (size_t chIndex = 0; chIndex < node->children_count; chIndex++)
     {
-        ProcessNode(node->children[chIndex], matrix);
+        ProcessNode(node->children[chIndex], parent);
     }
 }
 
@@ -140,20 +142,24 @@ Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
         // TODO: store baseColor as default color
         auto baseColor = mat->pbr_metallic_roughness.base_color_factor;
         auto diffuse = LoadMaterialTextures(mat->pbr_metallic_roughness.base_color_texture.texture, DIFFUSE_NAME);
-        auto specular = LoadMaterialTextures(mat->pbr_metallic_roughness.metallic_roughness_texture.texture, SPECULAR_NAME);
-
-        textures.insert(textures.end(), diffuse.begin(), diffuse.end());
+        diffuse.defaultColor = Vector4(baseColor[0], baseColor[1], baseColor[2], baseColor[3]);
+        textures.push_back(diffuse);
+        //textures.insert(textures.end(), diffuse.begin(), diffuse.end());
+        //auto specular = LoadMaterialTextures(mat->pbr_metallic_roughness.metallic_roughness_texture.texture, SPECULAR_NAME);
         //textures.insert(textures.end(), specular.begin(), specular.end());
     }
 
     return Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> GltfImporter::LoadMaterialTextures(cgltf_texture* texture, const std::string& typeName)
+Texture GltfImporter::LoadMaterialTextures(cgltf_texture* texture, const std::string& typeName)
 {
-    std::vector<Texture> textures;
+    Texture customTexture;
     if (!texture || !texture->image || !texture->image->uri)
-        return textures;
+    {
+        customTexture.valid = false;
+        return customTexture;
+    }
 
     std::string texPath = basePath + "/" + texture->image->uri;
 
@@ -161,8 +167,7 @@ std::vector<Texture> GltfImporter::LoadMaterialTextures(cgltf_texture* texture, 
     {
         if (t.filePath == texPath)
         {
-            textures.push_back(t);
-            return textures;
+            return customTexture;
         }
     }
 
@@ -174,8 +179,8 @@ std::vector<Texture> GltfImporter::LoadMaterialTextures(cgltf_texture* texture, 
     tex.id = LoadTexture(texPath.c_str());
 
     loadedTextures.push_back(tex);
-    textures.push_back(tex);
-    return textures;
+
+    return customTexture;
 }
 
 unsigned int GltfImporter::LoadTexture(const char* path)

@@ -18,6 +18,6 @@ private:
 	void ProcessMesh(cgltf_mesh* mesh, Matrix4 matrix);
 	Mesh ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix);
 
-	std::vector<Texture> LoadMaterialTextures(cgltf_texture* texture, const std::string& typeName);
+	Texture LoadMaterialTextures(cgltf_texture* texture, const std::string& typeName);
 	unsigned int LoadTexture(const char* path);
 };
