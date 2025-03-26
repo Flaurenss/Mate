@@ -19,6 +19,14 @@ Matrix4::Matrix4(float m00, float m01, float m02, float m03,
 	m[3] = m03;  m[7] = m13;  m[11] = m23;  m[15] = m33;
 }
 
+Matrix4::Matrix4(float* v)
+{
+    m[0] = v[0];  m[4] = v[4];  m[8] = v[8];  m[12] = v[12];
+    m[1] = v[1];  m[5] = v[5];  m[9] = v[9];  m[13] = v[13];
+    m[2] = v[2];  m[6] = v[6];  m[10] = v[10];  m[14] = v[14];
+    m[3] = v[3];  m[7] = v[7];  m[11] = v[11];  m[15] = v[15];
+}
+
 const float* Matrix4::get() const
 {
 	return m;
