@@ -20,10 +20,22 @@ std::vector<Mesh> GltfImporter::Load(const std::string& path)
 
     cgltf_validate(data);
 
-    for (int nodeIndex = 0; nodeIndex < data->nodes_count; nodeIndex++)
+    if (data->scene)
     {
-        Matrix4 matrixIdentity;
-        ProcessNode(&data->nodes[nodeIndex], matrixIdentity);
+        for (int nodeIndex = 0; nodeIndex < data->scene->nodes_count; nodeIndex++)
+        {
+            Matrix4 matrixIdentity;
+            ProcessNode(&data->nodes[nodeIndex], matrixIdentity);
+        }
+    }
+    else
+    {
+        std::cerr << "No SCENE defined in : " << path << std::endl;
+        //for (int nodeIndex = 0; nodeIndex < data->nodes_count; nodeIndex++)
+        //{
+        //    Matrix4 matrixIdentity;
+        //    ProcessNode(&data->nodes[nodeIndex], matrixIdentity);
+        //}
     }
 
     cgltf_free(data);
@@ -34,12 +46,7 @@ void GltfImporter::ProcessNode(cgltf_node* node, Matrix4 parent)
 {
     if (node->has_matrix)
     {
-        Matrix4 localMatrix = Matrix4(
-            node->matrix[0], node->matrix[1], node->matrix[2], node->matrix[3],
-            node->matrix[4], node->matrix[5], node->matrix[6], node->matrix[7],
-            node->matrix[8], node->matrix[9], node->matrix[10], node->matrix[11],
-            node->matrix[12], node->matrix[13], node->matrix[14], node->matrix[15]);
-        parent = parent * localMatrix;
+        parent = parent * Matrix4(node->matrix);
     }
     else 
     {
@@ -89,10 +96,11 @@ Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
     std::vector<Texture> textures;
 
     // TODO: do it the proper way, check if attributes any
+
     size_t vertexCount = primitive.attributes[0].data->count;
     vertices.resize(vertexCount);
 
-    for (size_t i = 0; i < primitive.attributes_count; ++i)
+    for (size_t i = 0; i < primitive.attributes_count; i++)
     {
         // TODO understand this assignament
         cgltf_attribute& attr = primitive.attributes[i];
@@ -102,7 +110,7 @@ Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
         
         if (attr.type == cgltf_attribute_type_position)
         {
-            for (size_t vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
+            for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
             {
                 auto position = matrix * Vector4(data[vertexIndex * 3 + 0], data[vertexIndex * 3 + 1], data[vertexIndex * 3 + 2], 1.0f);
                 vertices[vertexIndex].Position = Vector3(position.x, position.y, position.z);
@@ -120,8 +128,8 @@ Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
         {
             for (size_t textureIndex = 0; textureIndex < vertexCount; textureIndex++)
             {
-                vertices[textureIndex].TexureCoordinate = 
-                    Vector2(data[textureIndex * 2 + 0], data[textureIndex * 2 + 1]);
+                Vector2 uvs = Vector2(data[textureIndex * 2 + 0], data[textureIndex * 2 + 1]);
+                    vertices[textureIndex].TexureCoordinate = uvs;
             }
         }
     }
@@ -138,15 +146,13 @@ Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
     if (primitive.material)
     {
         cgltf_material* mat = primitive.material;
-
-        // TODO: store baseColor as default color
         auto baseColor = mat->pbr_metallic_roughness.base_color_factor;
         auto diffuse = LoadMaterialTextures(mat->pbr_metallic_roughness.base_color_texture.texture, DIFFUSE_NAME);
-        diffuse.defaultColor = Vector4(baseColor[0], baseColor[1], baseColor[2], baseColor[3]);
+        if (baseColor)
+        {
+            diffuse.defaultColor = Vector4(baseColor[0], baseColor[1], baseColor[2], baseColor[3]);
+        }
         textures.push_back(diffuse);
-        //textures.insert(textures.end(), diffuse.begin(), diffuse.end());
-        //auto specular = LoadMaterialTextures(mat->pbr_metallic_roughness.metallic_roughness_texture.texture, SPECULAR_NAME);
-        //textures.insert(textures.end(), specular.begin(), specular.end());
     }
 
     return Mesh(vertices, indices, textures);
@@ -171,14 +177,13 @@ Texture GltfImporter::LoadMaterialTextures(cgltf_texture* texture, const std::st
         }
     }
 
-    Texture tex;
-    tex.type = typeName;
-    tex.filePath = texPath;
-    tex.valid = true;
-    tex.defaultColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-    tex.id = LoadTexture(texPath.c_str());
+    customTexture.type = typeName;
+    customTexture.filePath = texPath;
+    customTexture.valid = true;
+    customTexture.defaultColor = Vector4(0.502f, 0.502f, 0.502f, 0.502f);
+    customTexture.id = LoadTexture(texPath.c_str());
 
-    loadedTextures.push_back(tex);
+    loadedTextures.push_back(customTexture);
 
     return customTexture;
 }
