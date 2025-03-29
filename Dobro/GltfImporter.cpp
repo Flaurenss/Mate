@@ -95,52 +95,68 @@ Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
     std::vector<unsigned int> indices; 
     std::vector<Texture> textures;
 
-    // TODO: do it the proper way, check if attributes any
+    cgltf_accessor* indexAccessor = primitive.indices;
+    if (indexAccessor)
+    {
+        indices.resize(indexAccessor->count); // Reservar espacio
+        for (size_t i = 0; i < indexAccessor->count; ++i)
+        {
+            indices[i] = cgltf_accessor_read_index(indexAccessor, i);
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Error: Primitive contains no indices.");
+    }
 
-    size_t vertexCount = primitive.attributes[0].data->count;
+    const cgltf_attribute* posAttr = nullptr;
+    const cgltf_attribute* normAttr = nullptr;
+    const cgltf_attribute* texAttr = nullptr;
+
+    for (size_t i = 0; i < primitive.attributes_count; ++i)
+    {
+        cgltf_attribute* attr = &primitive.attributes[i];
+        if (attr->type == cgltf_attribute_type_position)
+        {
+            posAttr = attr;
+        }
+        else if (attr->type == cgltf_attribute_type_normal)
+        {
+            normAttr = attr;
+        }
+        else if (attr->type == cgltf_attribute_type_texcoord && attr->index == 0) 
+        {
+            texAttr = attr;
+        }
+    }
+
+    // Check if we have positions
+    if (!posAttr || !posAttr->data) 
+    {
+        throw std::runtime_error("Error: Primitive contains no positions.");
+    }
+
+    size_t vertexCount = posAttr->data->count;
     vertices.resize(vertexCount);
 
-    for (size_t i = 0; i < primitive.attributes_count; i++)
+    for (size_t index = 0; index < vertexCount; ++index)
     {
-        // TODO understand this assignament
-        cgltf_attribute& attr = primitive.attributes[i];
-        float* data = (float*)((uint8_t*)attr.data->buffer_view->buffer->data +
-            attr.data->buffer_view->offset +
-            attr.data->offset);
-        
-        if (attr.type == cgltf_attribute_type_position)
+        Vertex& currentVertex = vertices[index];
+
+        currentVertex.Position = ProcessPosition(posAttr->data, index, matrix);
+
+        // --- Normals ---
+        if (normAttr && normAttr->data)
         {
-            for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
-            {
-                auto position = matrix * Vector4(data[vertexIndex * 3 + 0], data[vertexIndex * 3 + 1], data[vertexIndex * 3 + 2], 1.0f);
-                vertices[vertexIndex].Position = Vector3(position.x, position.y, position.z);
-            }
+            currentVertex.Normal = ProcessNormal(normAttr->data, index, matrix);
         }
-        else if (attr.type == cgltf_attribute_type_normal)
+
+        // --- UVs ---
+        if (texAttr && texAttr->data)
         {
-            for (size_t normalIndex = 0; normalIndex < vertexCount; normalIndex++)
-            {
-                auto normal = matrix * Vector4(data[normalIndex * 3 + 0], data[normalIndex * 3 + 1], data[normalIndex * 3 + 2], 0.0f);
-                vertices[normalIndex].Normal = Vector3(normal.x, normal.y, normal.z).normalize();
-            }
-        }
-        else if (attr.type == cgltf_attribute_type_texcoord)
-        {
-            for (size_t textureIndex = 0; textureIndex < vertexCount; textureIndex++)
-            {
-                Vector2 uvs = Vector2(data[textureIndex * 2 + 0], data[textureIndex * 2 + 1]);
-                    vertices[textureIndex].TexureCoordinate = uvs;
-            }
+            currentVertex.TexureCoordinate = ProcessTextureCoordinate(texAttr->data, index);
         }
     }
-
-    cgltf_accessor* indexAccessor = primitive.indices;
-    for (size_t i = 0; i < indexAccessor->count; ++i)
-    {
-        auto index = cgltf_accessor_read_index(indexAccessor, i);
-        indices.push_back(index);
-    }
-
 
     // Load textures
     if (primitive.material)
@@ -156,6 +172,39 @@ Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
     }
 
     return Mesh(vertices, indices, textures);
+}
+
+Vector3 GltfImporter::ProcessPosition(cgltf_accessor* accesor, size_t index, Matrix4 matrix)
+{
+    float pos[3] = { 0.0f, 0.0f, 0.0f }; // Default
+    if (!cgltf_accessor_read_float(accesor, index, pos, 3))
+    {
+        std::cerr << "Error tor read Vertex Position " << index << std::endl;
+    }
+
+    Vector4 worldPos = matrix * Vector4(pos[0], pos[1], pos[2], 1.0f);
+    return Vector3(worldPos.x, worldPos.y, worldPos.z);
+}
+
+Vector3 GltfImporter::ProcessNormal(cgltf_accessor* accesor, size_t index, Matrix4 matrix)
+{
+    float norm[3] = { 0.0f, 0.0f, 1.0f }; // Default
+    if (!cgltf_accessor_read_float(accesor, index, norm, 3))
+    {
+        std::cerr << "Error tor read Vertex Normal" << index << std::endl;
+    }
+    Vector4 worldNorm = matrix * Vector4(norm[0], norm[1], norm[2], 0.0f);
+    return Vector3(worldNorm.x, worldNorm.y, worldNorm.z).normalize();
+}
+
+Vector2 GltfImporter::ProcessTextureCoordinate(cgltf_accessor* accesor, size_t index)
+{
+    float uv[2] = { 0.0f, 0.0f }; // Default
+    if (!cgltf_accessor_read_float(accesor, index, uv, 2)) {
+        std::cerr << "Error to read Vertex Texture Coordinate" << index << std::endl;
+    }
+    // currentVertex.TexureCoordinate.y = 1.0f - currentVertex.TexureCoordinate.y;
+    return Vector2(uv[0], uv[1]);
 }
 
 Texture GltfImporter::LoadMaterialTextures(cgltf_texture* texture, const std::string& typeName)
