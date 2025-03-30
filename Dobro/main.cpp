@@ -116,7 +116,7 @@ int main() {
 		unsigned int viewLoc = glGetUniformLocation(myShader.ID, "view");
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view.get());
 		
-		auto projection = Matrix4();
+		Matrix4 projection = Matrix4();
 		projection.perspective(45.0f, WIDTH/HEIGHT, 0.1f, 100.0f);
 
 		// note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
