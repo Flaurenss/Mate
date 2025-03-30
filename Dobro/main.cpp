@@ -77,8 +77,11 @@ int main() {
 	//auto model = new Model("C:/Users/loren/Downloads/glTF-Sample-Models-main/glTF-Sample-Models-main/2.0/AnimatedCube/glTF/AnimatedCube.gltf");
 	//auto model = new Model("E:/TFG/Models/glTF-Sample-Assets-main/Models/OrientationTest/glTF/OrientationTest.gltf");
 	//auto model = new Model("E:/TFG/Models/glTF-Sample-Assets-main/Models/Avocado/glTF/Avocado.gltf");
-	auto model = new Model("E:/TFG/Models/glTF-Sample-Assets-main/Models/BoxTextured/glTF/BoxTextured.gltf");
+	//auto model = new Model("E:/TFG/Models/glTF-Sample-Assets-main/Models/BoxTextured/glTF/BoxTextured.gltf");
 	//auto model = new Model("E:/TFG/Models/glTF-Sample-Assets-main/Models/Duck/glTF/Duck.gltf");
+	auto model = new Model("E:/TFG/Models/Kenney/Models/GLB format/character-female-d.glb");
+	//auto model = new Model("E:/TFG/Models/glTF-Sample-Assets-main/Models/SciFiHelmet/glTF/SciFiHelmet.gltf");
+	//auto model = new Model("E:/TFG/Models/glTF-Sample-Assets-main/Models/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf");
 
 	// Hide mouse - focus mode
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -123,12 +126,12 @@ int main() {
 		int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.get());
 		
-		Matrix4 modelC = Matrix4();
-		modelC.rotate(-180, Vector3(0, 1.0f, 0));
+		Matrix4 modelMatrix = Matrix4();
+		//modelMatrix.rotate(-180, Vector3(0, 1.0f, 0));
 		//modelC.scale(0.15f);
 		/*modelC.translate();*/
 		unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, modelC.get());
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, modelMatrix.get());
 
 		model->Draw(myShader);
 		

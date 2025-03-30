@@ -95,20 +95,6 @@ Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
     std::vector<unsigned int> indices; 
     std::vector<Texture> textures;
 
-    cgltf_accessor* indexAccessor = primitive.indices;
-    if (indexAccessor)
-    {
-        indices.resize(indexAccessor->count); // Reservar espacio
-        for (size_t i = 0; i < indexAccessor->count; ++i)
-        {
-            indices[i] = cgltf_accessor_read_index(indexAccessor, i);
-        }
-    }
-    else
-    {
-        throw std::runtime_error("Error: Primitive contains no indices.");
-    }
-
     const cgltf_attribute* posAttr = nullptr;
     const cgltf_attribute* normAttr = nullptr;
     const cgltf_attribute* texAttr = nullptr;
@@ -158,6 +144,26 @@ Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
         }
     }
 
+    cgltf_accessor* indexAccessor = primitive.indices;
+    if (indexAccessor)
+    {
+        indices.resize(indexAccessor->count); // Reservar espacio
+        for (size_t i = 0; i < indexAccessor->count; ++i)
+        {
+            indices[i] = cgltf_accessor_read_index(indexAccessor, i);
+        }
+    }
+    else
+    {
+        //throw std::runtime_error("Error: Primitive contains no indices.");
+        std::cout << "INFO: Primitive without index. Generating sequencial indices..." << std::endl;
+        indices.resize(vertexCount);
+        for (size_t i = 0; i < vertexCount; ++i)
+        {
+            indices[i] = static_cast<unsigned int>(i);
+        }
+    }
+
     // Load textures
     if (primitive.material)
     {
@@ -169,6 +175,15 @@ Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
             diffuse.defaultColor = Vector4(baseColor[0], baseColor[1], baseColor[2], baseColor[3]);
         }
         textures.push_back(diffuse);
+    }
+    else
+    {
+        Texture texture;
+        texture.id = 0;
+        texture.valid = false;
+        texture.defaultColor = DefaultColor;
+
+        textures.push_back(texture);
     }
 
     return Mesh(vertices, indices, textures);
@@ -229,7 +244,7 @@ Texture GltfImporter::LoadMaterialTextures(cgltf_texture* texture, const std::st
     customTexture.type = typeName;
     customTexture.filePath = texPath;
     customTexture.valid = true;
-    customTexture.defaultColor = Vector4(0.502f, 0.502f, 0.502f, 0.502f);
+    customTexture.defaultColor = DefaultColor;
     customTexture.id = LoadTexture(texPath.c_str());
 
     loadedTextures.push_back(customTexture);

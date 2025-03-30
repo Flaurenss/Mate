@@ -22,6 +22,7 @@ struct Texture {
 
 const std::string DIFFUSE_NAME = "texture_diffuse";
 const std::string SPECULAR_NAME = "texture_specular";
+const Vector4 DefaultColor = Vector4(0.502f, 0.502f, 0.502f, 0.502f);
 
 class Mesh : public IRenderable
 {
