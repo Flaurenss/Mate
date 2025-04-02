@@ -97,7 +97,7 @@ int main() {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
 	// Custom Shader class:
-	Shader myShader("./vertexShader.vs", "./fragmentShader.fs");
+	Shader myShader("./vertexShader.shader", "./fragmentShader.shader");
 
 	// Frame loop
 	while (!glfwWindowShouldClose(window))

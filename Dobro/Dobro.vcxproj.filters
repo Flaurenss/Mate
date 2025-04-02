@@ -129,10 +129,10 @@
     <CopyFileToFolders Include="Resources\cat.png">
       <Filter>Resource Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="Shaders\fragmentShader.fs">
+    <CopyFileToFolders Include="Shaders\fragmentShader.shader">
       <Filter>Header Files\Core\Shaders</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="Shaders\vertexShader.vs">
+    <CopyFileToFolders Include="Shaders\vertexShader.shader">
       <Filter>Header Files\Core\Shaders</Filter>
     </CopyFileToFolders>
   </ItemGroup>
