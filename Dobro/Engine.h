@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 class Engine
 {
@@ -8,10 +9,15 @@ public:
 
 	void Initialize();
 	void Run();
-	void ProcessInput();
-	void Update();
+	
 private:
+	std::string title;
 	int widht;
 	int height;
+	bool isRunning;
+
+	void ProcessInput();
+	void Update();
+	void Render();
 };
 
