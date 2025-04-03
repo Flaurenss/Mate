@@ -40,6 +40,30 @@
     <Filter Include="Header Files\Core\Shaders">
       <UniqueIdentifier>{2f6c5fc5-7ccf-4f85-8847-245285a69b20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\ECS">
+      <UniqueIdentifier>{438c01ba-68d7-4896-890d-ca583e299d4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\ECS\Entities">
+      <UniqueIdentifier>{79420be9-4438-4a04-8d91-f86b0cbc97a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\ECS\Components">
+      <UniqueIdentifier>{ac3b5715-6981-402e-9fec-a6ccd857cc73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\ECS\Systems">
+      <UniqueIdentifier>{509e3ead-6e19-4773-9784-dd887ee4b264}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\ECS">
+      <UniqueIdentifier>{de35974b-e989-487f-9ac8-82355c8c467d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\ECS\Entities">
+      <UniqueIdentifier>{544ca7c7-dd8c-4bb1-9998-f5769c03d29b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\ECS\Components">
+      <UniqueIdentifier>{31cf2ca2-b576-45b0-b7c3-2fbb41a03a02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\ECS\Systems">
+      <UniqueIdentifier>{98159833-5b01-4f7d-9a88-8e4c53c605e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -77,6 +101,21 @@
     </ClCompile>
     <ClCompile Include="IRenderable.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS.cpp">
+      <Filter>Source Files\Core\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source Files\Core\ECS\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Source Files\Core\ECS\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>Source Files\Core\ECS\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="System.cpp">
+      <Filter>Source Files\Core\ECS\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +159,21 @@
     </ClInclude>
     <ClInclude Include="IRenderable.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\Core\ECS\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Header Files\Core\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>Header Files\Core\ECS\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS.h">
+      <Filter>Header Files\Core\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>Header Files\Core\ECS\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
