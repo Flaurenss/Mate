@@ -3,10 +3,10 @@
 #include <glfw/glfw3.h>
 #include <iostream>
 
-Engine::Engine()
+Engine::Engine(int width, int height) :
+	widht(width),
+	height(height)
 {
-	widht = 1920;
-	height = 1080;
 	title = "Engine";
 }
 

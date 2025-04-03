@@ -8,6 +8,7 @@
 #include <MathUtils.h>
 #include "Camera.h"
 #include "Model.h"
+#include "Engine.h"
 
 void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -33,7 +34,10 @@ Vector3 cameraUp = Vector3(0.0f, 1.0f, 0.0f);
 
 Camera camera(cameraPos, cameraUp);
 
-int main() {
+int main()
+{
+	auto engine = new Engine();
+
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
