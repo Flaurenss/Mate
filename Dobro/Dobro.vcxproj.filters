@@ -120,6 +120,9 @@
     <ClCompile Include="MovementSystem.cpp">
       <Filter>Source Files\Core\ECS\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
@@ -180,6 +183,9 @@
     </ClInclude>
     <ClInclude Include="MovementSystem.h">
       <Filter>Header Files\Core\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
