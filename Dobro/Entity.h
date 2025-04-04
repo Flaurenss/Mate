@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 
+template<typename T>
 class Component;
 
 // Represented by IDs
@@ -8,12 +9,18 @@ class Component;
 class Entity
 {
 public:
-	void AddComponent(Component* component);
+	Entity(int id);
+
+	//void AddComponent(Component component);
 	void GetComponent();
 	void Update(float deltaTime);
 	void Render();
 
+	int GetId() const;
+
+	bool operator==(const Entity& entity) const;
+
 private:
 	int id;
-	std::vector<Component*> components;
+	//std::vector<Component> components;
 };

@@ -2,13 +2,25 @@
 
 class Entity;
 
-// Pure data
-// Contiguous in memory, organized the data itself, not by entity (Data oriented design)
-class Component
+struct IComponent 
+{
+protected:
+	static int nextId;
+};
+
+/// <summary>
+/// Pure data represented as a Component.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+template <typename T>
+class Component : public IComponent
 {
 public:
-	virtual void Update() = 0;
-	virtual void Render() = 0;
+	static int GetId()
+	{
+		static auto id = nextId++;
+		return id;
+	}
 private:
 	Entity* owner;
 };

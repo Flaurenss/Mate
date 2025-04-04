@@ -36,7 +36,9 @@ Camera camera(cameraPos, cameraUp);
 
 int main()
 {
-	auto engine = new Engine();
+	//auto engine = new Engine();
+	//engine->Initialize();
+	//engine->Run();
 
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.

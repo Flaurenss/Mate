@@ -2,6 +2,7 @@
 #include <vector>
 #include "Entity.h"
 
+// TODO: rethink name, something like EntityManager?
 class ECS
 {
 public:
