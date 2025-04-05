@@ -1,0 +1,3 @@
+﻿D:\VSCommunity\MSBuild\Current\Bin\amd64\Microsoft.Common.CurrentVersion.targets(2176,5): warning : The referenced project '..\Dobro\Dobro.vcxproj' does not exist.
+  Mate.Game.cpp
+  Mate.Game.vcxproj -> E:\TFG\Dobro\x64\Debug\Mate.Game.exe
