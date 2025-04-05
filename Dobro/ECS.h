@@ -21,7 +21,7 @@ public:
 
 	template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
 	template <typename TComponent> void RemoveComponent(Entity entity);
-	template <typename TComponent> void HasComponent(Entity entity) const;
+	template <typename TComponent> bool HasComponent(Entity entity) const;
 	template <typename TComponent> TComponent& GetComponent(Entity entity) const;
 
 	void AddEntityToSystem(Entity entity);
