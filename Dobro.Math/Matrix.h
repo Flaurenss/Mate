@@ -65,12 +65,17 @@ public:
 
 	Matrix4& rotate(const float degrees, const Vector3 axis);
 
+
 	Matrix4& ortho(const float left, const float right, const float bottom, const float top, const float near, const float far);
 	Matrix4& perspective(const float fov, const float aspectRatio, const float near, const float far);
 
 	static Matrix4 lookAt(const Vector3 position, const Vector3 target, const Vector3 up);
 
 	static Matrix4 ToMatrix(const float x, const float y, const float z, const float w);
+	
+	static Matrix4& transform(const Matrix4& translate, const Matrix4& rotation, const Matrix4& scale);
+
+	static Matrix4& transform(const Vector3& position, const Vector3& rotation, const Vector3& scale);
 
 	// Operators
 	float& operator[](int index);

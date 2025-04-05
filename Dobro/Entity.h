@@ -19,6 +19,8 @@ public:
 	int GetId() const;
 
 	bool operator==(const Entity& entity) const;
+	bool operator<(const Entity& entity) const;
+	bool operator>(const Entity& entity) const;
 
 private:
 	int id;

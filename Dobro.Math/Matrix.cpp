@@ -103,6 +103,21 @@ Matrix4& Matrix4::rotate(const float degrees, const Vector3 axis)
     return *this;
 }
 
+Matrix4& Matrix4::transform(const Vector3& position, const Vector3& rotation, const Vector3& scale)
+{
+    Matrix4 identity;
+
+    identity.scale(scale);
+
+    identity.rotate(rotation.z, Vector3(0, 0, 1));
+    identity.rotate(rotation.y, Vector3(0, 1, 0));
+    identity.rotate(rotation.x, Vector3(1, 0, 0));
+
+    identity.translate(position);
+
+    return identity;
+}
+
 Matrix4& Matrix4::ortho(const float left, const float right, const float bottom, const float top, const float near, const float far)
 {
     // TODO: apply to current global m
@@ -226,7 +241,8 @@ float Matrix4::operator[](const int index) const
 
 Matrix4& Matrix4::operator=(const Matrix4& other)
 {
-    if (this != &other) { // Prevent self-assignment
+    if (this != &other) 
+    { // Prevent self-assignment
         for (int i = 0; i < 16; i++) {
             m[i] = other.m[i];
         }

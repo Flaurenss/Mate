@@ -12,3 +12,13 @@ bool Entity::operator==(const Entity& entity) const
 {
 	return id == entity.GetId();
 }
+
+bool Entity::operator<(const Entity& entity) const
+{
+	return id < entity.GetId();
+}
+
+bool Entity::operator>(const Entity& entity) const
+{
+	return id > entity.GetId();
+}

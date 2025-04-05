@@ -132,7 +132,8 @@ int main()
 		int projectionLoc = glGetUniformLocation(myShader.ID, "projection");
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.get());
 		
-		Matrix4 modelMatrix = Matrix4();
+		//Matrix4 modelMatrix = Matrix4();
+		Matrix4 modelMatrix = Matrix4::transform(Vector3(0, 0, 0), Vector3(0, -180, 0), Vector3(1, 1, 1));
 		//modelMatrix.rotate(-180, Vector3(0, 1.0f, 0));
 		//modelC.scale(0.15f);
 		/*modelC.translate();*/
