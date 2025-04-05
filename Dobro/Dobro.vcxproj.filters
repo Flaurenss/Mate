@@ -64,6 +64,12 @@
     <Filter Include="Header Files\Core\ECS\Systems">
       <UniqueIdentifier>{98159833-5b01-4f7d-9a88-8e4c53c605e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\Logger">
+      <UniqueIdentifier>{e31ec5fb-838c-4b2e-8d4a-747f1620f899}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Logger">
+      <UniqueIdentifier>{b191d873-1a39-4773-abfa-3cef874970d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -125,6 +131,9 @@
     </ClCompile>
     <ClCompile Include="ComponentRegistry.cpp">
       <Filter>Source Files\Core\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Source Files\Core\Logger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -192,6 +201,9 @@
     </ClInclude>
     <ClInclude Include="ComponentRegistry.h">
       <Filter>Header Files\Core\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Header Files\Core\Logger</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

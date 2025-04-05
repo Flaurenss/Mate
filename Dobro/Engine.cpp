@@ -8,6 +8,7 @@ Engine::Engine(int width, int height) :
 	height(height)
 {
 	title = "Engine";
+	ecs = new ECS();
 }
 
 Engine::~Engine()

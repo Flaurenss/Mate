@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "ECS.h"
 
 class Engine
 {
@@ -15,6 +16,8 @@ private:
 	int widht;
 	int height;
 	bool isRunning;
+
+	ECS* ecs;
 
 	void ProcessInput();
 	void Update();

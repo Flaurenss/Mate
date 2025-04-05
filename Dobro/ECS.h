@@ -27,7 +27,7 @@ public:
 	template <typename TComponent> TComponent& GetComponent(Entity entity) const;
 
 	/// <summary>
-	/// Add entity to system if entity components match ssytem components requirements.
+	/// Add entity to system if entity components match sytem components requirements.
 	/// </summary>
 	/// <param name="entity"></param>
 	void AddEntityToSystem(Entity entity);
