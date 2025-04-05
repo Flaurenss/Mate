@@ -136,10 +136,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Mate.Game.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dobro\Dobro.vcxproj">
+    <ProjectReference Include="..\Mate\Mate.vcxproj">
       <Project>{87d6bfc4-75e7-45cf-84fa-852979e2ccf4}</Project>
     </ProjectReference>
   </ItemGroup>

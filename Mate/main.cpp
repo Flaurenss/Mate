@@ -37,8 +37,8 @@ Camera camera(cameraPos, cameraUp);
 
 int main()
 {
-	//auto engine = new Engine();
-	//engine->Initialize();
+	auto engine = new Engine();
+	engine->Initialize();
 	//engine->Run();
 
 	glfwInit();

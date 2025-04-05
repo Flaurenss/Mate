@@ -2,13 +2,15 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 #include <iostream>
+#include "Logger.h"
 
 Engine::Engine(int width, int height) :
 	widht(width),
 	height(height)
 {
 	title = "Engine";
-	ecs = new ECS();
+	ecs = std::make_unique<ECS>();
+	Logger::Log("Engine created with name " + title);
 }
 
 Engine::~Engine()

@@ -29,7 +29,7 @@ public:
 	/// <summary>
 	/// Add entity to system if entity components match sytem components requirements.
 	/// </summary>
-	/// <param name="entity"></param>
+	/// <param name="entity">The entity to add.</param>
 	void AddEntityToSystem(Entity entity);
 	template <typename TSystem, typename ...TArgs> void AddSystem(TArgs&& ...args);
 	template <typename TSystem> void RemoveSystem();
@@ -58,14 +58,14 @@ private:
 	// Each component represents all data for a type Component.
 	// Vector index = component id
 	// Component Registry index = entityid
-	std::vector<IRegistry*> componentsRegistry;
+	std::vector<std::shared_ptr<IRegistry>> componentsRegistry;
 
 	// The signature lets us know which component are active for an entity.
 	// Vector index = entity id
 	std::vector<Signature> entityComponentSignatures;
 
 	// Map of active systems where index = system type
-	std::unordered_map<std::type_index, System*> systems;
+	std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
 };
 
 template<typename TComponent, typename ...TArgs>
@@ -83,11 +83,13 @@ void ECS::AddComponent(Entity entity, TArgs && ...args)
 	// Check if TComponent Registry exists, ifnot it created a new one
 	if (!componentsRegistry[componentId])
 	{
-		ComponentRegistry<TComponent>* newRegistry = new ComponentRegistry<TComponent>();
+		std::shared_ptr<ComponentRegistry<TComponent>> newRegistry =
+			std::make_shared<ComponentRegistry<TComponent>>();
 		componentsRegistry[componentId] = newRegistry;
 	}
 
-	ComponentRegistry<TComponent>* componentRegistry = ComponentRegistry<TComponent>(componentsRegistry[componentId]);
+	std::shared_ptr<ComponentRegistry<TComponent>> componentRegistry =
+		std::static_pointer_cast<ComponentRegistry<TComponent>>(componentsRegistry[componentId]);
 
 	if (entityId > componentRegistry->GetSize())
 	{
@@ -133,7 +135,8 @@ template<typename TSystem, typename ...TArgs>
 void ECS::AddSystem(TArgs && ...args)
 {
 	auto typeIndex = std::type_index(typeid(TSystem));
-	TSystem* newSystem(new TSystem(std::forward<TArgs>(args)...));
+
+	std::shared_ptr<TSystem> newSystem = std::make_shared<TSystem>(std::forward<TArgs>(args)...);
 	systems.insert(std::make_pair(typeIndex, newSystem));
 }
 

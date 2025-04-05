@@ -17,7 +17,7 @@ private:
 	int height;
 	bool isRunning;
 
-	ECS* ecs;
+	std::unique_ptr<ECS> ecs;
 
 	void ProcessInput();
 	void Update();
