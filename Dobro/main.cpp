@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Engine.h"
+#include "Logger.h"
 
 void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -50,7 +51,7 @@ int main()
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, NULL, NULL);
 	if (window == NULL)
 	{
-		std::cout << "Failed to create GLFW widnow" << std::endl;
+		Logger::Err("Failed to create GLFW widnow");
 		glfwTerminate();
 		return -1;
 	}
@@ -59,7 +60,7 @@ int main()
 	// Initialize GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		Logger::Err("Failed to initialize GLAD");
 		return -1;
 	}
 
@@ -69,7 +70,7 @@ int main()
 	// ------------------------------------
 	int nrAttributes;
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
+	Logger::Log("Maximum nr of vertex attributes supported: " + std::to_string(nrAttributes));
 	//unsigned int shaderProgram = createShaderProgram();
 	stbi_set_flip_vertically_on_load(false);
 	// Test model importer
@@ -111,8 +112,7 @@ int main()
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		//std::cout << deltaTime << std::endl;
-		// input
+
 		processInput(window);
 		
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -159,7 +159,7 @@ int main()
 /// <param name="height">The desired height.</param>
 void Framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	std::cout << width << "x" << height << std::endl;
+	Logger::Log(std::to_string(width) + "x" + std::to_string(height));
 	glViewport(0, 0, width, height);
 }
 
