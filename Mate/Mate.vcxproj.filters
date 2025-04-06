@@ -70,6 +70,18 @@
     <Filter Include="Source Files\Core\Logger">
       <UniqueIdentifier>{b191d873-1a39-4773-abfa-3cef874970d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{c0514972-2f1a-4616-a7b4-98898ebf3681}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems">
+      <UniqueIdentifier>{0bbafeaa-9436-47bc-907b-10187787af9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{b928f1f4-4c22-4147-8cb6-0f4d897f416a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Systems">
+      <UniqueIdentifier>{47741b5c-6e1e-4a12-bc32-48b14913c37a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp">
@@ -114,12 +126,6 @@
     <ClCompile Include="Component.cpp">
       <Filter>Source Files\Core\ECS\Components</Filter>
     </ClCompile>
-    <ClCompile Include="TransformComponent.cpp">
-      <Filter>Source Files\Core\ECS\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="MovementSystem.cpp">
-      <Filter>Source Files\Core\ECS\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -132,11 +138,14 @@
     <ClCompile Include="Entity.cpp">
       <Filter>Source Files\Core\ECS\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="RenderSystem.cpp">
-      <Filter>Source Files\Core\ECS\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="MeshComponent.cpp">
-      <Filter>Source Files\Core\ECS\Components</Filter>
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -190,14 +199,8 @@
     <ClInclude Include="Component.h">
       <Filter>Header Files\Core\ECS\Components</Filter>
     </ClInclude>
-    <ClInclude Include="TransformComponent.h">
-      <Filter>Header Files\Core\ECS\Components</Filter>
-    </ClInclude>
     <ClInclude Include="ECS.h">
       <Filter>Header Files\Core\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="MovementSystem.h">
-      <Filter>Header Files\Core\ECS\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Header Files\Core</Filter>
@@ -211,11 +214,17 @@
     <ClInclude Include="Entity.h">
       <Filter>Header Files\Core\ECS\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="RenderSystem.h">
-      <Filter>Header Files\Core\ECS\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="MeshComponent.h">
-      <Filter>Header Files\Core\ECS\Components</Filter>
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementSystem.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
