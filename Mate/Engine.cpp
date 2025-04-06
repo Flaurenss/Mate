@@ -107,9 +107,40 @@ Camera camera(cameraPos, cameraUp);
 
 void Engine::Test()
 {
+	glfwInit();
+	// OpenGl version to use, if user don't have it set it, will fail.
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	// Btw Intermediate/Core profile, we set the last one:
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	GLFWwindow* window = glfwCreateWindow(width, height, "TEST", NULL, NULL);
+	if (window == NULL)
+	{
+		Logger::Err("Failed to create GLFW widnow");
+		glfwTerminate();
+		return;
+	}
+	glfwMakeContextCurrent(window);
+
+	// Initialize GLAD
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		Logger::Err("Failed to initialize GLAD");
+		return;
+	}
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	// build and compile our shader program
+	// ------------------------------------
+	int nrAttributes;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+	Logger::Log("Maximum nr of vertex attributes supported: " + std::to_string(nrAttributes));
+	stbi_set_flip_vertically_on_load(false);
+
 	auto model = new Model("E:/TFG/Models/Kenney/Models/GLB format/character-female-d.glb");
 	//auto model = new Model("E:/TFG/Models/glTF-Sample-Assets-main/Models/Duck/glTF/Duck.gltf");
-
 
 	// Hide mouse - focus mode
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -118,7 +149,7 @@ void Engine::Test()
 	glfwSetFramebufferSizeCallback(window, Framebuffer_size_callback);
 
 	// Set mouse movement callback
-	//glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
 
 	// Draw primitives configuration
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -138,6 +169,16 @@ void Engine::Test()
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		GLenum err;
+		/*while ((err = glGetError()) == GL_NO_ERROR)
+		{
+		}*/
+		err = glGetError();
+		if (err != GL_NO_ERROR)
+		{
+			Logger::Err("OpenGL error: " + std::to_string(err));
+		}
 
 		myShader.Use();
 

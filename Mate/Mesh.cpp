@@ -33,8 +33,8 @@ void Mesh::Draw(Shader& shader)
 		shader.SetBool("valid", textures[i].valid);
 		if (textures[i].valid)
 		{
-			glBindTexture(GL_TEXTURE_2D, textures[i].id);
 			shader.SetInt(("material." + name + number).c_str(), i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].id);
 		}
 		else
 		{
@@ -42,13 +42,14 @@ void Mesh::Draw(Shader& shader)
 			shader.SetVec4("defaultColor", textures[i].defaultColor);
 		}
 
-		glActiveTexture(GL_TEXTURE0);
 	}
 
 	// Draw mesh
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::SetupMesh()

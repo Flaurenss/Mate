@@ -134,35 +134,27 @@ Matrix4& Matrix4::ortho(const float left, const float right, const float bottom,
 Matrix4& Matrix4::perspective(const float fov, const float aspectRatio, const float near, const float far)
 {
     Matrix4 p;
-    //auto rad = fov * DEG2RAD;
-    //auto top = tanf(rad * 0.5f) * near;
-    //auto bottom = -top;
-    //auto right = top * aspectRatio;
-    //auto left = -right;
-    //
-    //p[0] = (2 * near) / (right - left);
-    //
-    //p[5] = (2 * near) / (top - bottom);
-    //
-    //p[8] = (right + left) / (right - left);
-    //p[9] = (top + bottom) / (top - bottom);
-    //p[10] = -(far + near) / (far - near);
-    //p[11] = -1;
-    //
-    //p[14] = -(2 * far * near) / (far - near);
-    //p[15] = 0.0f;
-
-    //*this = p * (*this);
-
-    float f = 1.0f / tanf(fov * 0.5f * DEG2RAD);
-    p[0] = f / aspectRatio;
-    p[5] = f;
-    p[10] = (far + near) / (near - far);
-    p[11] = -1.0f;
-    p[14] = (2.0f * far * near) / (near - far);
+    auto rad = fov * DEG2RAD;
+    auto top = tanf(rad * 0.5f) * near;
+    auto bottom = -top;
+    auto right = top * aspectRatio;
+    auto left = -right;
+    
+    p[0] = (2 * near) / (right - left);
+    
+    p[5] = (2 * near) / (top - bottom);
+    
+    p[8] = (right + left) / (right - left);
+    p[9] = (top + bottom) / (top - bottom);
+    p[10] = -(far + near) / (far - near);
+    p[11] = -1;
+    
+    p[14] = -(2 * far * near) / (far - near);
     p[15] = 0.0f;
 
-    return p;
+    *this = p * (*this);
+
+    return *this;
 }
 
 Matrix4 Matrix4::lookAt(const Vector3 position, const Vector3 target, const Vector3 up)

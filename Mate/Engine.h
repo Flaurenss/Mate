@@ -20,7 +20,7 @@ public:
 	void Update();
 	void Render();
 
-	void Test();
+	static void Test();
 private:
 	std::string title;
 	static int width;
