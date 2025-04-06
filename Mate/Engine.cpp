@@ -24,9 +24,9 @@ void Engine::Initialize()
 {
 
 	auto ecs = new ECS();
-	auto player = ecs->CreateEntity();
+	//auto player = ecs->CreateEntity();
 	//ecs->AddComponent<TransformComponent>(player);
-	player.AddComponent<TransformComponent>();
+	//player.AddComponent<TransformComponent>();
 
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.

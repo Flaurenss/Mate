@@ -1,50 +1,32 @@
 #pragma once
-#include <vector>
-#include <memory>
-#include "ComponentManager.h"
+class ECS;
 
-// Represented by IDs
-// Populates scene
 class Entity
 {
 public:
-	Entity(int id);
-	~Entity();
+    Entity(int id);
+    ~Entity(); // Declaración
 
-	template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
-	template <typename TComponent> void RemoveComponent();
-	template <typename TComponent> bool HasComponent() const;
-	template <typename TComponent> TComponent& GetComponent() const;
+    // --- Métodos de Componentes (Delegan a ECS) ---
+    template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
+    template <typename TComponent> void RemoveComponent();
+    template <typename TComponent> bool HasComponent() const;
+    template <typename TComponent> TComponent& GetComponent() const;
 
-	int GetId() const;
+    // --- Otros Métodos ---
+    int GetId() const; // Declaración
 
-	bool operator==(const Entity& entity) const;
-	bool operator<(const Entity& entity) const;
-	bool operator>(const Entity& entity) const;
+    // --- Operadores ---
+    bool operator==(const Entity& entity) const; // Declaración
+    bool operator<(const Entity& entity) const;  // Declaración
+    bool operator>(const Entity& entity) const;  // Declaración
 
+    // --- Registro Estático para acceso a ECS ---
+    static void SetRegistry(ECS* ecsInstance);
+
+    ECS* registry; // Puntero a la instancia ECS activa
 private:
-	int id;
-	std::shared_ptr<ComponentManager> componentManager;
+    int id;
 };
 
-template<typename TComponent, typename ...TArgs>
-inline void Entity::AddComponent(TArgs && ...args)
-{
-}
-
-template<typename TComponent>
-inline void Entity::RemoveComponent()
-{
-}
-
-template<typename TComponent>
-inline bool Entity::HasComponent() const
-{
-	return componentManager->HasComponent<TComponent>(this);
-}
-
-template<typename TComponent>
-inline TComponent& Entity::GetComponent() const
-{
-	// TODO: insert return statement here
-}
+#include "Entity.inl"

@@ -1,7 +1,5 @@
 #pragma once
 
-class Entity;
-
 struct IComponent 
 {
 protected:
@@ -21,6 +19,4 @@ public:
 		static auto id = nextId++;
 		return id;
 	}
-private:
-	Entity* owner;
 };

@@ -1,19 +1,12 @@
 #include "Entity.h"
-#include <memory>
 
 Entity::Entity(int id) : id(id)
-{ }
+{
+}
 
 Entity::~Entity()
 {
-	//delete ecs;
-	//ecs = nullptr;
 }
-
-//void Entity::SetECS(ECS* ecs)
-//{
-//	this->ecs = ecs;
-//}
 
 int Entity::GetId() const
 {

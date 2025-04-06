@@ -1,12 +1,10 @@
 #include "ECS.h"
-
-int IComponent::nextId = 0;
+#include "Entity.h"
 
 Entity ECS::CreateEntity()
 {
 	int entityId = numEntities++;
 	Entity entity(entityId);
-	//entity.SetECS(this);
 	entitiesToAdd.insert(entity);
 	if (entityId >= entityComponentSignatures.size())
 	{
@@ -45,4 +43,55 @@ void ECS::Update()
 	//	DestroyEntity(entity);
 	//}
 	//entitiesToDestroy.clear();
+}
+
+//Entity::Entity(int id) : id(id)
+//{
+//}
+//
+//Entity::~Entity()
+//{
+//}
+//
+//int Entity::GetId() const
+//{
+//	return id;
+//}
+//
+//bool Entity::operator==(const Entity& entity) const
+//{
+//	return id == entity.GetId();
+//}
+//
+//bool Entity::operator<(const Entity& entity) const
+//{
+//	return id < entity.GetId();
+//}
+//
+//bool Entity::operator>(const Entity& entity) const
+//{
+//	return id > entity.GetId();
+//}
+
+void System::AddEntity(Entity entity)
+{
+	entities.push_back(entity);
+}
+
+void System::RemoveEntity(Entity entity)
+{
+	entities.erase(std::remove_if(entities.begin(), entities.end(), [&entity](Entity other)
+		{
+			return entity == other;
+		}), entities.end());
+}
+
+std::vector<Entity> System::GetEntities() const
+{
+	return entities;
+}
+
+const Signature& System::GetComponentSignature() const
+{
+	return componentSignature;
 }

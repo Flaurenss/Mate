@@ -1,16 +1,65 @@
 #pragma once
 #include <vector>
-#include "System.h"
-//#include "Entity.h"
-#include "ComponentManager.h"
-#include "ComponentRegistry.h"
 #include <memory>
 #include <unordered_map>
 #include <typeindex>
 #include <set>
+#include <bitset>
+#include "ComponentRegistry.h"
+#include "Component.h"
 
+class Entity;
 class IRegistry;
-class ComponentManager;
+
+const unsigned int MAX_COMPONENTS = 32;
+typedef std::bitset<MAX_COMPONENTS> Signature;
+
+//class Entity
+//{
+//public:
+//	Entity(int id);
+//	~Entity();
+//
+//	template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
+//	template <typename TComponent> void RemoveComponent();
+//	template <typename TComponent> bool HasComponent() const;
+//	template <typename TComponent> TComponent& GetComponent() const;
+//
+//	int GetId() const;
+//
+//	bool operator==(const Entity& entity) const;
+//	bool operator<(const Entity& entity) const;
+//	bool operator>(const Entity& entity) const;
+//
+//private:
+//	int id;
+//	class ECS* ecs;
+//};
+
+// Transforms Components from state A to state B
+// Performs logic on components and entities
+class System
+{
+public:
+	System() = default;
+	~System() = default;
+
+	void AddEntity(Entity entity);
+	void RemoveEntity(Entity entity);
+	std::vector<Entity> GetEntities() const;
+	const Signature& GetComponentSignature() const;
+
+	virtual void Update() = 0;
+
+	/// <summary>
+	/// Define the component type TComponent that entities must have to be consdiered by the system.
+	/// </summary>
+	/// <typeparam name="TComponent">The Component type.</typeparam>
+	template <typename TComponent> void RequireComponent();
+private:
+	std::vector<Entity> entities;
+	Signature componentSignature;
+};
 
 /// <summary>
 /// ECS administrator.
@@ -23,7 +72,6 @@ public:
 	ECS()
 	{
 		numEntities = 0;
-		componentManager = std::make_shared<ComponentManager>(this);
 	}
 	Entity CreateEntity();
 	void DestroyEntity();
@@ -38,10 +86,10 @@ public:
 	/// </summary>
 	/// <param name="entity">The entity to add.</param>
 	void AddEntityToSystem(Entity entity);
-	template <typename TSystem, typename ...TArgs> void AddSystem(TArgs&& ...args);
-	template <typename TSystem> void RemoveSystem();
-	template <typename TSystem> bool HasSystem() const;
-	template <typename TSystem> TSystem& GetSystem() const;
+	//template <typename TSystem, typename ...TArgs> void AddSystem(TArgs&& ...args);
+	//template <typename TSystem> void RemoveSystem();
+	//template <typename TSystem> bool HasSystem() const;
+	//template <typename TSystem> TSystem& GetSystem() const;
 	
 	/// <summary>
 	/// Add or Destroy entities based on pending set to add and pending set to destroy.
@@ -51,8 +99,6 @@ public:
 
 private:
 	int numEntities;
-
-	std::shared_ptr<ComponentManager> componentManager;
 
 	std::set<Entity> entitiesToAdd;
 	std::set<Entity> entitiesToDestroy;
@@ -76,98 +122,42 @@ private:
 	// Map of active systems where index = system type
 	std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
 };
-
-template<typename TComponent, typename ...TArgs>
-void ECS::AddComponent(Entity entity, TArgs && ...args)
-{
-	const auto componentId = Component<TComponent>::GetId();
-	const auto entityId = entity.GetId();
-
-	// Check and resize if needed (when TComponent has not been add)
-	if (componentId >= componentsRegistry.size())
-	{
-		componentsRegistry.resize(componentId + 1, nullptr);
-	}
-
-	// Check if TComponent Registry exists, ifnot it created a new one
-	if (!componentsRegistry[componentId])
-	{
-		std::shared_ptr<ComponentRegistry<TComponent>> newRegistry =
-			std::make_shared<ComponentRegistry<TComponent>>();
-		componentsRegistry[componentId] = newRegistry;
-	}
-
-	std::shared_ptr<ComponentRegistry<TComponent>> componentRegistry =
-		std::static_pointer_cast<ComponentRegistry<TComponent>>(componentsRegistry[componentId]);
-
-	if (entityId > componentRegistry->GetSize())
-	{
-		componentRegistry->Resize(numEntities);
-	}
-
-	// Send multiple arguments to the specified new TComponent
-	TComponent newComponent(std::forward<TArgs>(args)...);
-	componentRegistry->Set(entityId, newComponent);
-	entityComponentSignatures[entityId].set(componentId);
-}
+#include "ECS.inl"
+//template<typename TSystem, typename ...TArgs>
+//void ECS::AddSystem(TArgs && ...args)
+//{
+//	auto typeIndex = std::type_index(typeid(TSystem));
+//
+//	std::shared_ptr<TSystem> newSystem = std::make_shared<TSystem>(std::forward<TArgs>(args)...);
+//	systems.insert(std::make_pair(typeIndex, newSystem));
+//}
+//
+//template<typename TSystem>
+//void ECS::RemoveSystem()
+//{
+//	auto typeIndex = std::type_index(typeid(TSystem));
+//	auto system = systems.find(typeIndex);
+//	systems.erase(system);
+//}
+//
+//template<typename TSystem>
+//bool ECS::HasSystem() const
+//{
+//	auto typeIndex = std::type_index(typeid(TSystem));
+//	return systems.find(typeIndex != systems.end());
+//}
+//
+//template<typename TSystem>
+//TSystem& ECS::GetSystem() const
+//{
+//	auto typeIndex = std::type_index(typeid(TSystem));
+//	auto system = systems.find(typeIndex);
+//	return *(std::static_pointer_cast<TSystem>(system->second));
+//}
 
 template<typename TComponent>
-void ECS::RemoveComponent(Entity entity)
+void System::RequireComponent()
 {
-	const auto entityId = entity.GetId();
 	const auto componentId = Component<TComponent>::GetId();
-
-	// Put TComponent bit from entity at false:
-	entityComponentSignatures[entityId].set(componentId, false);
-}
-
-template<typename TComponent>
-bool ECS::HasComponent(Entity entity) const
-{
-	const auto entityId = entity.GetId();
-	const auto componentId = Component<TComponent>::GetId();
-
-	return entityComponentSignatures[entityId].test(componentId);
-}
-
-template<typename TComponent>
-TComponent& ECS::GetComponent(Entity entity) const
-{
-	const auto entityId = entity.GetId();
-	const auto componentId = Component<TComponent>::GetId();
-
-	auto componentRegistry = std::static_pointer_cast<ComponentRegistry<TComponent>>(componentsRegistry[componentId]);
-	return componentRegistry->Get(entityId);
-}
-
-template<typename TSystem, typename ...TArgs>
-void ECS::AddSystem(TArgs && ...args)
-{
-	auto typeIndex = std::type_index(typeid(TSystem));
-
-	std::shared_ptr<TSystem> newSystem = std::make_shared<TSystem>(std::forward<TArgs>(args)...);
-	systems.insert(std::make_pair(typeIndex, newSystem));
-}
-
-template<typename TSystem>
-void ECS::RemoveSystem()
-{
-	auto typeIndex = std::type_index(typeid(TSystem));
-	auto system = systems.find(typeIndex);
-	systems.erase(system);
-}
-
-template<typename TSystem>
-bool ECS::HasSystem() const
-{
-	auto typeIndex = std::type_index(typeid(TSystem));
-	return systems.find(typeIndex != systems.end());
-}
-
-template<typename TSystem>
-TSystem& ECS::GetSystem() const
-{
-	auto typeIndex = std::type_index(typeid(TSystem));
-	auto system = systems.find(typeIndex);
-	return *(std::static_pointer_cast<TSystem>(system->second));
+	componentSignature.set(componentId);
 }
