@@ -67,7 +67,8 @@ void ComponentRegistry<TComponent>::Set(int index, TComponent component)
 template<typename TComponent>
 TComponent& ComponentRegistry<TComponent>::Get(int index)
 {
-	return static_cast<TComponent&>(data[index]);
+	//return static_cast<TComponent&>(data[index]);
+	return *(data[index]);
 }
 
 template<typename TComponent>

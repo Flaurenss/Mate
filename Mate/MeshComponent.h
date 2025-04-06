@@ -6,6 +6,7 @@ class MeshComponent
 {
 public:
 	MeshComponent(std::string modelPath);
+	Model& GetModel();
 private:
 	Model* model;
 };

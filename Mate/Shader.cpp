@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include <filesystem>
+#include "Logger.h"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
@@ -31,7 +32,9 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     catch (std::ifstream::failure e)
     {
         // TODO: use custom LOGGER
-        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+        Logger::Err(std::string("ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: ") + e.what());
+        return;
+        //std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
     }
 
     // Create and compile VERTEX shader:

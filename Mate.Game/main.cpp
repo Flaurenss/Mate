@@ -10,7 +10,7 @@ int main()
 {
     Engine* engine = new Engine();
 
-    auto registry = engine->GetRegistry();
+    ECS& registry = engine->GetRegistry();
     auto box = registry.CreateEntity();
     box.AddComponent<TransformComponent>();
     box.AddComponent<MeshComponent>("E:/TFG/Models/Kenney/Models/GLB format/character-female-d.glb");

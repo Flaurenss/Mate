@@ -6,12 +6,15 @@ RenderSystem::RenderSystem()
 {
 	RequireComponent<TransformComponent>();
 	RequireComponent<MeshComponent>();
+
+	shader = new Shader("./vertexShader.shader", "./fragmentShader.shader");
 }
 
 void RenderSystem::Update()
 {
-	for (auto entity : GetEntities())
+	for (Entity& entity : GetEntities())
 	{
-
+		MeshComponent& meshComponent = entity.GetComponent<MeshComponent>();
+		meshComponent.GetModel().Draw(*shader);
 	}
 }

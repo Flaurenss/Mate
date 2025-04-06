@@ -26,8 +26,8 @@ Engine::~Engine()
 
 void Engine::Initialize()
 {
-	registry->AddSystem<RenderSystem>();
 	CoreInitialize();
+	registry->AddSystem<RenderSystem>();
 }
 
 void Engine::CoreInitialize()
@@ -94,6 +94,7 @@ void Engine::ProcessInput()
 
 void Engine::Update()
 {
+	registry->Update();
 }
 
 void Engine::Render()
@@ -101,6 +102,8 @@ void Engine::Render()
 	isRunning = !glfwWindowShouldClose(window);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	registry->GetSystem<RenderSystem>().Update();
 
 	// Swap buffers, front for already rendered colors an the back one in order to avoid artifacts.
 	glfwSwapBuffers(window);
