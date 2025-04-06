@@ -3,9 +3,9 @@
 Entity::Entity(int id, ECS* registry) : id(id), registry(registry)
 { }
 
-Entity::~Entity()
+void Entity::Destroy()
 {
-
+	registry->DestroyEntity(*this);
 }
 
 int Entity::GetId() const

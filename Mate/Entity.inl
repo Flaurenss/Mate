@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Entity.h" // Necesita la declaración de Entity
-#include <utility>  // Para std::forward
-#include "ECS.h"    // Necesita la definición COMPLETA de ECS para llamar a sus métodos
+#include "Entity.h"
+#include <utility>
+#include "ECS.h"
 
 template <typename TComponent, typename ...TArgs>
 void Entity::AddComponent(TArgs&& ...args)
@@ -19,14 +19,11 @@ void Entity::RemoveComponent()
 template <typename TComponent>
 bool Entity::HasComponent() const
 {
-
+	return registry->HasComponent<TComponent>(*this);
 }
 
 template <typename TComponent>
 TComponent& Entity::GetComponent() const
 {
-
+	return registry->GetComponent<TComponent>(*this);
 }
-
-// Asegúrate de que Entity::registry se inicializa en Entity.cpp
-// Asegúrate de llamar a Entity::SetRegistry() en tu código principal

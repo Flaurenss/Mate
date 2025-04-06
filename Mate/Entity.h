@@ -7,23 +7,20 @@ class Entity
 {
 public:
     Entity(int id, ECS* registry);
-    ~Entity(); // Declaración
+    void Destroy();
 
-    // --- Métodos de Componentes (Delegan a ECS) ---
     template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
     template <typename TComponent> void RemoveComponent();
     template <typename TComponent> bool HasComponent() const;
     template <typename TComponent> TComponent& GetComponent() const;
 
-    // --- Otros Métodos ---
-    int GetId() const; // Declaración
+    int GetId() const;
 
-    // --- Operadores ---
-    bool operator==(const Entity& entity) const; // Declaración
-    bool operator<(const Entity& entity) const;  // Declaración
-    bool operator>(const Entity& entity) const;  // Declaración
+    bool operator==(const Entity& entity) const;
+    bool operator<(const Entity& entity) const;
+    bool operator>(const Entity& entity) const;
 
-    ECS* registry; // Puntero a la instancia ECS activa
+    ECS* registry;
 private:
     int id;
 };

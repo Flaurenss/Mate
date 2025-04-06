@@ -7,6 +7,7 @@
 #include <bitset>
 #include "ComponentRegistry.h"
 #include "Component.h"
+#include <deque>
 
 class Entity;
 class IRegistry;
@@ -14,30 +15,9 @@ class IRegistry;
 const unsigned int MAX_COMPONENTS = 32;
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
-//class Entity
-//{
-//public:
-//	Entity(int id);
-//	~Entity();
-//
-//	template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
-//	template <typename TComponent> void RemoveComponent();
-//	template <typename TComponent> bool HasComponent() const;
-//	template <typename TComponent> TComponent& GetComponent() const;
-//
-//	int GetId() const;
-//
-//	bool operator==(const Entity& entity) const;
-//	bool operator<(const Entity& entity) const;
-//	bool operator>(const Entity& entity) const;
-//
-//private:
-//	int id;
-//	class ECS* ecs;
-//};
-
-// Transforms Components from state A to state B
-// Performs logic on components and entities
+/// <summary>
+/// Transforms Components from state A to state B and performs logic on components and entities.
+/// </summary>
 class System
 {
 public:
@@ -70,7 +50,7 @@ class ECS
 public:
 	ECS() = default;
 	Entity CreateEntity();
-	void DestroyEntity();
+	void DestroyEntity(Entity entity);
 
 	template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
 	template <typename TComponent> void RemoveComponent(Entity entity);
@@ -82,10 +62,11 @@ public:
 	/// </summary>
 	/// <param name="entity">The entity to add.</param>
 	void AddEntityToSystem(Entity entity);
-	//template <typename TSystem, typename ...TArgs> void AddSystem(TArgs&& ...args);
-	//template <typename TSystem> void RemoveSystem();
-	//template <typename TSystem> bool HasSystem() const;
-	//template <typename TSystem> TSystem& GetSystem() const;
+	void RemoveEntityFromSystems(Entity entity);
+	template <typename TSystem, typename ...TArgs> void AddSystem(TArgs&& ...args);
+	template <typename TSystem> void RemoveSystem();
+	template <typename TSystem> bool HasSystem() const;
+	template <typename TSystem> TSystem& GetSystem() const;
 	
 	/// <summary>
 	/// Add or Destroy entities based on pending set to add and pending set to destroy.
@@ -98,6 +79,7 @@ private:
 
 	std::set<Entity> entitiesToAdd;
 	std::set<Entity> entitiesToDestroy;
+	std::deque<int> freeIds;
 
 	// ComponentRegistry concept:
 	//  [0].........[1] [2] [3]
@@ -119,37 +101,37 @@ private:
 	std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
 };
 #include "ECS.inl"
-//template<typename TSystem, typename ...TArgs>
-//void ECS::AddSystem(TArgs && ...args)
-//{
-//	auto typeIndex = std::type_index(typeid(TSystem));
-//
-//	std::shared_ptr<TSystem> newSystem = std::make_shared<TSystem>(std::forward<TArgs>(args)...);
-//	systems.insert(std::make_pair(typeIndex, newSystem));
-//}
-//
-//template<typename TSystem>
-//void ECS::RemoveSystem()
-//{
-//	auto typeIndex = std::type_index(typeid(TSystem));
-//	auto system = systems.find(typeIndex);
-//	systems.erase(system);
-//}
-//
-//template<typename TSystem>
-//bool ECS::HasSystem() const
-//{
-//	auto typeIndex = std::type_index(typeid(TSystem));
-//	return systems.find(typeIndex != systems.end());
-//}
-//
-//template<typename TSystem>
-//TSystem& ECS::GetSystem() const
-//{
-//	auto typeIndex = std::type_index(typeid(TSystem));
-//	auto system = systems.find(typeIndex);
-//	return *(std::static_pointer_cast<TSystem>(system->second));
-//}
+template<typename TSystem, typename ...TArgs>
+void ECS::AddSystem(TArgs && ...args)
+{
+	auto typeIndex = std::type_index(typeid(TSystem));
+
+	std::shared_ptr<TSystem> newSystem = std::make_shared<TSystem>(std::forward<TArgs>(args)...);
+	systems.insert(std::make_pair(typeIndex, newSystem));
+}
+
+template<typename TSystem>
+void ECS::RemoveSystem()
+{
+	auto typeIndex = std::type_index(typeid(TSystem));
+	auto system = systems.find(typeIndex);
+	systems.erase(system);
+}
+
+template<typename TSystem>
+bool ECS::HasSystem() const
+{
+	auto typeIndex = std::type_index(typeid(TSystem));
+	return systems.find(typeIndex != systems.end());
+}
+
+template<typename TSystem>
+TSystem& ECS::GetSystem() const
+{
+	auto typeIndex = std::type_index(typeid(TSystem));
+	auto system = systems.find(typeIndex);
+	return *(std::static_pointer_cast<TSystem>(system->second));
+}
 
 template<typename TComponent>
 void System::RequireComponent()

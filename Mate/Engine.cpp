@@ -18,6 +18,7 @@ Engine::Engine(int width, int height) :
 
 Engine::~Engine()
 {
+
 }
 
 void Engine::Initialize()
@@ -27,6 +28,7 @@ void Engine::Initialize()
 	auto player = ecs->CreateEntity();
 	//ecs->AddComponent<TransformComponent>(player);
 	player.AddComponent<TransformComponent>();
+	player.Destroy();
 
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.

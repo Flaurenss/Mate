@@ -3,14 +3,32 @@
 
 Entity ECS::CreateEntity()
 {
-	int entityId = numEntities++;
+	int entityId;
+
+	if (freeIds.empty())
+	{
+		entityId = numEntities++;
+		if (entityId >= entityComponentSignatures.size())
+		{
+			entityComponentSignatures.resize(entityId + 1);
+		}
+	}
+	else
+	{
+		entityId = freeIds.front();
+		freeIds.pop_front();
+	}
+
 	Entity entity(entityId, this);
 	entitiesToAdd.insert(entity);
-	if (entityId >= entityComponentSignatures.size())
-	{
-		entityComponentSignatures.resize(entityId + 1);
-	}
 	return entity;
+}
+
+void ECS::DestroyEntity(Entity entity)
+{
+	entitiesToDestroy.insert(entity);
+	const auto id = entity.GetId();
+	freeIds.push_back(id);
 }
 
 void ECS::AddEntityToSystem(Entity entity)
@@ -30,6 +48,14 @@ void ECS::AddEntityToSystem(Entity entity)
 	}
 }
 
+void ECS::RemoveEntityFromSystems(Entity entity)
+{
+	for (auto& system : systems)
+	{
+		system.second->RemoveEntity(entity);
+	}
+}
+
 void ECS::Update()
 {
 	for (auto entity : entitiesToAdd)
@@ -38,11 +64,16 @@ void ECS::Update()
 	}
 	entitiesToAdd.clear();
 
-	//for (auto entity : entitiesToDestroy)
-	//{
-	//	DestroyEntity(entity);
-	//}
-	//entitiesToDestroy.clear();
+	for (auto entity : entitiesToDestroy)
+	{
+		RemoveEntityFromSystems(entity);
+
+		// Reset components for that entity
+		entityComponentSignatures[entity.GetId()].reset();
+
+		freeIds.push_back(entity.GetId());
+	}
+	entitiesToDestroy.clear();
 }
 
 void System::AddEntity(Entity entity)
