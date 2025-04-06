@@ -12,7 +12,7 @@ Engine::Engine(int width, int height) :
 	isRunning(false)
 {
 	title = "Engine";
-	ecs = std::make_unique<ECS>();
+	registry = std::make_unique<ECS>();
 	Logger::Log("Engine created with name " + title);
 }
 
@@ -23,13 +23,6 @@ Engine::~Engine()
 
 void Engine::Initialize()
 {
-
-	auto ecs = new ECS();
-	auto player = ecs->CreateEntity();
-	//ecs->AddComponent<TransformComponent>(player);
-	player.AddComponent<TransformComponent>();
-	player.Destroy();
-
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -56,6 +49,11 @@ void Engine::Initialize()
 	glDepthFunc(GL_LESS);
 
 	isRunning = true;
+}
+
+bool Engine::IsRunning()
+{
+	return isRunning;
 }
 
 void Engine::Run()

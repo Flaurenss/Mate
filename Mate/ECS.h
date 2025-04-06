@@ -75,7 +75,7 @@ public:
 	void Update();
 
 private:
-	int numEntities;
+	int numEntities = 0;
 
 	std::set<Entity> entitiesToAdd;
 	std::set<Entity> entitiesToDestroy;

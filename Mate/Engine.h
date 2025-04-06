@@ -9,18 +9,18 @@ public:
 	~Engine();
 
 	void Initialize();
-	void Run();
-	
+	bool IsRunning();
+	void ProcessInput();
+	void Update();
+	void Render();
+
 private:
 	std::string title;
 	int widht;
 	int height;
 	bool isRunning;
+	void Run();
 
-	std::unique_ptr<ECS> ecs;
-
-	void ProcessInput();
-	void Update();
-	void Render();
+	std::unique_ptr<ECS> registry;
 };
 
