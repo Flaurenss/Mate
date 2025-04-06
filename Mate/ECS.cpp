@@ -4,7 +4,7 @@
 Entity ECS::CreateEntity()
 {
 	int entityId = numEntities++;
-	Entity entity(entityId);
+	Entity entity(entityId, this);
 	entitiesToAdd.insert(entity);
 	if (entityId >= entityComponentSignatures.size())
 	{
@@ -44,34 +44,6 @@ void ECS::Update()
 	//}
 	//entitiesToDestroy.clear();
 }
-
-//Entity::Entity(int id) : id(id)
-//{
-//}
-//
-//Entity::~Entity()
-//{
-//}
-//
-//int Entity::GetId() const
-//{
-//	return id;
-//}
-//
-//bool Entity::operator==(const Entity& entity) const
-//{
-//	return id == entity.GetId();
-//}
-//
-//bool Entity::operator<(const Entity& entity) const
-//{
-//	return id < entity.GetId();
-//}
-//
-//bool Entity::operator>(const Entity& entity) const
-//{
-//	return id > entity.GetId();
-//}
 
 void System::AddEntity(Entity entity)
 {

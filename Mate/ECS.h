@@ -68,11 +68,7 @@ private:
 class ECS
 {
 public:
-	//ECS() = default;
-	ECS()
-	{
-		numEntities = 0;
-	}
+	ECS() = default;
 	Entity CreateEntity();
 	void DestroyEntity();
 

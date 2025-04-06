@@ -1,10 +1,12 @@
 #pragma once
+#include <memory>
+
 class ECS;
 
 class Entity
 {
 public:
-    Entity(int id);
+    Entity(int id, ECS* registry);
     ~Entity(); // Declaración
 
     // --- Métodos de Componentes (Delegan a ECS) ---
@@ -20,9 +22,6 @@ public:
     bool operator==(const Entity& entity) const; // Declaración
     bool operator<(const Entity& entity) const;  // Declaración
     bool operator>(const Entity& entity) const;  // Declaración
-
-    // --- Registro Estático para acceso a ECS ---
-    static void SetRegistry(ECS* ecsInstance);
 
     ECS* registry; // Puntero a la instancia ECS activa
 private:
