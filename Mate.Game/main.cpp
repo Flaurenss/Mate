@@ -3,14 +3,22 @@
 
 #include <iostream>
 #include "Engine.h"
+#include <MeshComponent.h>
+#include <TransformComponent.h>
 
 int main()
 {
     Engine* engine = new Engine();
-    engine->Initialize();
+
+    auto registry = engine->GetECS();
+    auto box = registry.CreateEntity();
+    box.AddComponent<TransformComponent>();
+    box.AddComponent<MeshComponent>();
 
     while (engine->IsRunning())
     {
-
+        engine->ProcessInput();
+        engine->Update();
+        engine->Render();
     }
 }

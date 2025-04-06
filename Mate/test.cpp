@@ -35,12 +35,8 @@ Vector3 cameraUp = Vector3(0.0f, 1.0f, 0.0f);
 
 Camera camera(cameraPos, cameraUp);
 
-int main()
+int test()
 {
-	auto engine = new Engine();
-	engine->Initialize();
-	//engine->Run();
-
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

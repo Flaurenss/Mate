@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"
-#include "../Mate.Math/Matrix.h"
+#include "Matrix.h"
 
 class TransformComponent : public Component<TransformComponent>
 {

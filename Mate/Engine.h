@@ -1,4 +1,6 @@
 #pragma once
+#include <glad/glad.h>
+#include <glfw/glfw3.h>
 #include <string>
 #include "ECS.h"
 
@@ -8,7 +10,11 @@ public:
 	Engine(int width = 1920, int height = 1080);
 	~Engine();
 
-	void Initialize();
+	ECS& GetECS()
+	{
+		return *registry;
+	}
+
 	bool IsRunning();
 	void ProcessInput();
 	void Update();
@@ -20,7 +26,8 @@ private:
 	int height;
 	bool isRunning;
 	void Run();
-
+	void Initialize();
+	void CoreInitialize();
+	GLFWwindow* window;
 	std::unique_ptr<ECS> registry;
 };
-

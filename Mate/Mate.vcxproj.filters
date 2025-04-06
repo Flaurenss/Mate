@@ -72,7 +72,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
@@ -131,6 +131,12 @@
     </ClCompile>
     <ClCompile Include="Entity.cpp">
       <Filter>Source Files\Core\ECS\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>Source Files\Core\ECS\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshComponent.cpp">
+      <Filter>Source Files\Core\ECS\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +210,12 @@
     </ClInclude>
     <ClInclude Include="Entity.h">
       <Filter>Header Files\Core\ECS\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>Header Files\Core\ECS\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshComponent.h">
+      <Filter>Header Files\Core\ECS\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

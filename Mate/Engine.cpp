@@ -1,10 +1,12 @@
 #include "Engine.h"
-#include <glad/glad.h>
-#include <glfw/glfw3.h>
 #include <iostream>
 #include "Logger.h"
 #include "ECS.h"
 #include "TransformComponent.h"
+#include "stb_image.h"
+#include "RenderSystem.h"
+
+void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 Engine::Engine(int width, int height) :
 	widht(width),
@@ -14,6 +16,7 @@ Engine::Engine(int width, int height) :
 	title = "Engine";
 	registry = std::make_unique<ECS>();
 	Logger::Log("Engine created with name " + title);
+	Initialize();
 }
 
 Engine::~Engine()
@@ -23,6 +26,12 @@ Engine::~Engine()
 
 void Engine::Initialize()
 {
+	registry->AddSystem<RenderSystem>();
+	CoreInitialize();
+}
+
+void Engine::CoreInitialize()
+{
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -30,7 +39,7 @@ void Engine::Initialize()
 	// Btw Intermediate/Core profile, we set the last one:
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(widht, height, title.c_str(), NULL, NULL);
+	window = glfwCreateWindow(widht, height, title.c_str(), NULL, NULL);
 	if (window == NULL)
 	{
 		std::cerr << "Failed to create GLFW widnow" << std::endl;
@@ -47,6 +56,19 @@ void Engine::Initialize()
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+
+	int nrAttributes;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+	Logger::Log("Maximum nr of vertex attributes supported: " + std::to_string(nrAttributes));
+
+	stbi_set_flip_vertically_on_load(true);
+
+	// Set rendering viewport callback
+	glfwSetFramebufferSizeCallback(window, Framebuffer_size_callback);
+
+	// Draw primitives configuration
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	isRunning = true;
 }
@@ -76,4 +98,24 @@ void Engine::Update()
 
 void Engine::Render()
 {
+	isRunning = !glfwWindowShouldClose(window);
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Swap buffers, front for already rendered colors an the back one in order to avoid artifacts.
+	glfwSwapBuffers(window);
+	// Check if any event like mouse/keyboard input heppen
+	glfwPollEvents();
+}
+
+/// <summary>
+/// Callback function to resize the actual viewport.
+/// </summary>
+/// <param name="window">The current GLFW window pointer.</param>
+/// <param name="width">The desired width.</param>
+/// <param name="height">The desired height.</param>
+void Framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	Logger::Log(std::to_string(width) + "x" + std::to_string(height));
+	glViewport(0, 0, width, height);
 }
