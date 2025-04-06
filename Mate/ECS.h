@@ -21,7 +21,7 @@ typedef std::bitset<MAX_COMPONENTS> Signature;
 class System
 {
 public:
-	System() = default;
+	//System() = default;
 	~System() = default;
 
 	void AddEntity(Entity entity);

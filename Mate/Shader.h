@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef SHADER_H
-#define SHADER_H
-
 #include <glad/glad.h> // include glad to get all the required OpenGL headers
 
 #include <string>
@@ -11,6 +8,7 @@
 #include <iostream>
 
 #include <Vector.h>
+#include <Matrix.h>
 
 class Shader
 {
@@ -51,9 +49,9 @@ public:
     void SetFloat(const std::string& name, float value) const;
 
     void SetVec4(const std::string& name, const Vector4& value) const;
+
+    void SetMat4(const std::string& name, const Matrix4& value);
 private:
     void checkShaderErrors(unsigned int id, std::string vertexType);
     void checkShaderProgramErrors(unsigned int id);
 };
-
-#endif

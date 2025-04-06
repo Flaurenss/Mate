@@ -20,14 +20,20 @@ public:
 	void Update();
 	void Render();
 
+	void Test();
 private:
 	std::string title;
-	int widht;
-	int height;
+	static int width;
+	static int height;
 	bool isRunning;
 	void Run();
 	void Initialize();
 	void CoreInitialize();
+	
 	GLFWwindow* window;
 	std::unique_ptr<ECS> registry;
+
+
+
+	static void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 };

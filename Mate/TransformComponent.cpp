@@ -1,12 +1,12 @@
 #include "TransformComponent.h"
 
 TransformComponent::TransformComponent() :
-	TransformComponent(Vector3(0, 0, 0), Vector3(1, 1, 1), Vector3(0, 0, 0))
+	TransformComponent(Vector3(0, 0, 0), Vector3(1, 1, 1), Vector3(1, 1, 1))
 { }
 
 TransformComponent::TransformComponent(Vector3 position, Vector3 rotation, Vector3 scale)
 {
-    Matrix4 initTransform;
+    Matrix4 initTransform = Matrix4();
 
     initTransform.scale(scale);
 
@@ -17,4 +17,19 @@ TransformComponent::TransformComponent(Vector3 position, Vector3 rotation, Vecto
     initTransform.translate(position);
 
     transform = initTransform;
+}
+
+Matrix4& TransformComponent::GetTransform()
+{
+    return transform;
+}
+
+void TransformComponent::Translate(Vector3 position)
+{
+    transform.translate(position);
+}
+
+void TransformComponent::Rotate(float angle, Vector3 axis)
+{
+    transform.rotate(angle, axis);
 }

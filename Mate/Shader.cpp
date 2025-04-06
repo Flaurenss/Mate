@@ -87,6 +87,11 @@ void Shader::SetVec4(const std::string& name, const Vector4& value) const
     glUniform4f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z, value.w);
 }
 
+void Shader::SetMat4(const std::string& name, const Matrix4& value)
+{
+    glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, value.get());
+}
+
 void Shader::checkShaderErrors(unsigned int id, std::string vertexType)
 {
     int success;

@@ -2,12 +2,10 @@
 #include "TransformComponent.h"
 #include "MeshComponent.h"
 
-RenderSystem::RenderSystem()
+RenderSystem::RenderSystem(Shader& sh) : shader(sh)
 {
 	RequireComponent<TransformComponent>();
 	RequireComponent<MeshComponent>();
-
-	shader = new Shader("./vertexShader.shader", "./fragmentShader.shader");
 }
 
 void RenderSystem::Update()
@@ -15,7 +13,10 @@ void RenderSystem::Update()
 	for (Entity& entity : GetEntities())
 	{
 		MeshComponent& meshComponent = entity.GetComponent<MeshComponent>();
-		shader->Use();
-		meshComponent.GetModel().Draw(*shader);
+		TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
+		shader.Use();
+		Matrix4 transform = transformComponent.GetTransform();
+		shader.SetMat4("model", transform);
+		meshComponent.GetModel().Draw(shader);
 	}
 }

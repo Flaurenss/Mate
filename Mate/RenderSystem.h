@@ -5,10 +5,10 @@
 class RenderSystem : public System
 {
 public:
-	RenderSystem();
+	RenderSystem(Shader& shader);
 
 	virtual void Update();
 private:
-	Shader* shader;
+	Shader shader;
 };
 
