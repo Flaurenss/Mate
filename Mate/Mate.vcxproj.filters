@@ -135,6 +135,9 @@
     <ClCompile Include="Logger.cpp">
       <Filter>Source Files\Core\Logger</Filter>
     </ClCompile>
+    <ClCompile Include="ComponentManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
@@ -204,6 +207,9 @@
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Header Files\Core\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentManager.h">
+      <Filter>Header Files\Core\ECS\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

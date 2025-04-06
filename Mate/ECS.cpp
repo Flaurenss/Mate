@@ -6,6 +6,7 @@ Entity ECS::CreateEntity()
 {
 	int entityId = numEntities++;
 	Entity entity(entityId);
+	//entity.SetECS(this);
 	entitiesToAdd.insert(entity);
 	if (entityId >= entityComponentSignatures.size())
 	{

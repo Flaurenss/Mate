@@ -1,8 +1,7 @@
 #pragma once
 #include <vector>
-
-template<typename T>
-class Component;
+#include <memory>
+#include "ComponentManager.h"
 
 // Represented by IDs
 // Populates scene
@@ -10,11 +9,12 @@ class Entity
 {
 public:
 	Entity(int id);
+	~Entity();
 
-	//void AddComponent(Component component);
-	void GetComponent();
-	void Update(float deltaTime);
-	void Render();
+	template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
+	template <typename TComponent> void RemoveComponent();
+	template <typename TComponent> bool HasComponent() const;
+	template <typename TComponent> TComponent& GetComponent() const;
 
 	int GetId() const;
 
@@ -24,5 +24,27 @@ public:
 
 private:
 	int id;
-	//std::vector<Component> components;
+	std::shared_ptr<ComponentManager> componentManager;
 };
+
+template<typename TComponent, typename ...TArgs>
+inline void Entity::AddComponent(TArgs && ...args)
+{
+}
+
+template<typename TComponent>
+inline void Entity::RemoveComponent()
+{
+}
+
+template<typename TComponent>
+inline bool Entity::HasComponent() const
+{
+	return componentManager->HasComponent<TComponent>(this);
+}
+
+template<typename TComponent>
+inline TComponent& Entity::GetComponent() const
+{
+	// TODO: insert return statement here
+}

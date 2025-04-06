@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
 #include "System.h"
-#include "Entity.h"
+//#include "Entity.h"
+#include "ComponentManager.h"
 #include "ComponentRegistry.h"
 #include <memory>
 #include <unordered_map>
@@ -9,15 +10,21 @@
 #include <set>
 
 class IRegistry;
+class ComponentManager;
 
 /// <summary>
 /// ECS administrator.
-/// Manages creation and destruction of entities, systems and components.
+/// Manages creation and destruction of entities, components and systems.
 /// </summary>
 class ECS
 {
 public:
-	ECS() = default;
+	//ECS() = default;
+	ECS()
+	{
+		numEntities = 0;
+		componentManager = std::make_shared<ComponentManager>(this);
+	}
 	Entity CreateEntity();
 	void DestroyEntity();
 
@@ -44,6 +51,8 @@ public:
 
 private:
 	int numEntities;
+
+	std::shared_ptr<ComponentManager> componentManager;
 
 	std::set<Entity> entitiesToAdd;
 	std::set<Entity> entitiesToDestroy;

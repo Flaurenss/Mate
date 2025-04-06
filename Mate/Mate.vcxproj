@@ -150,6 +150,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentManager.cpp" />
     <ClCompile Include="ComponentRegistry.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="cgltf.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="ComponentRegistry.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="Engine.h" />

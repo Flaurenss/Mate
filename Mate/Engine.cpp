@@ -3,10 +3,13 @@
 #include <glfw/glfw3.h>
 #include <iostream>
 #include "Logger.h"
+#include "ECS.h"
+#include "TransformComponent.h"
 
 Engine::Engine(int width, int height) :
 	widht(width),
-	height(height)
+	height(height),
+	isRunning(false)
 {
 	title = "Engine";
 	ecs = std::make_unique<ECS>();
@@ -19,6 +22,12 @@ Engine::~Engine()
 
 void Engine::Initialize()
 {
+
+	auto ecs = new ECS();
+	auto player = ecs->CreateEntity();
+	//ecs->AddComponent<TransformComponent>(player);
+	player.AddComponent<TransformComponent>();
+
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
