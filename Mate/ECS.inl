@@ -15,23 +15,17 @@ void ECS::AddComponent(Entity entity, TArgs && ...args)
 		componentsRegistry.resize(componentId + 1, nullptr);
 	}
 
-	// Check if TComponent Registry exists, ifnot it created a new one
+	//// Check if TComponent Registry exists, if not it creates a new one
 	if (!componentsRegistry[componentId])
 	{
-		std::shared_ptr<ComponentRegistry<TComponent>> newRegistry =
-			std::make_shared<ComponentRegistry<TComponent>>();
+		std::shared_ptr<ComponentRegistry<TComponent>> newRegistry(new ComponentRegistry<TComponent>());
 		componentsRegistry[componentId] = newRegistry;
 	}
 
 	std::shared_ptr<ComponentRegistry<TComponent>> componentRegistry =
 		std::static_pointer_cast<ComponentRegistry<TComponent>>(componentsRegistry[componentId]);
 
-	if (entityId > componentRegistry->GetSize())
-	{
-		componentRegistry->Resize(numEntities);
-	}
-
-	// Send multiple arguments to the specified new TComponent
+	/* Send multiple arguments to the specified new TComponent*/
 	TComponent newComponent(std::forward<TArgs>(args)...);
 	componentRegistry->Set(entityId, newComponent);
 	entityComponentSignatures[entityId].set(componentId);

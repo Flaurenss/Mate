@@ -21,7 +21,7 @@ Engine::Engine(int width, int height) :
 
 Engine::~Engine()
 {
-
+	// TODO:...
 }
 
 void Engine::Initialize()

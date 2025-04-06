@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <memory>
 
 class IRegistry
 {
@@ -24,13 +25,13 @@ public:
 	TComponent& Get(int index);
 	TComponent& operator [](int index);
 private:
-	std::vector<TComponent> data;
+	std::vector<std::shared_ptr<TComponent>> data;
 };
 
 template<typename TComponent>
 ComponentRegistry<TComponent>::ComponentRegistry(int size)
 {
-	Resize(size);
+	data.resize(size, nullptr);
 }
 
 template<typename TComponent>
@@ -43,12 +44,6 @@ template<typename TComponent>
 int ComponentRegistry<TComponent>::GetSize() const
 {
 	return data.size();
-}
-
-template<typename TComponent>
-void ComponentRegistry<TComponent>::Resize(int size)
-{
-	data.resize(size);
 }
 
 template<typename TComponent>
@@ -66,7 +61,7 @@ void ComponentRegistry<TComponent>::Add(TComponent component)
 template<typename TComponent>
 void ComponentRegistry<TComponent>::Set(int index, TComponent component)
 {
-	data[index] = component;
+	data[index] = std::make_shared<TComponent>(component);
 }
 
 template<typename TComponent>
@@ -78,5 +73,5 @@ TComponent& ComponentRegistry<TComponent>::Get(int index)
 template<typename TComponent>
 TComponent& ComponentRegistry<TComponent>::operator[](int index)
 {
-	return data[index];
+	return *data[index];
 }

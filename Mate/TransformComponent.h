@@ -2,7 +2,7 @@
 #include "Component.h"
 #include "Matrix.h"
 
-class TransformComponent : public Component<TransformComponent>
+class TransformComponent
 {
 public:
 	TransformComponent();

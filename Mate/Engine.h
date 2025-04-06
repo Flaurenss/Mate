@@ -10,7 +10,7 @@ public:
 	Engine(int width = 1920, int height = 1080);
 	~Engine();
 
-	ECS& GetECS()
+	ECS& GetRegistry()
 	{
 		return *registry;
 	}
