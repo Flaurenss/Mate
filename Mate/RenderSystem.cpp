@@ -15,6 +15,7 @@ void RenderSystem::Update()
 	for (Entity& entity : GetEntities())
 	{
 		MeshComponent& meshComponent = entity.GetComponent<MeshComponent>();
+		shader->Use();
 		meshComponent.GetModel().Draw(*shader);
 	}
 }
