@@ -28,8 +28,8 @@ Engine::Engine(int w, int h) :
 	registry = std::make_unique<ECS>();
 	Logger::Log("Engine created with name " + title);
 
-	Vector3 cameraPos = Vector3(0.0f, 0.0f, 3.0f);
-	Vector3 cameraFront = Vector3(0.0f, 0.0f, -1.0f);
+	Vector3 cameraPos = Vector3(0.0f, 1.0f, 3.0f);
+	//Vector3 cameraFront = Vector3(0.0f, 0.0f, -1.0f);
 	Vector3 cameraUp = Vector3(0.0f, 1.0f, 0.0f);
 
 	testCamera = new Camera(cameraPos, cameraUp);

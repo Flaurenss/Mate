@@ -32,8 +32,6 @@ private:
 	std::string title;
 	float lastFrame;
 
-	float testYaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-	float testPitch = 0.0f;
 	float testLastX = 800.0f / 2.0;
 	float testLastY = 600.0 / 2.0;
 
