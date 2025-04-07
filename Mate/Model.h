@@ -9,6 +9,7 @@ class Model : public IRenderable
 {
 public:
     Model(const std::string& path);
+    Model(Mesh mesh);
     ~Model();
 
     virtual void Draw(Shader& shader);

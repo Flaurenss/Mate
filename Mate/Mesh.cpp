@@ -15,6 +15,13 @@ void Mesh::Draw(Shader& shader)
 {
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
+	
+	if (textures.empty())
+	{
+		shader.SetBool("valid", false);
+		shader.SetVec4("defaultColor", DefaultColor);
+	}
+
 	for (unsigned int i = 0; i < textures.size(); i++)
 	{
 		// Activate Texture unit
@@ -38,10 +45,8 @@ void Mesh::Draw(Shader& shader)
 		}
 		else
 		{
-			shader.SetBool("valid", false);
 			shader.SetVec4("defaultColor", textures[i].defaultColor);
 		}
-
 	}
 
 	// Draw mesh

@@ -163,6 +163,7 @@
     <ClCompile Include="IRenderable.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="PrimitivesHelper.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MovementSystem.h" />
+    <ClInclude Include="PrimitivesHelper.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />

@@ -10,6 +10,12 @@ Model::Model(const std::string& path)
     meshes = modelImporter->Load(path);
 }
 
+Model::Model(Mesh mesh)
+{
+    meshes.push_back(mesh);
+    modelImporter = nullptr;
+}
+
 Model::~Model()
 {
     delete modelImporter;
