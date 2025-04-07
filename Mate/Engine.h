@@ -20,11 +20,16 @@ public:
 	void Update();
 	void Render();
 
+	float DeltaTime;
+
 	static void Test();
 private:
 	std::string title;
+	float lastFrame;
+
 	static int width;
 	static int height;
+	
 	bool isRunning;
 	void Run();
 	void Initialize();
@@ -32,8 +37,6 @@ private:
 	
 	GLFWwindow* window;
 	std::unique_ptr<ECS> registry;
-
-
 
 	static void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 };

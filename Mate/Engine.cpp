@@ -15,7 +15,9 @@ void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 Engine::Engine(int w, int h) :
-	isRunning(false)
+	isRunning(false),
+	lastFrame(0),
+	DeltaTime(0)
 {
 	width = w;
 	height = h;
@@ -96,8 +98,8 @@ float pitch = 0.0f;
 float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
 
-float deltaTime = 0.0f;	// Time between current frame and last frame
-float lastFrame = 0.0f; // Time of last frame
+float testDeltaTime = 0.0f;	// Time between current frame and last frame
+float testLastFrame = 0.0f; // Time of last frame
 
 Vector3 cameraPos = Vector3(0.0f, 0.0f, 3.0f);
 Vector3 cameraFront = Vector3(0.0f, 0.0f, -1.0f);
@@ -139,7 +141,8 @@ void Engine::Test()
 	Logger::Log("Maximum nr of vertex attributes supported: " + std::to_string(nrAttributes));
 	stbi_set_flip_vertically_on_load(false);
 
-	auto model = new Model("E:/TFG/Models/Kenney/Models/GLB format/character-female-d.glb");
+	auto model = new Model("C:/Users/loren/Downloads/glTF-Sample-Models-main/glTF-Sample-Models-main/2.0/Avocado/glTF/Avocado.gltf");
+	//auto model = new Model("E:/TFG/Models/Kenney/Models/GLB format/character-female-d.glb");
 	//auto model = new Model("E:/TFG/Models/glTF-Sample-Assets-main/Models/Duck/glTF/Duck.gltf");
 
 	// Hide mouse - focus mode
@@ -162,8 +165,8 @@ void Engine::Test()
 	while (!glfwWindowShouldClose(window))
 	{
 		float currentFrame = static_cast<float>(glfwGetTime());
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+		testDeltaTime = currentFrame - testLastFrame;
+		testLastFrame = currentFrame;
 
 		processInput(window);
 
@@ -195,9 +198,9 @@ void Engine::Test()
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.get());
 
 		Matrix4 modelMatrix = Matrix4();
-		//modelMatrix.rotate(-180, Vector3(0, 1.0f, 0));
+		modelMatrix.rotate(testDeltaTime * 400.0f, Vector3(0, 1.0f, 0));
 		//modelC.scale(0.15f);
-		/*modelC.translate();*/
+		modelMatrix.translate(Vector3(2, 0, 0));
 		unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, modelMatrix.get());
 
@@ -233,6 +236,9 @@ void Engine::Run()
 
 void Engine::Update()
 {
+	float currentFrame = static_cast<float>(glfwGetTime());
+	testDeltaTime = currentFrame - testLastFrame;
+	testLastFrame = currentFrame;
 	registry->Update();
 }
 
@@ -279,11 +285,11 @@ void processInput(GLFWwindow* window)
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboardMovement(FORWARD, deltaTime);
+		camera.ProcessKeyboardMovement(FORWARD, testDeltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboardMovement(BACKWARD, deltaTime);
+		camera.ProcessKeyboardMovement(BACKWARD, testDeltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboardMovement(LEFT, deltaTime);
+		camera.ProcessKeyboardMovement(LEFT, testDeltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboardMovement(RIGHT, deltaTime);
+		camera.ProcessKeyboardMovement(RIGHT, testDeltaTime);
 }
