@@ -5,6 +5,7 @@ class CameraComponent
 {
 public:
 	CameraComponent();
+	CameraComponent(Camera* camera);
 
 	Camera& GetCamera();
 

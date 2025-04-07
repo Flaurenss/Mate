@@ -11,6 +11,7 @@ public:
 	Matrix4& GetTransform();
 	void Translate(Vector3 position);
 	void Rotate(float angle, Vector3 axis);
+	void Scale(Vector3 scale);
 private:
 	Matrix4 transform;
 };

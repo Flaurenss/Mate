@@ -33,3 +33,8 @@ void TransformComponent::Rotate(float angle, Vector3 axis)
 {
     transform.rotate(angle, axis);
 }
+
+void TransformComponent::Scale(Vector3 scale)
+{
+    transform.scale(scale);
+}

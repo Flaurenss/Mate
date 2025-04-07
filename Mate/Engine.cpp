@@ -8,16 +8,18 @@
 #include "CameraSystem.h"
 #include "Camera.h"
 #include "Model.h"
+#include "CameraComponent.h"
 
+Engine* Engine::instance = nullptr;
 int Engine::width = 1920;
 int Engine::height = 1080;
+float Engine::DeltaTime = 0;
+//void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow* window);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 Engine::Engine(int w, int h) :
 	isRunning(false),
-	lastFrame(0),
-	DeltaTime(0)
+	lastFrame(0)
 {
 	width = w;
 	height = h;
@@ -25,6 +27,13 @@ Engine::Engine(int w, int h) :
 	title = "Engine";
 	registry = std::make_unique<ECS>();
 	Logger::Log("Engine created with name " + title);
+
+	Vector3 cameraPos = Vector3(0.0f, 0.0f, 3.0f);
+	Vector3 cameraFront = Vector3(0.0f, 0.0f, -1.0f);
+	Vector3 cameraUp = Vector3(0.0f, 1.0f, 0.0f);
+
+	testCamera = new Camera(cameraPos, cameraUp);
+
 	Initialize();
 }
 
@@ -35,6 +44,7 @@ Engine::~Engine()
 
 void Engine::Initialize()
 {
+	instance = this;
 	CoreInitialize();
 	Shader shader("./vertexShader.shader", "./fragmentShader.shader");
 	registry->AddSystem<RenderSystem>(shader);
@@ -74,14 +84,22 @@ void Engine::CoreInitialize()
 
 	stbi_set_flip_vertically_on_load(false);
 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	// Set rendering viewport callback
 	glfwSetFramebufferSizeCallback(window, Framebuffer_size_callback);
+
+	glfwSetCursorPosCallback(window, mouse_callback);
 
 	// Draw primitives configuration
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	isRunning = true;
+
+	auto cameraTest = registry->CreateEntity();
+	cameraTest.AddComponent<TransformComponent>();
+	cameraTest.AddComponent<CameraComponent>(testCamera);
 }
 
 void Engine::Framebuffer_size_callback(GLFWwindow* window, int w, int h)
@@ -198,9 +216,9 @@ void Engine::Test()
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection.get());
 
 		Matrix4 modelMatrix = Matrix4();
-		modelMatrix.rotate(testDeltaTime * 400.0f, Vector3(0, 1.0f, 0));
-		//modelC.scale(0.15f);
 		modelMatrix.translate(Vector3(2, 0, 0));
+		modelMatrix.rotate(testDeltaTime * 20.0f, Vector3(0, 1.0f, 0));
+		//modelC.scale(0.15f);
 		unsigned int modelLoc = glGetUniformLocation(myShader.ID, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, modelMatrix.get());
 
@@ -237,8 +255,11 @@ void Engine::Run()
 void Engine::Update()
 {
 	float currentFrame = static_cast<float>(glfwGetTime());
-	testDeltaTime = currentFrame - testLastFrame;
-	testLastFrame = currentFrame;
+	DeltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	testProcessInput(window);
+
 	registry->Update();
 }
 
@@ -257,7 +278,7 @@ void Engine::Render()
 	glfwPollEvents();
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+void Engine::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (firstMouse)
 	{
@@ -272,6 +293,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastY = ypos;
 
 	camera.ProcessMouseMovement(xoffset, yoffset);
+
+	if (instance) {
+		instance->testMouse_callback(window, xpos, ypos);
+	}
 }
 /// <summary>
 /// Process user input given a GLFW window.
@@ -285,11 +310,61 @@ void processInput(GLFWwindow* window)
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
 		camera.ProcessKeyboardMovement(FORWARD, testDeltaTime);
+	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
 		camera.ProcessKeyboardMovement(BACKWARD, testDeltaTime);
+	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
 		camera.ProcessKeyboardMovement(LEFT, testDeltaTime);
+	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
 		camera.ProcessKeyboardMovement(RIGHT, testDeltaTime);
+	}
+}
+
+void Engine::testProcessInput(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, true);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		testCamera->ProcessKeyboardMovement(FORWARD, DeltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		testCamera->ProcessKeyboardMovement(BACKWARD, DeltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		testCamera->ProcessKeyboardMovement(LEFT, DeltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		testCamera->ProcessKeyboardMovement(RIGHT, DeltaTime);
+	}
+}
+
+void Engine::testMouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (testFirstMouse)
+	{
+		testLastX = xpos;
+		testLastY = ypos;
+		testFirstMouse = false;
+	}
+
+	float xoffset = xpos - testLastX;
+	float yoffset = testLastY - ypos; // reversed since y-coordinates range from bottom to top
+	testLastX = xpos;
+	testLastY = ypos;
+
+	testCamera->ProcessMouseMovement(xoffset, yoffset);
 }
