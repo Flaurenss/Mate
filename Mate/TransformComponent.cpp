@@ -4,34 +4,44 @@ TransformComponent::TransformComponent() :
 	TransformComponent(Vector3(0, 0, 0), Vector3(1, 1, 1), Vector3(1, 1, 1))
 { }
 
-TransformComponent::TransformComponent(Vector3 position, Vector3 rotation, Vector3 scale)
+TransformComponent::TransformComponent(Vector3 position, Vector3 rotation, Vector3 scale) :
+    position(position),
+    eulerAngles(rotation),
+    scale(scale) 
+{ }
+
+Matrix4 TransformComponent::GetTransform() const
 {
-    Matrix4 initTransform = Matrix4();
+    Matrix4 mScale;
+    mScale.scale(scale);
 
-    initTransform.scale(scale);
+    Matrix4 mRotX;
+    mRotX.rotate(eulerAngles.x, Vector3::Right);
+    Matrix4 mRotY;
+    mRotX.rotate(eulerAngles.y, Vector3::Up);
+    Matrix4 mRotZ;
+    mRotX.rotate(eulerAngles.z, Vector3::Forward);
+    Matrix4 rotationMatrix = mRotZ * mRotY * mRotX;
 
-    initTransform.rotate(rotation.z, Vector3(0, 0, 1));
-    initTransform.rotate(rotation.y, Vector3(0, 1, 0));
-    initTransform.rotate(rotation.x, Vector3(1, 0, 0));
+    Matrix4 mTrans;
+    mTrans.translate(position);
 
-    initTransform.translate(position);
-
-    transform = initTransform;
+    return mTrans * rotationMatrix * mScale;
 }
 
-Matrix4& TransformComponent::GetTransform()
+void TransformComponent::SetPosition(Vector3 newPosition)
 {
-    return transform;
+    position = newPosition;
 }
 
-void TransformComponent::Translate(Vector3 position)
+void TransformComponent::Translate(Vector3 delta)
 {
-    transform.translate(position);
+    position += delta;
 }
 
-void TransformComponent::Rotate(float angle, Vector3 axis)
+void TransformComponent::Rotate(Vector3 deltaDegrees)
 {
-    transform.rotate(angle, axis);
+    eulerAngles += deltaDegrees;
 }
 
 void TransformComponent::Scale(Vector3 scale)
