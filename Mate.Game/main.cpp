@@ -2,11 +2,7 @@
 //
 
 #include <iostream>
-#include "Engine.h"
-#include <MeshComponent.h>
-#include <TransformComponent.h>
-#include <CameraComponent.h>
-#include "PrimitivesHelper.h"
+#include <Mate.h>
 
 int main()
 {

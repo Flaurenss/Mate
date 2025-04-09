@@ -203,6 +203,7 @@
     <ClInclude Include="IModelImporter.h" />
     <ClInclude Include="IRenderable.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="Mate.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="Model.h" />

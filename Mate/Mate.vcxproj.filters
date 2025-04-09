@@ -241,6 +241,9 @@
     <ClInclude Include="PrimitivesHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Mate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="Resources\container.jpg">
