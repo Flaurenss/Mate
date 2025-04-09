@@ -17,27 +17,25 @@ int main()
     TransformComponent& floorTrans = floor.GetComponent<TransformComponent>();
     floorTrans.Scale(Vector3(10, 1, 10));
 
-    auto box = registry.CreateEntity();
-    box.AddComponent<TransformComponent>();
-    box.AddComponent<MeshComponent>(avocadoModel);
-    TransformComponent& boxTransform = box.GetComponent<TransformComponent>();
+    auto avocado = registry.CreateEntity();
+    avocado.AddComponent<TransformComponent>();
+    avocado.AddComponent<MeshComponent>(avocadoModel);
+    TransformComponent& boxTransform = avocado.GetComponent<TransformComponent>();
+    boxTransform.SetPosition(Vector3(0, 0.01f, 0));
     boxTransform.Scale(Vector3(5, 5, 5));
     
     float rotationSpeedDegrees = 90.0f;
     float movementSpeedUnits = 0.1f;
     while (engine->IsRunning())
     {
-        //float deltaTime = engine->DeltaTime;
-        //
-        //float deltaRotationY = rotationSpeedDegrees * deltaTime;
-        //boxTransform.Rotate(Vector3(0, deltaRotationY, 0));
-        //
-        //Matrix4 currentTransform = boxTransform.GetTransform();
-        //Vector3 currentPosition(currentTransform[12], currentTransform[13], currentTransform[14]);
-
-        //float deltaMovementX = movementSpeedUnits * deltaTime;
-
-        //boxTransform.Translate(Vector3(deltaMovementX, 0.0f, 0.0f));
+        float deltaTime = engine->DeltaTime;
+        
+        float deltaRotationY = rotationSpeedDegrees * deltaTime;
+        boxTransform.Rotate(Vector3(0, deltaRotationY, 0));
+        
+        Vector3 currentPosition = boxTransform.position;
+        float deltaMovementX = movementSpeedUnits * deltaTime;
+        boxTransform.Translate(Vector3(deltaMovementX, 0.0f, 0.0f));
 
         engine->Update();
         engine->Render();

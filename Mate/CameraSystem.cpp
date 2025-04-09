@@ -19,7 +19,7 @@ void CameraSystem::Update()
 		Matrix4 view = camera.GetViewMatrix();
 		 
 		Matrix4 projection = Matrix4();
-		projection.perspective(45.0f, (float)1920 / (float)1080, 0.1f, 100.0f);
+		projection.perspective(45.0f, (float)width / (float)height, 0.1f, 100.0f);
 
 		shader.SetMat4("view", camera.GetViewMatrix());
 		shader.SetMat4("projection", projection);
