@@ -24,14 +24,14 @@ public:
 
 	static float DeltaTime;
 
-	static void Test();
 	static Engine* instance;
 	void testMouse_callback(GLFWwindow* window, double xpos, double ypos);
 private:
-	Camera* testCamera;
 	std::string title;
 	float lastFrame;
 
+	Camera* testCamera;
+	bool testFirstMouse = true;
 	float testLastX = 800.0f / 2.0;
 	float testLastY = 600.0 / 2.0;
 
@@ -43,7 +43,6 @@ private:
 	void Initialize();
 	void CoreInitialize();
 	
-	bool testFirstMouse = true;
 	GLFWwindow* window;
 	std::unique_ptr<ECS> registry;
 

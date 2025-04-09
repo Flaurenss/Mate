@@ -246,9 +246,6 @@
     <CopyFileToFolders Include="Resources\container.jpg">
       <Filter>Resource Files</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="Resources\cat.png">
-      <Filter>Resource Files</Filter>
-    </CopyFileToFolders>
     <CopyFileToFolders Include="Shaders\fragmentShader.shader">
       <Filter>Header Files\Core\Shaders</Filter>
     </CopyFileToFolders>

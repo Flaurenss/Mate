@@ -217,9 +217,6 @@
   <ItemGroup>
     <CopyFileToFolders Include="Resources\container.jpg" />
   </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="Resources\cat.png" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

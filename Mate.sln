@@ -12,8 +12,14 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mate.Math", "Mate.Math\Mate.Math.vcxproj", "{1F8D6C21-6208-4E8E-843A-ED06A5274540}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mate.Game", "Mate.Game\Mate.Game.vcxproj", "{346006F2-942D-4B1B-B5E2-C87431507A51}"
+	ProjectSection(ProjectDependencies) = postProject
+		{87D6BFC4-75E7-45CF-84FA-852979E2CCF4} = {87D6BFC4-75E7-45CF-84FA-852979E2CCF4}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mate", "Mate\Mate.vcxproj", "{87D6BFC4-75E7-45CF-84FA-852979E2CCF4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F8D6C21-6208-4E8E-843A-ED06A5274540} = {1F8D6C21-6208-4E8E-843A-ED06A5274540}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
