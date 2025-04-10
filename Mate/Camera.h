@@ -20,6 +20,8 @@ public:
 	void ProcessKeyboardMovement(MOVEMENT movement, float deltaTime);
 
 	Matrix4 GetViewMatrix();
+
+	void SetForward(Vector3 target);
 private:
 	// Enter fields
 	Vector3 Position;
@@ -30,11 +32,11 @@ private:
 	Vector3 Up;
 	Vector3 Right;
 
+	// Test properties and method for a free fly camera
 	float yaw = -90.0f;
 	float pitch = -20.0f;
 	float speed = 2.5f;
 	float sensitivity = 0.1f;
-
 	void UpdateCameraVectors();
 };
 
