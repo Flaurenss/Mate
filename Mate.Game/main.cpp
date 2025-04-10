@@ -7,6 +7,7 @@
 int main()
 {
     auto avocadoModel = "./Assets/Avocado/Avocado.gltf";
+    auto playerModel = "./Assets/Player/character.glb";
     Engine* engine = new Engine();
     ECS& registry = engine->GetRegistry();
     
@@ -16,6 +17,12 @@ int main()
     floor.AddComponent<MeshComponent>(floorMesh);
     TransformComponent& floorTrans = floor.GetComponent<TransformComponent>();
     floorTrans.Scale(Vector3(10, 1, 10));
+
+    auto player = registry.CreateEntity();
+    player.AddComponent<TransformComponent>();
+    player.AddComponent<MeshComponent>(playerModel);
+    TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
+    playerTransform.scale = (Vector3(0.1f, 0.1f, 0.1f));
 
     auto avocado = registry.CreateEntity();
     avocado.AddComponent<TransformComponent>();

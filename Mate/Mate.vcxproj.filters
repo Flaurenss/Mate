@@ -37,9 +37,6 @@
     <Filter Include="Header Files\Core">
       <UniqueIdentifier>{b071bc92-2577-4bb8-9960-759a6f9e443d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Core\Shaders">
-      <UniqueIdentifier>{2f6c5fc5-7ccf-4f85-8847-245285a69b20}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Core\ECS">
       <UniqueIdentifier>{438c01ba-68d7-4896-890d-ca583e299d4b}</UniqueIdentifier>
     </Filter>
@@ -81,6 +78,9 @@
     </Filter>
     <Filter Include="Source Files\Systems">
       <UniqueIdentifier>{47741b5c-6e1e-4a12-bc32-48b14913c37a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{3fa8b98c-c159-4fa7-8864-47cdd905e89f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +167,12 @@
     <None Include="ECS.inl">
       <Filter>Header Files\Core\ECS</Filter>
     </None>
+    <None Include="Assets\fragmentShader.shader">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\vertexShader.shader">
+      <Filter>Assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -189,9 +195,6 @@
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Header Files\ThirdDependencies</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files\Core\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Header Files\Core</Filter>
@@ -248,12 +251,6 @@
   <ItemGroup>
     <CopyFileToFolders Include="Resources\container.jpg">
       <Filter>Resource Files</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="Shaders\fragmentShader.shader">
-      <Filter>Header Files\Core\Shaders</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="Shaders\vertexShader.shader">
-      <Filter>Header Files\Core\Shaders</Filter>
     </CopyFileToFolders>
   </ItemGroup>
 </Project>

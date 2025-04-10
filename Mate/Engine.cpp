@@ -43,7 +43,7 @@ void Engine::Initialize()
 {
 	instance = this;
 	CoreInitialize();
-	Shader shader("./vertexShader.shader", "./fragmentShader.shader");
+	Shader shader("./Assets/vertexShader.shader", "./Assets/fragmentShader.shader");
 	registry->AddSystem<RenderSystem>(shader);
 	registry->AddSystem<CameraSystem>(shader);
 }

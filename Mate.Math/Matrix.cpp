@@ -44,10 +44,6 @@ Matrix4& Matrix4::identity()
 
 Matrix4& Matrix4::translate(const Vector3& v)
 {
-	//m[0] += m[3] * v.x;   m[4] += m[7] * v.x;   m[8] += m[11] * v.x;   m[12] += m[15] * v.x;
-	//m[1] += m[3] * v.y;   m[5] += m[7] * v.y;   m[9] += m[11] * v.y;   m[13] += m[15] * v.y;
-	//m[2] += m[3] * v.z;   m[6] += m[7] * v.z;   m[10] += m[11] * v.z;   m[14] += m[15] * v.z;
-
     Matrix4 t;
     t.m[12] = v.x;
     t.m[13] = v.y;
@@ -68,12 +64,6 @@ Matrix4& Matrix4::scale(float f)
 
 Matrix4& Matrix4::scale(const Vector3& v)
 {
-	//m[0] *= v.x;   m[4] *= v.x;   m[8] *= v.x;   m[12] *= v.x;
-	//m[1] *= v.y;   m[5] *= v.y;   m[9] *= v.y;   m[13] *= v.y;
-	//m[2] *= v.z;   m[6] *= v.z;   m[10] *= v.z;   m[14] *= v.z;
-	//return *this;
-
-
     Matrix4 s;
     s.m[0] = v.x;
     s.m[5] = v.y;
@@ -87,73 +77,29 @@ Matrix4& Matrix4::scale(const Vector3& v)
 
 Matrix4& Matrix4::rotate(const float degrees, const Vector3 axis)
 {
-    //float cosTheta = cosf(degrees * DEG2RAD);
-    //float sinTheta = sinf(degrees * DEG2RAD);
-    //float oneMinusCos = 1.0f - cosTheta;
-
-    //// Save actual matrix status
-    //float m0 = m[0], m4 = m[4], m8 = m[8], m12 = m[12],
-    //    m1 = m[1], m5 = m[5], m9 = m[9], m13 = m[13],
-    //    m2 = m[2], m6 = m[6], m10 = m[10], m14 = m[14];
-
-    //// Compute rotation matrix elements (Rodrigues' rotation formula)
-    //float r0 = axis.x * axis.x * oneMinusCos + cosTheta;
-    //float r1 = axis.x * axis.y * oneMinusCos + axis.z * sinTheta;
-    //float r2 = axis.x * axis.z * oneMinusCos - axis.y * sinTheta;
-    //float r4 = axis.x * axis.y * oneMinusCos - axis.z * sinTheta;
-    //float r5 = axis.y * axis.y * oneMinusCos + cosTheta;
-    //float r6 = axis.y * axis.z * oneMinusCos + axis.x * sinTheta;
-    //float r8 = axis.x * axis.z * oneMinusCos + axis.y * sinTheta;
-    //float r9 = axis.y * axis.z * oneMinusCos - axis.x * sinTheta;
-    //float r10 = axis.z * axis.z * oneMinusCos + cosTheta;
-
-    //// Apply rotation matrix multiplication
-    //m[0] = r0 * m0 + r4 * m1 + r8 * m2;
-    //m[1] = r1 * m0 + r5 * m1 + r9 * m2;
-    //m[2] = r2 * m0 + r6 * m1 + r10 * m2;
-    //m[4] = r0 * m4 + r4 * m5 + r8 * m6;
-    //m[5] = r1 * m4 + r5 * m5 + r9 * m6;
-    //m[6] = r2 * m4 + r6 * m5 + r10 * m6;
-    //m[8] = r0 * m8 + r4 * m9 + r8 * m10;
-    //m[9] = r1 * m8 + r5 * m9 + r9 * m10;
-    //m[10] = r2 * m8 + r6 * m9 + r10 * m10;
-    //m[12] = r0 * m12 + r4 * m13 + r8 * m14;
-    //m[13] = r1 * m12 + r5 * m13 + r9 * m14;
-    //m[14] = r2 * m12 + r6 * m13 + r10 * m14;
-
-    //return *this;
-    Matrix4 r; // Empieza como identidad
+    Matrix4 r;
     float rad = degrees * DEG2RAD;
     float cosTheta = cosf(rad);
     float sinTheta = sinf(rad);
     float oneMinusCos = 1.0f - cosTheta;
-    // normalizado para Rodrigues' formula
+    // Normalizing for Rodrigues' formula
     Vector3 normAxis = axis.normalize();
     float x = normAxis.x;
     float y = normAxis.y;
     float z = normAxis.z;
 
-    // Rellenar la matriz r (Column-Major)
+    // Fille the matrix(Column-Major)
     r.m[0] = x * x * oneMinusCos + cosTheta;
     r.m[1] = y * x * oneMinusCos + z * sinTheta;
     r.m[2] = z * x * oneMinusCos - y * sinTheta;
-    // r.m[3] = 0.0f; // Ya es 0 por identidad
 
     r.m[4] = x * y * oneMinusCos - z * sinTheta;
     r.m[5] = y * y * oneMinusCos + cosTheta;
     r.m[6] = z * y * oneMinusCos + x * sinTheta;
-    // r.m[7] = 0.0f; // Ya es 0 por identidad
 
     r.m[8] = x * z * oneMinusCos + y * sinTheta;
     r.m[9] = y * z * oneMinusCos - x * sinTheta;
     r.m[10] = z * z * oneMinusCos + cosTheta;
-    // r.m[11] = 0.0f; // Ya es 0 por identidad
-
-    // r.m[12] = 0.0f; // Ya es 0 por identidad
-    // r.m[13] = 0.0f; // Ya es 0 por identidad
-    // r.m[14] = 0.0f; // Ya es 0 por identidad
-    // r.m[15] = 1.0f; // Ya es 1 por identidad
-
 
     //  M' = M * R
     *this = (*this) * r;
@@ -304,33 +250,32 @@ Vector4 Matrix4::operator*(const Vector4& v) const
 
 Matrix4 Matrix4::operator*(const Matrix4& n)
 {
-    //Matrix4 result;
+    auto m00 = m[0] * n[0] + m[4] * n[1] + m[8] * n[2] + m[12] * n[3];
+    auto m10 = m[1] * n[0] + m[5] * n[1] + m[9] * n[2] + m[13] * n[3];
+    auto m20 = m[2] * n[0] + m[6] * n[1] + m[10] * n[2] + m[14] * n[3];
+    auto m30 = m[3] * n[0] + m[7] * n[1] + m[11] * n[2] + m[15] * n[3];
 
-    //for (int row = 0; row < 4; ++row) {
-    //    for (int col = 0; col < 4; ++col) {
-    //        result[row * 4 + col] =
-    //            m[row * 4 + 0] * n[0 * 4 + col] +
-    //            m[row * 4 + 1] * n[1 * 4 + col] +
-    //            m[row * 4 + 2] * n[2 * 4 + col] +
-    //            m[row * 4 + 3] * n[3 * 4 + col];
-    //    }
-    //}
+    auto m01 = m[0] * n[4] + m[4] * n[5] + m[8] * n[6] + m[12] * n[7];
+    auto m11 = m[1] * n[4] + m[5] * n[5] + m[9] * n[6] + m[13] * n[7];
+    auto m21 = m[2] * n[4] + m[6] * n[5] + m[10] * n[6] + m[14] * n[7];
+    auto m31 = m[3] * n[4] + m[7] * n[5] + m[11] * n[6] + m[15] * n[7];
 
-    //return result;
-    Matrix4 result;
+    auto m02 = m[0] * n[8] + m[4] * n[9] + m[8] * n[10] + m[12] * n[11];
+    auto m12 = m[1] * n[8] + m[5] * n[9] + m[9] * n[10] + m[13] * n[11];
+    auto m22 = m[2] * n[8] + m[6] * n[9] + m[10] * n[10] + m[14] * n[11];
+    auto m32 = m[3] * n[8] + m[7] * n[9] + m[11] * n[10] + m[15] * n[11];
 
-    for (int col = 0; col < 4; ++col) {
-        for (int row = 0; row < 4; ++row) {
+    auto m03 = m[0] * n[12] + m[4] * n[13] + m[8] * n[14] + m[12] * n[15];
+    auto m13 = m[1] * n[12] + m[5] * n[13] + m[9] * n[14] + m[13] * n[15];
+    auto m23 = m[2] * n[12] + m[6] * n[13] + m[10] * n[14] + m[14] * n[15];
+    auto m33 = m[3] * n[12] + m[7] * n[13] + m[11] * n[14] + m[15] * n[15];
 
-            float sum = 0.0f;
-            for (int k = 0; k < 4; ++k) {
-                sum += m[k * 4 + row] * n.m[col * 4 + k];
-            }
-            result.m[col * 4 + row] = sum;
-        }
-    }
-
-    return result;
+    return Matrix4(
+        m00, m10, m20, m30,
+        m01, m11, m21, m31,
+        m02, m12, m22, m32,
+        m03, m13, m23, m33
+    );
 }
 
 void Matrix4::print()
