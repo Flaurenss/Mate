@@ -7,6 +7,8 @@
 - [ ] Implement basic lighting.
 - [ ] Implement physics.
 - [ ] Implement animations.
+- [ ] Implement text renderign.
+- [ ] Implement UI for debug.
 - [ ] Implement scripting.
 - [ ] Separate Import model behaviour from model concept.
 - [ ] Add Texture independent concept so it can be added freely to any entity.
