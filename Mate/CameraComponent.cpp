@@ -2,7 +2,7 @@
 
 CameraComponent::CameraComponent()
 {
-	camera = new Camera(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+	camera = new Camera(Vector3(0.0f, 0.5f, 1), Vector3(0.0f, 1.0f, 0.0f));
 }
 
 CameraComponent::CameraComponent(Camera* camera)

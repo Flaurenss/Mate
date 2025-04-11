@@ -52,7 +52,6 @@ Matrix4& Matrix4::translate(const Vector3& v)
     // M' = M * T
     *this = (*this) * t;
 
-    return *this;
 	return *this;
 }
 
@@ -165,7 +164,7 @@ Matrix4 Matrix4::lookAt(const Vector3 position, const Vector3 target, const Vect
 {
     auto zAxis = (position - target).normalize();
     auto xAxis = Vector3::cross(up.normalize(), zAxis).normalize();
-    auto yAxis = Vector3::cross(zAxis, xAxis);
+    auto yAxis = Vector3::cross(zAxis, xAxis).normalize();
 
     Matrix4 rotation = Matrix4();
     Matrix4 translation = Matrix4();

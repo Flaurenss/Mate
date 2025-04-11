@@ -11,8 +11,8 @@ Vector2::Vector2(float x, float y) : x(x), y(y)
 
 #pragma region Vector3
 
-const Vector3 Vector3::Forward = Vector3(0.0f, 0.0f, 1.0f);
-const Vector3 Vector3::Back = Vector3(0.0f, 0.0f, -1.0f);
+const Vector3 Vector3::Forward = Vector3(0.0f, 0.0f, -1.0f);
+const Vector3 Vector3::Back = Vector3(0.0f, 0.0f, 1.0f);
 const Vector3 Vector3::Up = Vector3(0.0f, 1.0f, 0.0f);
 const Vector3 Vector3::Down = Vector3(0.0f, -1.0f, 0.0f);
 const Vector3 Vector3::Right = Vector3(1.0f, 0.0f, 0.0f);
@@ -37,7 +37,7 @@ float Vector3::length() const
 	return sqrtf((x * x) + (y * y) + (z * z));
 }
 
-float Vector3::dot(const Vector3& a, const Vector3& b) const
+float Vector3::dot(const Vector3& a, const Vector3& b)
 {
 	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
 }

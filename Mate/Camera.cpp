@@ -43,7 +43,8 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset)
 Matrix4 Camera::GetViewMatrix()
 {
 	//Position + Forward
-    return Matrix4::lookAt(Position, Position + Forward, Up);
+	return Matrix4::lookAt(Vector3(0, 5, 5), Vector3(0, 0, 0), Vector3(0, 1, 0));
+    //return Matrix4::lookAt(Position, Position + Forward, Up);
 }
 
 void Camera::SetForward(Vector3 target)

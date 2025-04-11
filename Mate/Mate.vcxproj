@@ -160,6 +160,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="GltfImporter.cpp" />
     <ClCompile Include="IModelImporter.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="IRenderable.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="FbxImporterExperimental.h" />
     <ClInclude Include="GltfImporter.h" />
     <ClInclude Include="IModelImporter.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="IRenderable.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Mate.h" />

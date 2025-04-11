@@ -16,7 +16,6 @@ void CameraSystem::Update()
 
 		CameraComponent& cameraComponent = entity.GetComponent<CameraComponent>();
 		Camera& camera = cameraComponent.GetCamera();
-		Matrix4 view = camera.GetViewMatrix();
 		 
 		Matrix4 projection = Matrix4();
 		projection.perspective(45.0f, (float)width / (float)height, 0.1f, 100.0f);

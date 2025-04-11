@@ -20,7 +20,7 @@ struct Vector3
 	// Utils
 	Vector3 normalize() const;
 	float length() const;
-	float dot(const Vector3& a, const Vector3& b) const;
+	static float dot(const Vector3& a, const Vector3& b);
 	static Vector3 cross(const Vector3& a, const Vector3& b);
 
 	// Operators

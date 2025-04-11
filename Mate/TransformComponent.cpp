@@ -18,9 +18,9 @@ Matrix4 TransformComponent::GetTransform() const
     Matrix4 mRotX;
     mRotX.rotate(eulerAngles.x, Vector3::Right);
     Matrix4 mRotY;
-    mRotX.rotate(eulerAngles.y, Vector3::Up);
+    mRotY.rotate(eulerAngles.y, Vector3::Up);
     Matrix4 mRotZ;
-    mRotX.rotate(eulerAngles.z, Vector3::Forward);
+    mRotZ.rotate(eulerAngles.z, Vector3::Forward);
     Matrix4 rotationMatrix = mRotZ * mRotY * mRotX;
 
     Matrix4 mTrans;
@@ -44,7 +44,7 @@ void TransformComponent::Rotate(Vector3 deltaDegrees)
     eulerAngles += deltaDegrees;
 }
 
-void TransformComponent::Scale(Vector3 scale)
+void TransformComponent::Scale(Vector3 newScale)
 {
-    transform.scale(scale);
+    scale = newScale;
 }
