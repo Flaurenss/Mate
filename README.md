@@ -3,7 +3,7 @@ Basic Engine powered by OpenGL.
 
 ## How to Build
 - This engine has been developed with Visual Studio 2022. In order to avoid possible unmanaged issues 2022 is the recommended version.
-- Third party dependencies are located outside this repository. Please download them from the `Release` page [here](TODO) and mantain the following structure:
+- Third party dependencies are located outside this repository. Please download them from the `Release` page and mantain the following structure:
 ```
 ---- CustomFolder
    |
