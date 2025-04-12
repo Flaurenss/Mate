@@ -22,6 +22,7 @@ public:
 	Matrix4 GetViewMatrix();
 
 	void SetForward(Vector3 target);
+
 private:
 	// Enter fields
 	Vector3 Position;
@@ -33,6 +34,7 @@ private:
 	Vector3 Right;
 
 	// Test properties and method for a free fly camera
+	bool freeCamera = false;
 	float yaw = -90.0f;
 	float pitch = -20.0f;
 	float speed = 2.5f;

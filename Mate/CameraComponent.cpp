@@ -1,16 +1,33 @@
 #include "CameraComponent.h"
+#include "Logger.h"
 
-CameraComponent::CameraComponent()
-{
-	camera = new Camera(Vector3(0.0f, 0.5f, 1), Vector3(0.0f, 1.0f, 0.0f));
-}
+CameraComponent::CameraComponent() : CameraComponent(new Camera(Vector3(0.0f, 2.0f, 2.5f), Vector3::Up))
+{ }
 
 CameraComponent::CameraComponent(Camera* camera)
 {
+	Fov = 45.0f;
+	Near = 0.1f;
+	Far = 100.0f;
 	this->camera = camera;
 }
 
-Camera& CameraComponent::GetCamera()
+void CameraComponent::SetForward(Vector3 target)
 {
-	return *camera;
+	if (camera)
+	{
+		camera->SetForward(target);
+	}
+}
+
+Matrix4 CameraComponent::GetViewMatrix()
+{
+	if (camera)
+	{
+		return camera->GetViewMatrix();
+	}
+	else
+	{
+		Logger::Err("Camera is not initialized in CameraComponent.");
+	}
 }

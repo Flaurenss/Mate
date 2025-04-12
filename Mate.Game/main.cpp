@@ -5,7 +5,8 @@
 #include <Mate.h>
 
 void CreateFloor(ECS& registry);
-TransformComponent& CreatePlayer(ECS& registry);
+void CreateCamera(ECS& ecs);
+TransformComponent& CreatePlayer(ECS& ecs);
 TransformComponent& CreateMisc(ECS& registry);
 void ManagePlayerInput(TransformComponent& transform, float deltaTime);
 
@@ -14,9 +15,8 @@ int main()
     Engine* engine = new Engine();
     ECS& ecs = engine->GetRegistry();
     
-    auto camera = ecs.CreateEntity();
-    camera.AddComponent<TransformComponent>();
-    camera.AddComponent<CameraComponent>();
+    CreateCamera(ecs);
+
 
     CreateFloor(ecs);
     TransformComponent& playerTransform = CreatePlayer(ecs);
@@ -43,20 +43,29 @@ int main()
     }
 }
 
-void CreateFloor(ECS& registry)
+void CreateFloor(ECS& ecs)
 {
     auto floorMesh = PrimitivesHelper::CreatePlane();
-    auto floor = registry.CreateEntity();
+    auto floor = ecs.CreateEntity();
     floor.AddComponent<TransformComponent>();
     floor.AddComponent<MeshComponent>(floorMesh);
     TransformComponent& floorTrans = floor.GetComponent<TransformComponent>();
     floorTrans.Scale(Vector3(5, 1, 5));
 }
 
-TransformComponent& CreatePlayer(ECS& registry)
+void CreateCamera(ECS& ecs)
+{
+    auto camera = ecs.CreateEntity();
+    camera.AddComponent<TransformComponent>();
+    camera.AddComponent<CameraComponent>();
+    CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
+    cameraComponent.SetForward(Vector3(0, 0, 0));
+}
+
+TransformComponent& CreatePlayer(ECS& ecs)
 {
     auto playerModel = "./Assets/Player/character.glb";
-    auto player = registry.CreateEntity();
+    auto player = ecs.CreateEntity();
     player.AddComponent<TransformComponent>();
     player.AddComponent<MeshComponent>(playerModel);
     TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
@@ -65,10 +74,10 @@ TransformComponent& CreatePlayer(ECS& registry)
     return playerTransform;
 }
 
-TransformComponent& CreateMisc(ECS& registry)
+TransformComponent& CreateMisc(ECS& ecs)
 {
     auto avocadoModel = "./Assets/Avocado/Avocado.gltf";
-    auto avocado = registry.CreateEntity();
+    auto avocado = ecs.CreateEntity();
     avocado.AddComponent<TransformComponent>();
     avocado.AddComponent<MeshComponent>(avocadoModel);
     TransformComponent& avcTransform = avocado.GetComponent<TransformComponent>();

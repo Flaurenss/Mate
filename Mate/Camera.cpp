@@ -8,7 +8,10 @@ Camera::Camera(Vector3 position, Vector3 up) :
 	Forward(Vector3(0, 0, -1))
 {
     // calculate the new Front vector
-	UpdateCameraVectors();
+	if (freeCamera)
+	{
+		UpdateCameraVectors();
+	}
 }
 
 void Camera::ProcessKeyboardMovement(MOVEMENT movement, float deltaTime)
@@ -42,8 +45,7 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset)
 
 Matrix4 Camera::GetViewMatrix()
 {
-	//Position + Forward
-	return Matrix4::lookAt(Vector3(0, 2, 2.5f), Vector3(0, 0, 0), Vector3(0, 1, 0));
+	return Matrix4::lookAt(Position, Forward, WorldUp);
     //return Matrix4::lookAt(Position, Position + Forward, Up);
 }
 

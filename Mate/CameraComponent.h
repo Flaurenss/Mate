@@ -4,10 +4,15 @@
 class CameraComponent
 {
 public:
+	float Fov;
+	float Near;
+	float Far;
+
 	CameraComponent();
 	CameraComponent(Camera* camera);
 
-	Camera& GetCamera();
+	Matrix4 GetViewMatrix();
+	void SetForward(Vector3 target);
 
 private:
 	Camera* camera;

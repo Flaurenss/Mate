@@ -15,12 +15,11 @@ void CameraSystem::Update()
 		shader.Use();
 
 		CameraComponent& cameraComponent = entity.GetComponent<CameraComponent>();
-		Camera& camera = cameraComponent.GetCamera();
 		 
 		Matrix4 projection = Matrix4();
-		projection.perspective(45.0f, (float)width / (float)height, 0.1f, 100.0f);
+		projection.perspective(cameraComponent.Fov, (float)width / (float)height, cameraComponent.Near, cameraComponent.Far);
 
-		shader.SetMat4("view", camera.GetViewMatrix());
+		shader.SetMat4("view", cameraComponent.GetViewMatrix());
 		shader.SetMat4("projection", projection);
 	}
 }
