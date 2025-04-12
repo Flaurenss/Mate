@@ -1,7 +1,6 @@
 # TODO List
 
 ## TODO
-- [ ] Update README with build instructions.
 - [ ] Add event system (input at least).
 - [ ] Implement main procedural game movement.
 - [ ] Implement basic lighting.
@@ -16,8 +15,9 @@
 - [ ] Pack dependencies as nuget.
 
 ## In progress
-- [ ] Add player movement.
+- [ ] Update README with build instructions.
 
 ## DONE
+- [x] Add player movement.
 - [x] Refactor `GltfImporter` `ProcessPrimitive` method.
 - [x] Fix `Matrix4` operations to follow left to right order.
