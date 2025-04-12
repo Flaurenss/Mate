@@ -48,3 +48,8 @@ void TransformComponent::Scale(Vector3 newScale)
 {
     scale = newScale;
 }
+
+void TransformComponent::Scale(float newScale)
+{
+    scale = Vector3(newScale, newScale, newScale);
+}

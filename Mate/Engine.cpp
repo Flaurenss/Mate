@@ -38,6 +38,8 @@ Engine::Engine(int w, int h) :
 Engine::~Engine()
 {
 	// TODO:...
+	delete window;
+	window = nullptr;
 }
 
 void Engine::Initialize()
@@ -136,6 +138,7 @@ void Engine::Update()
 	DeltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
+	ComputeFps(DeltaTime);
 	testProcessInput(window);
 
 	registry->Update();
@@ -161,6 +164,20 @@ void Engine::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (instance) {
 		instance->testMouse_callback(window, xpos, ypos);
+	}
+}
+
+void Engine::ComputeFps(float deltaTime)
+{
+	float smoothedFPS = 0.0f;
+
+	frameTimeAccumulator += DeltaTime;
+	frameCount++;
+	if (frameTimeAccumulator >= 1.0f) {
+		smoothedFPS = frameCount / frameTimeAccumulator;
+		frameTimeAccumulator = 0.0f;
+		frameCount = 0;
+		Logger::War("FPS: " + std::to_string(smoothedFPS));
 	}
 }
 

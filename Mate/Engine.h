@@ -46,6 +46,10 @@ private:
 	GLFWwindow* window;
 	std::unique_ptr<ECS> registry;
 
+	float frameTimeAccumulator = 0.0f;
+	int frameCount = 0;
+	void ComputeFps(float deltaTime);
+
 	static void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 	void testProcessInput(GLFWwindow* window);

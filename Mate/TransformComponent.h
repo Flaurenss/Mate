@@ -18,7 +18,8 @@ public:
 
 	void Translate(Vector3 position);
 	void Rotate(Vector3 axis);
-	void Scale(Vector3 scale);
+	void Scale(Vector3 newScale);
+	void Scale(float newScale);
 private:
 	Matrix4 transform;
 };
