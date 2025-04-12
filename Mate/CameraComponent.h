@@ -12,6 +12,7 @@ public:
 	CameraComponent(Camera* camera);
 
 	Matrix4 GetViewMatrix();
+	void SetPosition(Vector3 position);
 	void SetForward(Vector3 target);
 
 private:

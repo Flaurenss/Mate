@@ -5,9 +5,9 @@
 class TransformComponent
 {
 public:
-	Vector3 position;
-	Vector3 eulerAngles;
-	Vector3 scale;
+	Vector3 Position;
+	Vector3 EulerAngles;
+	Vector3 Scale;
 
 	TransformComponent();
 	TransformComponent(Vector3 position, Vector3 scale, Vector3 rotation);
@@ -18,8 +18,8 @@ public:
 
 	void Translate(Vector3 position);
 	void Rotate(Vector3 axis);
-	void Scale(Vector3 newScale);
-	void Scale(float newScale);
+	void DoScale(Vector3 newScale);
+	void DoScale(float newScale);
 private:
 	Matrix4 transform;
 };

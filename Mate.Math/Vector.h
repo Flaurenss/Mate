@@ -15,6 +15,7 @@ struct Vector3
 
 	Vector3() = default;
 
+	Vector3(float v);
 	Vector3(float x, float y, float z);
 
 	// Utils

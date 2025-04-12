@@ -34,7 +34,7 @@ int main()
         float deltaRotationY = rotationSpeedDegrees * deltaTime;
         avcTransform.Rotate(Vector3(0, deltaRotationY, 0));
         
-        Vector3 currentPosition = avcTransform.position;
+        Vector3 currentPosition = avcTransform.Position;
         float deltaMovementX = movementSpeedUnits * deltaTime;
         //boxTransform.Translate(Vector3(deltaMovementX, 0.0f, 0.0f));
 
@@ -50,13 +50,13 @@ void CreateFloor(ECS& ecs)
     floor.AddComponent<TransformComponent>();
     floor.AddComponent<MeshComponent>(floorMesh);
     TransformComponent& floorTrans = floor.GetComponent<TransformComponent>();
-    floorTrans.Scale(Vector3(5, 1, 5));
+    floorTrans.Scale = Vector3(5, 1, 5);
 }
 
 void CreateCamera(ECS& ecs)
 {
     auto camera = ecs.CreateEntity();
-    camera.AddComponent<TransformComponent>();
+    camera.AddComponent<TransformComponent>(Vector3(0, 2.0f, 2.5f), Vector3(1, 1, 1), Vector3());
     camera.AddComponent<CameraComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     cameraComponent.SetForward(Vector3(0, 0, 0));
@@ -70,7 +70,7 @@ TransformComponent& CreatePlayer(ECS& ecs)
     player.AddComponent<MeshComponent>(playerModel);
     TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
     playerTransform.SetPosition(Vector3(0, 0.01f, 0));
-    playerTransform.Scale(0.5f);
+    playerTransform.DoScale(0.5f);
     return playerTransform;
 }
 
@@ -82,7 +82,7 @@ TransformComponent& CreateMisc(ECS& ecs)
     avocado.AddComponent<MeshComponent>(avocadoModel);
     TransformComponent& avcTransform = avocado.GetComponent<TransformComponent>();
     avcTransform.SetPosition(Vector3(0, 0.01f, 0));
-    avcTransform.Scale(2);
+    avcTransform.DoScale(2);
     return avcTransform;
 }
 

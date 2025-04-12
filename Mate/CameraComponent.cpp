@@ -12,14 +12,6 @@ CameraComponent::CameraComponent(Camera* camera)
 	this->camera = camera;
 }
 
-void CameraComponent::SetForward(Vector3 target)
-{
-	if (camera)
-	{
-		camera->SetForward(target);
-	}
-}
-
 Matrix4 CameraComponent::GetViewMatrix()
 {
 	if (camera)
@@ -29,5 +21,21 @@ Matrix4 CameraComponent::GetViewMatrix()
 	else
 	{
 		Logger::Err("Camera is not initialized in CameraComponent.");
+	}
+}
+
+void CameraComponent::SetPosition(Vector3 position)
+{
+	if (camera)
+	{
+		camera->SetPosition(position);
+	}
+}
+
+void CameraComponent::SetForward(Vector3 target)
+{
+	if (camera)
+	{
+		camera->SetForward(target);
 	}
 }

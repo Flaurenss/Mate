@@ -20,6 +20,9 @@ const Vector3 Vector3::Left = Vector3(-1.0f, 0.0f, 0.0f);
 const Vector3 Vector3::Zero = Vector3(0.0f, 0.0f, 0.0f);
 const Vector3 Vector3::One = Vector3(1.0f, 1.0f, 1.0f);
 
+Vector3::Vector3(float v) : Vector3(v, v, v)
+{ }
+
 Vector3::Vector3(float x, float y, float z) : x(x), y(y), z(z)
 { }
 

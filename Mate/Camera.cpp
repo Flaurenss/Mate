@@ -49,6 +49,11 @@ Matrix4 Camera::GetViewMatrix()
     //return Matrix4::lookAt(Position, Position + Forward, Up);
 }
 
+void Camera::SetPosition(Vector3 position)
+{
+	Position = position;
+}
+
 void Camera::SetForward(Vector3 target)
 {
 	Forward = target - Position;
