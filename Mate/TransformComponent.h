@@ -10,6 +10,7 @@ public:
 	Vector3 Scale;
 
 	TransformComponent();
+	TransformComponent(Vector3 position);
 	TransformComponent(Vector3 position, Vector3 scale, Vector3 rotation);
 
 	Matrix4 GetTransform() const;

@@ -4,10 +4,11 @@
 #include <iostream>
 #include <Mate.h>
 
-void CreateFloor(ECS& registry);
+void CreateFloor(ECS& ecs);
 void CreateCamera(ECS& ecs);
 TransformComponent& CreatePlayer(ECS& ecs);
-TransformComponent& CreateMisc(ECS& registry);
+TransformComponent& CreateMisc(ECS& ecs);
+void CreateMovableMisc(ECS& registry);
 void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vector3 originalPos);
 void ManagePlayerInput(TransformComponent& transform, float deltaTime);
 
@@ -17,9 +18,10 @@ int main()
     ECS& ecs = engine->GetRegistry();
     
     CreateCamera(ecs);
-    CreateFloor(ecs);
+    //CreateFloor(ecs);
+    CreateMovableMisc(ecs);
     TransformComponent& playerTransform = CreatePlayer(ecs);
-    TransformComponent& avcTransform = CreateMisc(ecs);
+    //TransformComponent& avcTransform = CreateMisc(ecs);
 
     
     float rotationSpeedDegrees = 90.0f;
@@ -27,16 +29,8 @@ int main()
     Vector3 originalPos = playerTransform.Position;
     while (engine->IsRunning())
     {
-        ManagePlayerInputRails(playerTransform, engine->DeltaTime, originalPos);
-
         float deltaTime = engine->DeltaTime;
-        
-        float deltaRotationY = rotationSpeedDegrees * deltaTime;
-        avcTransform.Rotate(Vector3(0, deltaRotationY, 0));
-        
-        Vector3 currentPosition = avcTransform.Position;
-        float deltaMovementX = movementSpeedUnits * deltaTime;
-        //boxTransform.Translate(Vector3(deltaMovementX, 0.0f, 0.0f));
+        ManagePlayerInputRails(playerTransform, deltaTime, originalPos);
 
         engine->Update();
         engine->Render();
@@ -86,9 +80,28 @@ TransformComponent& CreateMisc(ECS& ecs)
     return avcTransform;
 }
 
+void CreateMovableMisc(ECS& ecs)
+{
+    auto coinModel = "./Assets/Environment/Misc/coin.glb";
+    auto boxModel = "./Assets/Environment/Misc/crate-color.glb";
+    auto roadModel = "./Assets/Environment/Road/road-straight.glb";
+
+    auto coin = ecs.CreateEntity();
+    coin.AddComponent<TransformComponent>(Vector3(-0.2f, 0.2f, -1), Vector3(0, -90, 0), Vector3::One);
+    coin.AddComponent<MeshComponent>(coinModel);
+
+    auto box = ecs.CreateEntity();
+    box.AddComponent<TransformComponent>(Vector3(0.2f, 0, 1));
+    box.AddComponent<MeshComponent>(boxModel);
+
+    auto road = ecs.CreateEntity();
+    road.AddComponent<TransformComponent>(Vector3::Zero, Vector3::Zero, Vector3(5, 5, 5));
+    road.AddComponent<MeshComponent>(roadModel);
+}
+
 void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vector3 originalPos)
 {
-    float space = 2.0f;
+    float space = 1.5f;
     float maxRight = originalPos.x + space;
     float maxLeft = originalPos.x - space;
 
@@ -97,7 +110,9 @@ void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vect
     {
         float newX = transform.Position.x + space;
         if (newX <= maxRight)
+        {
             transform.Position.x = newX;
+        }
     }
 
     // Mover a la izquierda
@@ -105,7 +120,9 @@ void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vect
     {
         float newX = transform.Position.x - space;
         if (newX >= maxLeft)
+        {
             transform.Position.x = newX;
+        }
     }
 }
 
@@ -135,3 +152,15 @@ void ManagePlayerInput(TransformComponent& transform, float deltaTime)
 
     transform.Translate(direction.normalize() * velocity);
 }
+
+struct EnvironmentAsset
+{
+    std::vector<Entity> objects;
+};
+
+enum EnvironmentType
+{
+    Floor,
+    Obstacle,
+    Reward
+};
