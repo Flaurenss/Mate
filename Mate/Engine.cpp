@@ -130,6 +130,7 @@ void Engine::Update()
 	lastFrame = currentFrame;
 
 	ComputeFps(DeltaTime);
+	Input::Update();
 	testProcessInput(window);
 
 	registry->Update();
@@ -151,13 +152,6 @@ void Engine::Render()
 	glfwPollEvents();
 }
 
-void Engine::mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	if (instance) {
-		instance->testMouse_callback(window, xpos, ypos);
-	}
-}
-
 void Engine::ComputeFps(float deltaTime)
 {
 	float smoothedFPS = 0.0f;
@@ -174,33 +168,8 @@ void Engine::ComputeFps(float deltaTime)
 
 void Engine::testProcessInput(GLFWwindow* window)
 {
-	Input::Update();
-
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, true);
-	}
-}
-
-void Engine::testMouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	float xPos = (float)xpos;
-	float yPos = (float)ypos;
-
-	if (testFirstMouse)
-	{
-		testLastX = xPos;
-		testLastY = yPos;
-		testFirstMouse = false;
-	}
-
-	float xoffset = xPos - testLastX;
-	float yoffset = testLastY - yPos; // reversed since y-coordinates range from bottom to top
-	testLastX = xPos;
-	testLastY = yPos;
-
-	if (testCamera)
-	{
-		testCamera->ProcessMouseMovement(xoffset, yoffset);
 	}
 }

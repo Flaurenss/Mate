@@ -63,7 +63,7 @@ Entity CreateCamera(ECS& ecs)
     camera.AddComponent<TransformComponent>(Vector3(0, 2.0f, 2.5f), Vector3(1, 1, 1), Vector3());
     camera.AddComponent<CameraComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
-    //cameraComponent.SetForward(Vector3(0, 0, 0));
+    cameraComponent.SetForward(Vector3(0, 0, 0));
     return camera;
 }
 
@@ -197,7 +197,6 @@ void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& came
     auto newUp = Vector3::cross(newRight, newForward);
 
     cameraTransform.Translate(direction.normalize() * speed);
-    auto customForward = cameraTransform.Position + newForward;
     cameraComponent.SetForward(newForward);
     cameraComponent.SetRight(newRight);
     cameraComponent.SetUp(newUp);

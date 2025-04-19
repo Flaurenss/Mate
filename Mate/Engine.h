@@ -25,7 +25,6 @@ public:
 	static float DeltaTime;
 
 	static Engine* instance;
-	void testMouse_callback(GLFWwindow* window, double xpos, double ypos);
 private:
 	std::string title;
 	float lastFrame;
@@ -51,6 +50,5 @@ private:
 	void ComputeFps(float deltaTime);
 
 	static void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
-	static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 	void testProcessInput(GLFWwindow* window);
 };

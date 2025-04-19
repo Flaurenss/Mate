@@ -16,9 +16,6 @@ class Camera
 public:
 	Camera(Vector3 position, Vector3 worldUp, bool freeCamera = false);
 
-	void ProcessMouseMovement(float xOffset, float yOffset);
-	void ProcessKeyboardMovement(MOVEMENT movement, float deltaTime);
-
 	Matrix4 GetViewMatrix();
 
 	void SetPosition(Vector3 position);
@@ -32,24 +29,13 @@ public:
 	void SetRight(Vector3 right);
 	Vector3 GetRight();
 
-	void SetFreeCamera(bool activate);
-
 private:
 	// Enter fields
 	Vector3 Position;
-	Vector3 WorldUp;
 
 	// Post calculated fields
 	Vector3 Forward;
 	Vector3 Up;
 	Vector3 Right;
-
-	// Test properties and method for a free fly camera
-	bool freeCamera = false;
-	float yaw = -90.0f;
-	float pitch = -20.0f;
-	float speed = 2.5f;
-	float sensitivity = 0.1f;
-	void UpdateCameraVectors();
 };
 
