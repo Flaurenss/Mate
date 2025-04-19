@@ -27,11 +27,6 @@ Engine::Engine(int w, int h) :
 	registry = std::make_unique<ECS>();
 	Logger::Log("Engine created with name " + title);
 
-	// TODO: fix initial position
-	//Vector3 cameraPos = Vector3(0.0f, 0.5f, 1);
-	//Vector3 cameraUp = Vector3(0.0f, 1.0f, 0.0f);
-	//testCamera = new Camera(cameraPos, cameraUp);
-
 	Initialize();
 }
 
@@ -92,17 +87,13 @@ void Engine::CoreInitialize()
 	// Set rendering viewport callback
 	glfwSetFramebufferSizeCallback(window, Framebuffer_size_callback);
 
-	glfwSetCursorPosCallback(window, mouse_callback);
+	//glfwSetCursorPosCallback(window, mouse_callback);
 
 	// Draw primitives configuration
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	isRunning = true;
-
-	//auto cameraTest = registry->CreateEntity();
-	//cameraTest.AddComponent<TransformComponent>();
-	//cameraTest.AddComponent<CameraComponent>(testCamera);
 }
 
 void Engine::Framebuffer_size_callback(GLFWwindow* window, int w, int h)
@@ -189,23 +180,6 @@ void Engine::testProcessInput(GLFWwindow* window)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
-
-	//if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-	//{
-	//	testCamera->ProcessKeyboardMovement(FORWARD, DeltaTime);
-	//}
-	//if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	//{
-	//	testCamera->ProcessKeyboardMovement(BACKWARD, DeltaTime);
-	//}
-	//if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	//{
-	//	testCamera->ProcessKeyboardMovement(LEFT, DeltaTime);
-	//}
-	//if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	//{
-	//	testCamera->ProcessKeyboardMovement(RIGHT, DeltaTime);
-	//}
 }
 
 void Engine::testMouse_callback(GLFWwindow* window, double xpos, double ypos)

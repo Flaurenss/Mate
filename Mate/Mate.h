@@ -6,5 +6,7 @@
 #include "MeshComponent.h"
 #include "TransformComponent.h"
 #include "CameraComponent.h"
+#include "MathUtils.h"
+#include "Logger.h"
 
 #include "PrimitivesHelper.h"

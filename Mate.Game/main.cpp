@@ -4,12 +4,19 @@
 #include <iostream>
 #include <Mate.h>
 
+float yaw = -90.0f;
+float pitch = -20.0f;
+float lastX = 0;
+float lastY = 0;
+bool firstMouse = true;
+
 void CreateFloor(ECS& ecs);
-void CreateCamera(ECS& ecs);
+Entity CreateCamera(ECS& ecs);
 TransformComponent& CreatePlayer(ECS& ecs);
 TransformComponent& CreateMisc(ECS& ecs);
 void CreateMovableMisc(ECS& registry);
 void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vector3 originalPos);
+void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& transformCamera, float deltaTime);
 void ManagePlayerInput(TransformComponent& transform, float deltaTime);
 
 int main()
@@ -17,7 +24,9 @@ int main()
     Engine* engine = new Engine();
     ECS& ecs = engine->GetRegistry();
     
-    CreateCamera(ecs);
+    auto camera = CreateCamera(ecs);
+    TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
+    CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     //CreateFloor(ecs);
     CreateMovableMisc(ecs);
     TransformComponent& playerTransform = CreatePlayer(ecs);
@@ -30,7 +39,8 @@ int main()
     while (engine->IsRunning())
     {
         float deltaTime = engine->DeltaTime;
-        ManagePlayerInputRails(playerTransform, deltaTime, originalPos);
+        //ManagePlayerInputRails(playerTransform, deltaTime, originalPos);
+        ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
 
         engine->Update();
         engine->Render();
@@ -47,13 +57,14 @@ void CreateFloor(ECS& ecs)
     floorTrans.Scale = Vector3(5, 1, 5);
 }
 
-void CreateCamera(ECS& ecs)
+Entity CreateCamera(ECS& ecs)
 {
     auto camera = ecs.CreateEntity();
     camera.AddComponent<TransformComponent>(Vector3(0, 2.0f, 2.5f), Vector3(1, 1, 1), Vector3());
     camera.AddComponent<CameraComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
-    cameraComponent.SetForward(Vector3(0, 0, 0));
+    //cameraComponent.SetForward(Vector3(0, 0, 0));
+    return camera;
 }
 
 TransformComponent& CreatePlayer(ECS& ecs)
@@ -124,6 +135,72 @@ void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vect
             transform.Position.x = newX;
         }
     }
+}
+
+void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& cameraTransform, float deltaTime)
+{
+    float speed = deltaTime * 2.5f;
+    Vector3 direction = Vector3::Zero;
+    
+    // User keyboard input
+    if (Input::GetKey(KeyCode::W))
+    {
+        direction += cameraComponent.GetForward();
+    }
+    if (Input::GetKey(KeyCode::A))
+    {
+        direction -= cameraComponent.GetRight();
+    }
+    if (Input::GetKey(KeyCode::S))
+    {
+        direction -= cameraComponent.GetForward();
+    }
+    if (Input::GetKey(KeyCode::D))
+    {
+        direction += cameraComponent.GetRight();
+    }
+
+    float xPos = Input::MousePosition.x;
+    float yPos = Input::MousePosition.y;
+    float sensitivity = 0.1f;
+    // User mouse movement
+    if (firstMouse)
+    {
+        lastX = xPos;
+        lastY = yPos;
+        firstMouse = false;
+    }
+
+    float xoffset = xPos - lastX;
+    float yoffset = lastY - yPos; // reversed since y-coordinates range from bottom to top
+    lastX = xPos;
+    lastY = yPos;
+
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if (pitch > 80.0f)
+        pitch = 80.0f;
+    if (pitch < -80.0f)
+        pitch = -80.0f;
+
+    Vector3 newForward;
+    newForward.x = cosf(MathUtils::radians(yaw)) * cosf(MathUtils::radians(pitch));
+    newForward.y = sinf(MathUtils::radians(pitch));
+    newForward.z = sinf(MathUtils::radians(yaw)) * cosf(MathUtils::radians(pitch));
+
+    newForward = newForward.normalize();
+    auto newRight = Vector3::cross(newForward, Vector3::Up).normalize();
+    auto newUp = Vector3::cross(newRight, newForward);
+
+    cameraTransform.Translate(direction.normalize() * speed);
+    auto customForward = cameraTransform.Position + newForward;
+    cameraComponent.SetForward(newForward);
+    cameraComponent.SetRight(newRight);
+    cameraComponent.SetUp(newUp);
 }
 
 void ManagePlayerInput(TransformComponent& transform, float deltaTime)

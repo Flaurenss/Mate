@@ -14,7 +14,7 @@ enum MOVEMENT
 class Camera
 {
 public:
-	Camera(Vector3 position, Vector3 worldUp);
+	Camera(Vector3 position, Vector3 worldUp, bool freeCamera = false);
 
 	void ProcessMouseMovement(float xOffset, float yOffset);
 	void ProcessKeyboardMovement(MOVEMENT movement, float deltaTime);
@@ -22,7 +22,17 @@ public:
 	Matrix4 GetViewMatrix();
 
 	void SetPosition(Vector3 position);
-	void SetForward(Vector3 target);
+	
+	void SetForward(Vector3 forward);
+	Vector3 GetForward();
+
+	void SetUp(Vector3 up);
+	Vector3 GetUp();
+
+	void SetRight(Vector3 right);
+	Vector3 GetRight();
+
+	void SetFreeCamera(bool activate);
 
 private:
 	// Enter fields

@@ -1,6 +1,8 @@
 #include "Input.h"
 #include "Logger.h"
 
+Vector3 Input::MousePosition = Vector3::Zero;
+
 GLFWwindow* Input::ptrWindow = nullptr;
 std::unordered_map<int, bool> Input::currentKeysMap;
 std::unordered_map<int, bool> Input::previousKeysMap;
@@ -46,6 +48,7 @@ int Input::MapToGLFWKey(KeyCode keyCode)
 void Input::Init(GLFWwindow* window)
 {
     ptrWindow = window;
+    glfwSetCursorPosCallback(window, MouseCallBack);
 }
 
 void Input::Update()
@@ -77,4 +80,9 @@ bool Input::GetKeyUp(KeyCode key)
 {
     int glfwKey = MapToGLFWKey(key);
     return !currentKeysMap[glfwKey] && previousKeysMap[glfwKey];
+}
+
+void Input::MouseCallBack(GLFWwindow* window, double xpos, double ypos)
+{
+    MousePosition = Vector3((float)xpos, (float)ypos, 0);
 }

@@ -2,6 +2,7 @@
 #include <glfw/glfw3.h>
 #include <string>
 #include <unordered_map>
+#include <Vector.h>
 
 /* Function keys */
 enum class KeyCode {
@@ -25,6 +26,8 @@ public:
     static bool GetKey(KeyCode key);
     static bool GetKeyUp(KeyCode key);
 
+    static Vector3 MousePosition;
+
 private:
     static GLFWwindow* ptrWindow;
     static std::unordered_map<int, bool> currentKeysMap;
@@ -35,5 +38,6 @@ private:
     //static std::unordered_map<int, bool> previousMouseButtonsMap;
 
     static int MapToGLFWKey(KeyCode keyCode);
+    static void MouseCallBack(GLFWwindow* window, double xpos, double ypos);
 };
 

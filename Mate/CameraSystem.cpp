@@ -22,6 +22,7 @@ void CameraSystem::Update()
 		Matrix4 projection = Matrix4();
 		projection.perspective(cameraComponent.Fov, (float)width / (float)height, cameraComponent.Near, cameraComponent.Far);
 
+		//auto lookAt = Matrix4::lookAt(cameraTransform.Position, cameraComponent.GetForward(), cameraComponent.GetUp());
 		shader.SetMat4("view", cameraComponent.GetViewMatrix());
 		shader.SetMat4("projection", projection);
 	}
