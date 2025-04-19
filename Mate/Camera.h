@@ -2,15 +2,6 @@
 #include <Vector.h>
 #include <Matrix.h>
 
-enum MOVEMENT
-{
-	FORWARD,
-	BACKWARD,
-	RIGHT,
-	LEFT,
-	SHIFT
-};
-
 class Camera
 {
 public:
