@@ -18,7 +18,6 @@ public:
 	bool IsEmpty() const;
 	int GetSize() const;
 
-	void Resize(int size);
 	void Clear();
 	void Add(TComponent component);
 	void Set(int index, TComponent component);
@@ -67,7 +66,7 @@ void ComponentRegistry<TComponent>::Set(int index, TComponent component)
 template<typename TComponent>
 TComponent& ComponentRegistry<TComponent>::Get(int index)
 {
-	//return static_cast<TComponent&>(data[index]);
+	// TODO: check if nullptr
 	return *(data[index]);
 }
 

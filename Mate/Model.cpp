@@ -5,12 +5,11 @@
 
 Model::Model(const std::string& path)
 {
-    //modelImporter = new FbxImporterExperimental();
     modelImporter = new GltfImporter();
     meshes = modelImporter->Load(path);
 }
 
-Model::Model(Mesh mesh)
+Model::Model(std::shared_ptr<Mesh> mesh)
 {
     meshes.push_back(mesh);
     modelImporter = nullptr;
@@ -20,12 +19,13 @@ Model::~Model()
 {
     delete modelImporter;
     modelImporter = nullptr;
+    meshes.clear();
 }
 
 void Model::Draw(Shader& shader)
 {
 	for (auto i = 0; i < meshes.size(); i++)
 	{
-		meshes[i].Draw(shader);
+		meshes[i]->Draw(shader);
 	}
 }

@@ -4,7 +4,7 @@
 #include "stb_image.h"
 #include <filesystem>
 
-std::vector<Mesh> GltfImporter::Load(const std::string& path)
+std::vector<std::shared_ptr<Mesh>> GltfImporter::Load(const std::string& path)
 {
     cgltf_options options = {};
     cgltf_data* data = NULL;
@@ -85,11 +85,12 @@ void GltfImporter::ProcessMesh(cgltf_mesh* mesh, Matrix4 matrix)
 {
     for (int i = 0; i < mesh->primitives_count; i++)
     {
-        meshes.push_back(ProcessPrimitive(mesh->primitives[i], matrix));
+        auto primitiveMesh = ProcessPrimitive(mesh->primitives[i], matrix);
+        meshes.push_back(primitiveMesh);
     }
 }
 
-Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
+std::shared_ptr<Mesh> GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices; 
@@ -185,8 +186,8 @@ Mesh GltfImporter::ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix)
 
         textures.push_back(texture);
     }
-
-    return Mesh(vertices, indices, textures);
+    return std::make_unique<Mesh>(vertices, indices, textures);
+    //return new Mesh(vertices, indices, textures);
 }
 
 Vector3 GltfImporter::ProcessPosition(cgltf_accessor* accesor, size_t index, Matrix4 matrix)

@@ -7,13 +7,13 @@
 class FbxImporterExperimental : public IModelImporter
 {
 public:
-	virtual std::vector<Mesh> Load(const std::string& path);
+	virtual std::vector<std::shared_ptr<Mesh>> Load(const std::string& path);
 
     void ProcessNode(ufbx_node* node, const ufbx_scene* scene);
 
     void ProcessMesh(ufbx_mesh* mesh, const ufbx_scene* scene, const ufbx_matrix& transform);
     
-    Mesh ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh, const ufbx_matrix& transform);
+    std::shared_ptr<Mesh> ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh, const ufbx_matrix& transform);
     
     std::vector<Texture> LoadMaterialTextures(ufbx_material* material, ufbx_material_pbr_map type,
         std::string typeName);
@@ -21,7 +21,7 @@ public:
     unsigned int LoadTexture(const char* path);
 
 private:
-    std::vector<Mesh> meshes;
+    std::vector<std::shared_ptr<Mesh>> meshes;
     std::vector<Texture> loadedTextures;
 };
 

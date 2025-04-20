@@ -79,6 +79,7 @@ TransformComponent& CreatePlayer(ECS& ecs)
     player.AddComponent<MeshComponent>(playerModel);
     TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
     playerTransform.SetPosition(Vector3(0, 0.01f, 0));
+    ecs.DestroyEntity(player);
     return playerTransform;
 }
 
@@ -101,7 +102,7 @@ void CreateMovableMisc(ECS& ecs)
     auto roadModel = "./Assets/Environment/Road/road-straight.glb";
 
     auto coin = ecs.CreateEntity();
-    coin.AddComponent<TransformComponent>(Vector3(-5, 0.2f, -1), Vector3(0, -90, 0), Vector3::One);
+    coin.AddComponent<TransformComponent>(Vector3(-1.5, 0.2f, -1), Vector3(0, -90, 0), Vector3::One);
     coin.AddComponent<MeshComponent>(coinModel);
 
     auto box = ecs.CreateEntity();
@@ -109,7 +110,7 @@ void CreateMovableMisc(ECS& ecs)
     box.AddComponent<MeshComponent>(boxModel);
 
     auto road = ecs.CreateEntity();
-    road.AddComponent<TransformComponent>(Vector3::Zero, Vector3::Zero, Vector3(5, 5, 5));
+    road.AddComponent<TransformComponent>(Vector3::Zero, Vector3::Zero, Vector3(5, 1, 5));
     road.AddComponent<MeshComponent>(roadModel);
 }
 
@@ -211,14 +212,20 @@ void ManagePlayerInput(TransformComponent& transform, float deltaTime)
     transform.Translate(direction.normalize() * velocity);
 }
 
-struct EnvironmentAsset
-{
-    std::vector<Entity> objects;
-};
-
 enum EnvironmentType
 {
     Floor,
     Obstacle,
     Reward
+};
+
+struct EnvironmentPart
+{
+    EnvironmentType environmentType;
+    Entity entity;
+};
+
+struct EnvironmentAsset
+{
+    std::vector<EnvironmentPart> objects;
 };

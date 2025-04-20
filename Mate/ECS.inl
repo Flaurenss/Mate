@@ -15,7 +15,7 @@ void ECS::AddComponent(Entity entity, TArgs && ...args)
 		componentsRegistry.resize(componentId + 1, nullptr);
 	}
 
-	//// Check if TComponent Registry exists, if not it creates a new one
+	// Check if TComponent Registry exists, if not it creates a new one
 	if (!componentsRegistry[componentId])
 	{
 		std::shared_ptr<ComponentRegistry<TComponent>> newRegistry(new ComponentRegistry<TComponent>());

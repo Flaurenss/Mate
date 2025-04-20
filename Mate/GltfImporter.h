@@ -7,16 +7,16 @@
 class GltfImporter : public IModelImporter
 {
 public:
-	virtual std::vector<Mesh> Load(const std::string& path);
+	virtual std::vector<std::shared_ptr<Mesh>> Load(const std::string& path);
 
 private:
-	std::vector<Mesh> meshes;
+	std::vector<std::shared_ptr<Mesh>> meshes;
 	std::vector<Texture> loadedTextures;
 	std::string basePath;
 
 	void ProcessNode(cgltf_node* node, Matrix4 matrix);
 	void ProcessMesh(cgltf_mesh* mesh, Matrix4 matrix);
-	Mesh ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix);
+	std::shared_ptr<Mesh> ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix);
 
 	Vector3 ProcessPosition(cgltf_accessor* accesor, size_t index, Matrix4 matrix);
 	Vector3 ProcessNormal(cgltf_accessor* accesor, size_t index, Matrix4 matrix);

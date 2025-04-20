@@ -1,7 +1,7 @@
 #include "FbxImporterExperimental.h"
 #include "stb_image.h"
 
-std::vector<Mesh> FbxImporterExperimental::Load(const std::string& path)
+std::vector<std::shared_ptr<Mesh>> FbxImporterExperimental::Load(const std::string& path)
 {
     ufbx_load_opts opts = { };
     opts.target_axes = ufbx_axes_right_handed_y_up;
@@ -58,7 +58,7 @@ void FbxImporterExperimental::ProcessMesh(ufbx_mesh* mesh, const ufbx_scene* sce
     }
 }
 
-Mesh FbxImporterExperimental::ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh, const ufbx_matrix& transform)
+std::shared_ptr<Mesh> FbxImporterExperimental::ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh, const ufbx_matrix& transform)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -118,8 +118,7 @@ Mesh FbxImporterExperimental::ProcessPart(ufbx_mesh_part part, ufbx_mesh* mesh, 
         auto diffuseMaps = LoadMaterialTextures(material, UFBX_MATERIAL_PBR_BASE_COLOR, DIFFUSE_NAME);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
     }
-
-    return Mesh(vertices, indices, textures);
+    return std::make_shared<Mesh>(vertices, indices, textures);
 }
 
 std::vector<Texture> FbxImporterExperimental::LoadMaterialTextures(ufbx_material* material, ufbx_material_pbr_map type, std::string typeName)
