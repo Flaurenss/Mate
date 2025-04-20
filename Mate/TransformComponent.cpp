@@ -1,4 +1,6 @@
 #include "TransformComponent.h"
+#include "MathUtils.h"
+#include <cmath>
 
 TransformComponent::TransformComponent() :
 	TransformComponent(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1))
@@ -50,6 +52,16 @@ void TransformComponent::DoScale(Vector3 newScale)
 void TransformComponent::DoScale(float newScale)
 {
     Scale = Vector3(newScale, newScale, newScale);
+}
+
+void TransformComponent::LookAt(Vector3 target, Vector3 up)
+{
+    Vector3 direction = (target - Position).normalize();
+    float yaw = std::atan2(-direction.x, -direction.z);
+
+    float pitch = std::asin(direction.y);
+
+    EulerAngles = Vector3(pitch * MathUtils::RAD2DEG, yaw * MathUtils::RAD2DEG, 0);
 }
 
 Vector3 TransformComponent::GetForward() const

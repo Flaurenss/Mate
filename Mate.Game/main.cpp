@@ -27,6 +27,8 @@ int main()
     auto camera = CreateCamera(ecs);
     TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
+    //cameraTransform.LookAt(Vector3(0, 0, 0));
+    
     //CreateFloor(ecs);
     CreateMovableMisc(ecs);
     TransformComponent& playerTransform = CreatePlayer(ecs);
@@ -40,8 +42,8 @@ int main()
     {
         float deltaTime = engine->DeltaTime;
         //ManagePlayerInputRails(playerTransform, deltaTime, originalPos);
-
         ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
+
 
         engine->Update();
         engine->Render();
@@ -61,10 +63,11 @@ void CreateFloor(ECS& ecs)
 Entity CreateCamera(ECS& ecs)
 {
     auto camera = ecs.CreateEntity();
-    camera.AddComponent<TransformComponent>(Vector3(0, 2.0f, 2.5f), Vector3(1, 1, 1), Vector3());
+    camera.AddComponent<TransformComponent>(Vector3(0, 2.0f, 2.5f), Vector3(), Vector3(1));
     camera.AddComponent<CameraComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
-    cameraComponent.SetForward(Vector3(0, 0, 0));
+    TransformComponent& trans = camera.GetComponent<TransformComponent>();
+    trans.LookAt(Vector3(0), trans.GetUp());
     return camera;
 }
 
@@ -72,11 +75,10 @@ TransformComponent& CreatePlayer(ECS& ecs)
 {
     auto playerModel = "./Assets/Player/character.glb";
     auto player = ecs.CreateEntity();
-    player.AddComponent<TransformComponent>();
+    player.AddComponent<TransformComponent>(Vector3(0, 0.01f, 0), Vector3(0, -180, 0), Vector3(0.5f));
     player.AddComponent<MeshComponent>(playerModel);
     TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
     playerTransform.SetPosition(Vector3(0, 0.01f, 0));
-    playerTransform.DoScale(0.5f);
     return playerTransform;
 }
 
@@ -99,7 +101,7 @@ void CreateMovableMisc(ECS& ecs)
     auto roadModel = "./Assets/Environment/Road/road-straight.glb";
 
     auto coin = ecs.CreateEntity();
-    coin.AddComponent<TransformComponent>(Vector3(-0.2f, 0.2f, -1), Vector3(0, -90, 0), Vector3::One);
+    coin.AddComponent<TransformComponent>(Vector3(-5, 0.2f, -1), Vector3(0, -90, 0), Vector3::One);
     coin.AddComponent<MeshComponent>(coinModel);
 
     auto box = ecs.CreateEntity();

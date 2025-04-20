@@ -4,7 +4,6 @@
 #include <string>
 #include "ECS.h"
 #include "Vector.h"
-#include "Camera.h"
 
 class Engine
 {
@@ -28,11 +27,6 @@ public:
 private:
 	std::string title;
 	float lastFrame;
-
-	Camera* testCamera;
-	bool testFirstMouse = true;
-	float testLastX = 800.0f / 2.0;
-	float testLastY = 600.0 / 2.0;
 
 	static int width;
 	static int height;

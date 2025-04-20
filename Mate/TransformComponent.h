@@ -11,7 +11,7 @@ public:
 
 	TransformComponent();
 	TransformComponent(Vector3 position);
-	TransformComponent(Vector3 position, Vector3 scale, Vector3 rotation);
+	TransformComponent(Vector3 position, Vector3 rotation, Vector3 scale);
 
 	Matrix4 GetTransform() const;
 
@@ -22,9 +22,11 @@ public:
 	void DoScale(Vector3 newScale);
 	void DoScale(float newScale);
 
-	Vector3 GetForward() const;;
-	Vector3 GetUp() const;;
-	Vector3 GetRight() const;;
+	void LookAt(Vector3 target, Vector3 up);
+
+	Vector3 GetForward() const;
+	Vector3 GetUp() const;
+	Vector3 GetRight() const;
 private:
 	Matrix4 transform;
 

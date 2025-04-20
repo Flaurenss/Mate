@@ -27,9 +27,7 @@ void CameraSystem::Update()
         );
 
         Vector3 position = cameraTransform.Position;
-
         Vector3 forward = cameraTransform.GetForward().normalize();
-
         Vector3 right = Vector3::cross(forward, Vector3::Up).normalize();
         Vector3 up = Vector3::cross(right, forward).normalize();
 

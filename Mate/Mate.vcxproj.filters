@@ -84,9 +84,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GltfImporter.cpp">
       <Filter>Source Files\Importers</Filter>
     </ClCompile>
@@ -178,9 +175,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FbxImporterExperimental.h">
       <Filter>Header Files\Importers</Filter>
     </ClInclude>

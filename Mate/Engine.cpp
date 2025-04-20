@@ -6,7 +6,6 @@
 #include "stb_image.h"
 #include "RenderSystem.h"
 #include "CameraSystem.h"
-#include "Camera.h"
 #include "Model.h"
 #include "CameraComponent.h"
 #include "Input.h"
