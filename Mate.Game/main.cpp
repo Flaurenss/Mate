@@ -107,29 +107,29 @@ EnvironmentAsset CreateMovableMisc(ECS& ecs, int i)
     auto boxModel = "./Assets/Environment/Misc/crate-color.glb";
     auto roadModel = "./Assets/Environment/Road/road-straight.glb";
     int separation = i;
-    EnvironmentAsset asset;
+
 
     auto coin = ecs.CreateEntity();
     auto coinPos = Vector3(-1.5, 0.2f, -1);
     coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
     coin.AddComponent<MeshComponent>(coinModel);
-
-    asset.objects.push_back(EnvironmentPart{ EnvironmentType::Reward, coin, coinPos });
+    Part coinPart{ coin, coinPos, EnvironmentType::Reward };
 
     auto box = ecs.CreateEntity();
     auto boxPos = Vector3(0.2f, 0, 1);
     box.AddComponent<TransformComponent>(boxPos);
     box.AddComponent<MeshComponent>(boxModel);
-
-    asset.objects.push_back(EnvironmentPart{ EnvironmentType::Obstacle, box, boxPos });
+    Part boxPart{ box, boxPos, EnvironmentType::Obstacle };
 
     auto road = ecs.CreateEntity();
     auto roadPos = Vector3(0, 0, 0 + (-i * 6));
     road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<MeshComponent>(roadModel);
+    Part floorPart{ road, roadPos, EnvironmentType::Floor };
 
-    asset.objects.push_back(EnvironmentPart{ EnvironmentType::Floor, road, roadPos });
-
+    // Agrupar en EnvironmentPart
+    EnvironmentPart envPart{ floorPart, {boxPart}, {coinPart} };
+    EnvironmentAsset asset {envPart};
     return asset;
 }
 
@@ -138,16 +138,37 @@ void ManageMovableMisc(std::vector<EnvironmentAsset>& assets, float deltaTime)
     float speed = deltaTime * 1.5f;
     for (auto asset : assets)
     {
-        for (auto obj : asset.objects)
+        TransformComponent& floorTrans = asset.floor.floorPart.entity.GetComponent<TransformComponent>();
+        if (floorTrans.Position.z > 5)
         {
-            TransformComponent& trans = obj.entity.GetComponent<TransformComponent>();
-            if (trans.Position.z > 5)
+            floorTrans.SetPosition(asset.floor.floorPart.originalPos);
+            for (auto coll : asset.floor.collisions)
             {
-                trans.Position = Vector3(trans.Position.x, trans.Position.y, 0);
+                TransformComponent& collTrans = coll.entity.GetComponent<TransformComponent>();
+                collTrans.SetPosition(coll.originalPos);
             }
-            else
+
+
+            for (auto reward : asset.floor.rewards)
             {
-                trans.Translate(-Vector3::Forward * speed);
+                TransformComponent& rewardTrans = reward.entity.GetComponent<TransformComponent>();
+                rewardTrans.SetPosition(reward.originalPos);
+            }
+        }
+        else
+        {
+            auto movement = -Vector3::Forward * speed;
+            floorTrans.Translate(movement);
+            for (auto coll : asset.floor.collisions)
+            {
+                TransformComponent& collTrans = coll.entity.GetComponent<TransformComponent>();
+                collTrans.Translate(movement);
+            }
+
+            for (auto reward : asset.floor.rewards)
+            {
+                TransformComponent& rewardTrans = reward.entity.GetComponent<TransformComponent>();
+                rewardTrans.Translate(movement);
             }
         }
     }

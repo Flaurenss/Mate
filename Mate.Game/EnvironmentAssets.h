@@ -1,5 +1,6 @@
 #pragma once
 #include <Mate.h>
+#include <vector>
 
 enum EnvironmentType
 {
@@ -8,15 +9,23 @@ enum EnvironmentType
     Reward
 };
 
-struct EnvironmentPart
+struct Part
 {
-    EnvironmentType environmentType;
     Entity entity;
     Vector3 originalPos;
+    EnvironmentType environmentType;
 };
 
+struct EnvironmentPart
+{
+    Part floorPart;
+    std::vector<Part> collisions;
+    std::vector<Part> rewards;
+};
 struct EnvironmentAsset
 {
-    std::vector<EnvironmentPart> objects;
+    EnvironmentPart floor;
 };
+
+
 
