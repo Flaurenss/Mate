@@ -25,6 +25,9 @@ struct Vector3
 	static Vector3 cross(const Vector3& a, const Vector3& b);
 
 	// Operators
+	bool operator==(const Vector3) const;
+	bool operator!=(const Vector3) const;
+
 	float& operator[](int i);
 	Vector3 operator-() const;
 	
@@ -61,8 +64,11 @@ struct Vector4
 
 	Vector4(float x, float y, float z, float w);
 
+	Vector4(Vector3 v3, float w = 0);
+
 	// Utils
-	float lenght() const;
+	Vector4 normalize() const;
+	float length() const;
 	float dot(const Vector4& a, const Vector4& b) const;
 
 	// Operators

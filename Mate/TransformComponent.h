@@ -21,7 +21,13 @@ public:
 	void Rotate(Vector3 axis);
 	void DoScale(Vector3 newScale);
 	void DoScale(float newScale);
+
+	Vector3 GetForward() const;;
+	Vector3 GetUp() const;;
+	Vector3 GetRight() const;;
 private:
 	Matrix4 transform;
+
+	Matrix4 GetRotationMatrix() const;
 };
 

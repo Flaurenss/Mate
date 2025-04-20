@@ -40,6 +40,7 @@ int main()
     {
         float deltaTime = engine->DeltaTime;
         //ManagePlayerInputRails(playerTransform, deltaTime, originalPos);
+
         ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
 
         engine->Update();
@@ -116,7 +117,6 @@ void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vect
     float maxRight = originalPos.x + space;
     float maxLeft = originalPos.x - space;
 
-    // Mover a la derecha
     if (Input::GetKeyDown(KeyCode::D))
     {
         float newX = transform.Position.x + space;
@@ -126,7 +126,6 @@ void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vect
         }
     }
 
-    // Mover a la izquierda
     if (Input::GetKeyDown(KeyCode::A))
     {
         float newX = transform.Position.x - space;
@@ -139,31 +138,10 @@ void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vect
 
 void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& cameraTransform, float deltaTime)
 {
-    float speed = deltaTime * 2.5f;
-    Vector3 direction = Vector3::Zero;
-    
-    // User keyboard input
-    if (Input::GetKey(KeyCode::W))
-    {
-        direction += cameraComponent.GetForward();
-    }
-    if (Input::GetKey(KeyCode::A))
-    {
-        direction -= cameraComponent.GetRight();
-    }
-    if (Input::GetKey(KeyCode::S))
-    {
-        direction -= cameraComponent.GetForward();
-    }
-    if (Input::GetKey(KeyCode::D))
-    {
-        direction += cameraComponent.GetRight();
-    }
-
     float xPos = Input::MousePosition.x;
     float yPos = Input::MousePosition.y;
     float sensitivity = 0.1f;
-    // User mouse movement
+
     if (firstMouse)
     {
         lastX = xPos;
@@ -171,8 +149,8 @@ void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& came
         firstMouse = false;
     }
 
-    float xoffset = xPos - lastX;
-    float yoffset = lastY - yPos; // reversed since y-coordinates range from bottom to top
+    float xoffset = lastX - xPos;
+    float yoffset = lastY - yPos;
     lastX = xPos;
     lastY = yPos;
 
@@ -182,24 +160,26 @@ void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& came
     yaw += xoffset;
     pitch += yoffset;
 
-    if (pitch > 80.0f)
-        pitch = 80.0f;
-    if (pitch < -80.0f)
-        pitch = -80.0f;
+    if (pitch > 89.0f) pitch = 89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
 
-    Vector3 newForward;
-    newForward.x = cosf(MathUtils::radians(yaw)) * cosf(MathUtils::radians(pitch));
-    newForward.y = sinf(MathUtils::radians(pitch));
-    newForward.z = sinf(MathUtils::radians(yaw)) * cosf(MathUtils::radians(pitch));
+    Vector3 currentEuler = cameraTransform.EulerAngles;
+    currentEuler.y = yaw;
+    currentEuler.x = pitch;
+    currentEuler.z = 0;
+    cameraTransform.EulerAngles = currentEuler;
 
-    newForward = newForward.normalize();
-    auto newRight = Vector3::cross(newForward, Vector3::Up).normalize();
-    auto newUp = Vector3::cross(newRight, newForward);
+    float speed = deltaTime * 2.5f;
+    Vector3 direction = Vector3::Zero;
+    Vector3 transformForward = cameraTransform.GetForward();
+    Vector3 transformRight = cameraTransform.GetRight();
+
+    if (Input::GetKey(KeyCode::W)) direction += transformForward;
+    if (Input::GetKey(KeyCode::S)) direction -= transformForward;
+    if (Input::GetKey(KeyCode::A)) direction -= transformRight;
+    if (Input::GetKey(KeyCode::D)) direction += transformRight;
 
     cameraTransform.Translate(direction.normalize() * speed);
-    cameraComponent.SetForward(newForward);
-    cameraComponent.SetRight(newRight);
-    cameraComponent.SetUp(newUp);
 }
 
 void ManagePlayerInput(TransformComponent& transform, float deltaTime)

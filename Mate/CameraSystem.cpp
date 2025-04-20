@@ -1,6 +1,7 @@
 #include "CameraSystem.h"
 #include "TransformComponent.h"
 #include "CameraComponent.h"
+#include "Logger.h"
 
 CameraSystem::CameraSystem(Shader& shader) : shader(shader)
 {
@@ -10,21 +11,33 @@ CameraSystem::CameraSystem(Shader& shader) : shader(shader)
 
 void CameraSystem::Update()
 {
-	for (Entity& entity : GetEntities())
-	{
-		shader.Use();
+    for (Entity& entity : GetEntities())
+    {
+        shader.Use();
 
-		CameraComponent& cameraComponent = entity.GetComponent<CameraComponent>();
-		TransformComponent& cameraTransform = entity.GetComponent<TransformComponent>();
-		
-		cameraComponent.SetPosition(cameraTransform.Position);
+        TransformComponent& cameraTransform = entity.GetComponent<TransformComponent>();
+        CameraComponent& cameraComponent = entity.GetComponent<CameraComponent>();
 
-		Matrix4 projection = Matrix4();
-		projection.perspective(cameraComponent.Fov, (float)width / (float)height, cameraComponent.Near, cameraComponent.Far);
+        Matrix4 projection;
+        projection.perspective(
+            cameraComponent.Fov,
+            static_cast<float>(width) / static_cast<float>(height),
+            cameraComponent.Near,
+            cameraComponent.Far
+        );
 
-		shader.SetMat4("view", cameraComponent.GetViewMatrix());
-		shader.SetMat4("projection", projection);
-	}
+        Vector3 position = cameraTransform.Position;
+
+        Vector3 forward = cameraTransform.GetForward().normalize();
+
+        Vector3 right = Vector3::cross(forward, Vector3::Up).normalize();
+        Vector3 up = Vector3::cross(right, forward).normalize();
+
+        Matrix4 view = Matrix4::lookAt(position, position + forward, up);
+
+        shader.SetMat4("view", view);
+        shader.SetMat4("projection", projection);
+    }
 }
 
 void CameraSystem::SetResolution(int w, int h)

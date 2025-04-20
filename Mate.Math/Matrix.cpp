@@ -240,6 +240,7 @@ Matrix4& Matrix4::operator=(const Matrix4& other)
 
 Vector4 Matrix4::operator*(const Vector4& v) const
 {
+    // TODO: Consider what happens when w != 1 || w!= 0
 	return Vector4(
 		m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w,
 		m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w,

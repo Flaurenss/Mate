@@ -54,6 +54,16 @@ Vector3 Vector3::cross(const Vector3& a, const Vector3& b)
 	);
 }
 
+bool Vector3::operator==(const Vector3 v) const
+{
+	return x == v.x && y == v.y && z == v.z;
+}
+
+bool Vector3::operator!=(const Vector3 v) const
+{
+	return !(*this == v);
+}
+
 float& Vector3::operator[](int i)
 {
 	return ((&x)[i]);
@@ -142,7 +152,20 @@ Vector4::Vector4(float x, float y, float z, float w) :
 	x(x), y(y), z(z), w(w)
 { }
 
-float Vector4::lenght() const
+Vector4::Vector4(Vector3 v3, float w) :
+	x(v3.x), y(v3.y), z(v3.z), w(w)
+{ }
+
+Vector4 Vector4::normalize() const
+{
+	float len = length();
+	if (len == 0.0f) return Vector4(0, 0, 0, 0); // Handle zero-length vector
+
+	float invLen = 1.0f / len;
+	return Vector4(x * invLen, y * invLen, z * invLen, w * invLen);
+}
+
+float Vector4::length() const
 {
 	return sqrtf(x*x + y*y + z*z + w*w);
 }
