@@ -5,6 +5,7 @@
 // TODO: add pch with Mate.h
 #include <Mate.h>
 #include "EnvironmentAssets.h"
+#include <deque>
 
 float yaw = -90.0f;
 float pitch = -20.0f;
@@ -18,7 +19,7 @@ TransformComponent& CreatePlayer(ECS& ecs);
 TransformComponent& CreateMisc(ECS& ecs);
 
 EnvironmentAsset CreateMovableMisc(ECS& registry, int i);
-void ManageMovableMisc(std::vector<EnvironmentAsset>& assets, float deltaTime);
+void ManageMovableMisc(std::deque<EnvironmentAsset>& assets, float deltaTime);
 
 void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vector3 originalPos);
 void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& transformCamera, float deltaTime);
@@ -34,8 +35,8 @@ int main()
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     
     TransformComponent& playerTransform = CreatePlayer(ecs);
-    std::vector<EnvironmentAsset> environmentAssets;
-    for (auto i = 0; i < 1; i++)
+    std::deque<EnvironmentAsset> environmentAssets;
+    for (auto i = 0; i < 2; i++)
     {
         environmentAssets.push_back(CreateMovableMisc(ecs, i));
     }
@@ -109,63 +110,63 @@ EnvironmentAsset CreateMovableMisc(ECS& ecs, int i)
     int separation = i;
 
 
-    auto coin = ecs.CreateEntity();
-    auto coinPos = Vector3(-1.5, 0.2f, -1);
-    coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
-    coin.AddComponent<MeshComponent>(coinModel);
-    Part coinPart{ coin, coinPos, EnvironmentType::Reward };
+    //auto coin = ecs.CreateEntity();
+    //auto coinPos = Vector3(-1.5, 0.2f, -1);
+    //coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
+    //coin.AddComponent<MeshComponent>(coinModel);
+    //Part coinPart{ coin, coinPos, EnvironmentType::Reward };
 
-    auto box = ecs.CreateEntity();
-    auto boxPos = Vector3(0.2f, 0, 1);
-    box.AddComponent<TransformComponent>(boxPos);
-    box.AddComponent<MeshComponent>(boxModel);
-    Part boxPart{ box, boxPos, EnvironmentType::Obstacle };
+    //auto box = ecs.CreateEntity();
+    //auto boxPos = Vector3(0.2f, 0, 1);
+    //box.AddComponent<TransformComponent>(boxPos);
+    //box.AddComponent<MeshComponent>(boxModel);
+    //Part boxPart{ box, boxPos, EnvironmentType::Obstacle };
 
     auto road = ecs.CreateEntity();
-    auto roadPos = Vector3(0, 0, 0 + (-i * 6));
+    auto roadPos = Vector3(0, 0, 0 + (-i * 10));
     road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<MeshComponent>(roadModel);
     Part floorPart{ road, roadPos, EnvironmentType::Floor };
 
     // Agrupar en EnvironmentPart
-    EnvironmentPart envPart{ floorPart, {boxPart}, {coinPart} };
+    EnvironmentPart envPart{ floorPart, {}, {} };
     EnvironmentAsset asset {envPart};
     return asset;
 }
 
-void ManageMovableMisc(std::vector<EnvironmentAsset>& assets, float deltaTime)
+void ManageMovableMisc(std::deque<EnvironmentAsset>& assets, float deltaTime)
 {
     float speed = deltaTime * 1.5f;
-    for (auto asset : assets)
+    for (auto& asset : assets)
     {
         TransformComponent& floorTrans = asset.floor.floorPart.entity.GetComponent<TransformComponent>();
         if (floorTrans.Position.z > 5)
         {
             floorTrans.SetPosition(asset.floor.floorPart.originalPos);
-            for (auto coll : asset.floor.collisions)
+            for (auto& coll : asset.floor.collisions)
             {
                 TransformComponent& collTrans = coll.entity.GetComponent<TransformComponent>();
-                collTrans.SetPosition(coll.originalPos);
+                //collTrans.SetPosition(coll.originalPos);
             }
 
 
-            for (auto reward : asset.floor.rewards)
+            for (auto& reward : asset.floor.rewards)
             {
                 TransformComponent& rewardTrans = reward.entity.GetComponent<TransformComponent>();
-                rewardTrans.SetPosition(reward.originalPos);
+                //rewardTrans.SetPosition(reward.originalPos);
             }
         }
         else
         {
             auto movement = -Vector3::Forward * speed;
-            floorTrans.Translate(movement);
-            for (auto coll : asset.floor.collisions)
+            //floorTrans.Translate(movement);
+            for (auto& coll : asset.floor.collisions)
             {
                 TransformComponent& collTrans = coll.entity.GetComponent<TransformComponent>();
                 collTrans.Translate(movement);
             }
 
-            for (auto reward : asset.floor.rewards)
+            for (auto& reward : asset.floor.rewards)
             {
                 TransformComponent& rewardTrans = reward.entity.GetComponent<TransformComponent>();
                 rewardTrans.Translate(movement);
