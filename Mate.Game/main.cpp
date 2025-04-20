@@ -2,7 +2,9 @@
 //
 
 #include <iostream>
+// TODO: add pch with Mate.h
 #include <Mate.h>
+#include "EnvironmentAssets.h"
 
 float yaw = -90.0f;
 float pitch = -20.0f;
@@ -14,7 +16,10 @@ void CreateFloor(ECS& ecs);
 Entity CreateCamera(ECS& ecs);
 TransformComponent& CreatePlayer(ECS& ecs);
 TransformComponent& CreateMisc(ECS& ecs);
-void CreateMovableMisc(ECS& registry);
+
+EnvironmentAsset CreateMovableMisc(ECS& registry, int i);
+void ManageMovableMisc(std::vector<EnvironmentAsset>& assets, float deltaTime);
+
 void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vector3 originalPos);
 void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& transformCamera, float deltaTime);
 void ManagePlayerInput(TransformComponent& transform, float deltaTime);
@@ -27,12 +32,13 @@ int main()
     auto camera = CreateCamera(ecs);
     TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
-    //cameraTransform.LookAt(Vector3(0, 0, 0));
     
-    //CreateFloor(ecs);
-    CreateMovableMisc(ecs);
     TransformComponent& playerTransform = CreatePlayer(ecs);
-    //TransformComponent& avcTransform = CreateMisc(ecs);
+    std::vector<EnvironmentAsset> environmentAssets;
+    for (auto i = 0; i < 1; i++)
+    {
+        environmentAssets.push_back(CreateMovableMisc(ecs, i));
+    }
 
     
     float rotationSpeedDegrees = 90.0f;
@@ -43,7 +49,7 @@ int main()
         float deltaTime = engine->DeltaTime;
         //ManagePlayerInputRails(playerTransform, deltaTime, originalPos);
         ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
-
+        ManageMovableMisc(environmentAssets, deltaTime);
 
         engine->Update();
         engine->Render();
@@ -63,11 +69,11 @@ void CreateFloor(ECS& ecs)
 Entity CreateCamera(ECS& ecs)
 {
     auto camera = ecs.CreateEntity();
-    camera.AddComponent<TransformComponent>(Vector3(0, 2.0f, 2.5f), Vector3(), Vector3(1));
+    camera.AddComponent<TransformComponent>(Vector3(0, 1.5f, 2.5f), Vector3(), Vector3(1));
     camera.AddComponent<CameraComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     TransformComponent& trans = camera.GetComponent<TransformComponent>();
-    trans.LookAt(Vector3(0), trans.GetUp());
+    trans.LookAt(Vector3(), trans.GetUp());
     return camera;
 }
 
@@ -79,7 +85,7 @@ TransformComponent& CreatePlayer(ECS& ecs)
     player.AddComponent<MeshComponent>(playerModel);
     TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
     playerTransform.SetPosition(Vector3(0, 0.01f, 0));
-    ecs.DestroyEntity(player);
+    //player.Destroy();
     return playerTransform;
 }
 
@@ -95,23 +101,56 @@ TransformComponent& CreateMisc(ECS& ecs)
     return avcTransform;
 }
 
-void CreateMovableMisc(ECS& ecs)
+EnvironmentAsset CreateMovableMisc(ECS& ecs, int i)
 {
     auto coinModel = "./Assets/Environment/Misc/coin.glb";
     auto boxModel = "./Assets/Environment/Misc/crate-color.glb";
     auto roadModel = "./Assets/Environment/Road/road-straight.glb";
+    int separation = i;
+    EnvironmentAsset asset;
 
     auto coin = ecs.CreateEntity();
-    coin.AddComponent<TransformComponent>(Vector3(-1.5, 0.2f, -1), Vector3(0, -90, 0), Vector3::One);
+    auto coinPos = Vector3(-1.5, 0.2f, -1);
+    coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
     coin.AddComponent<MeshComponent>(coinModel);
 
+    asset.objects.push_back(EnvironmentPart{ EnvironmentType::Reward, coin, coinPos });
+
     auto box = ecs.CreateEntity();
-    box.AddComponent<TransformComponent>(Vector3(0.2f, 0, 1));
+    auto boxPos = Vector3(0.2f, 0, 1);
+    box.AddComponent<TransformComponent>(boxPos);
     box.AddComponent<MeshComponent>(boxModel);
 
+    asset.objects.push_back(EnvironmentPart{ EnvironmentType::Obstacle, box, boxPos });
+
     auto road = ecs.CreateEntity();
-    road.AddComponent<TransformComponent>(Vector3::Zero, Vector3::Zero, Vector3(5, 1, 5));
+    auto roadPos = Vector3(0, 0, 0 + (-i * 6));
+    road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<MeshComponent>(roadModel);
+
+    asset.objects.push_back(EnvironmentPart{ EnvironmentType::Floor, road, roadPos });
+
+    return asset;
+}
+
+void ManageMovableMisc(std::vector<EnvironmentAsset>& assets, float deltaTime)
+{
+    float speed = deltaTime * 1.5f;
+    for (auto asset : assets)
+    {
+        for (auto obj : asset.objects)
+        {
+            TransformComponent& trans = obj.entity.GetComponent<TransformComponent>();
+            if (trans.Position.z > 5)
+            {
+                trans.Position = Vector3(trans.Position.x, trans.Position.y, 0);
+            }
+            else
+            {
+                trans.Translate(-Vector3::Forward * speed);
+            }
+        }
+    }
 }
 
 void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vector3 originalPos)
@@ -211,21 +250,3 @@ void ManagePlayerInput(TransformComponent& transform, float deltaTime)
 
     transform.Translate(direction.normalize() * velocity);
 }
-
-enum EnvironmentType
-{
-    Floor,
-    Obstacle,
-    Reward
-};
-
-struct EnvironmentPart
-{
-    EnvironmentType environmentType;
-    Entity entity;
-};
-
-struct EnvironmentAsset
-{
-    std::vector<EnvironmentPart> objects;
-};

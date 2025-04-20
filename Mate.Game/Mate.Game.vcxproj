@@ -153,11 +153,15 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EnvironmentAssets.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Avocado\Avocado.gltf" />
     <None Include="copyDependencies.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EnvironmentAssets.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

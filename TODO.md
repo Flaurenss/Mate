@@ -7,6 +7,8 @@
 - [ ] Add event system (input at least).
 - [ ] Implement animations.
 - [ ] Implement text rendering.
+- [ ] Add cubemaps.
+- [ ] Fix graphics memory management with ECS.
 - [ ] Implement UI for debug.
 - [ ] Implement scripting.
 - [ ] Separate Draw from Model object.
@@ -16,9 +18,9 @@
 - [ ] Pack dependencies as nuget.
 
 ## In progress
-- [x] Clean camera component.
 
 ## DONE
+- [x] Clean camera component.
 - [x] Update README with build instructions.
 - [x] Add player movement.
 - [x] Refactor `GltfImporter` `ProcessPrimitive` method.
