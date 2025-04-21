@@ -22,10 +22,11 @@ struct EnvironmentPart
     Part floorPart;
     std::vector<Part> collisions;
     std::vector<Part> rewards;
-};
-struct EnvironmentAsset
-{
-    EnvironmentPart floor;
+
+    TransformComponent& GetFloorTransform()
+    {
+        return floorPart.transformComponent;
+    }
 };
 
 struct PlayerRailState
