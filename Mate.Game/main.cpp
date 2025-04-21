@@ -113,23 +113,23 @@ EnvironmentAsset CreateMovableMisc(ECS& ecs, int i)
 
     auto road = ecs.CreateEntity();
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
-    road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
+    auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<MeshComponent>(roadModel);
-    Part floorPart{ road, roadPos, EnvironmentType::Floor };
+    Part floorPart{ road, roadPos, roadTrans, EnvironmentType::Floor };
 
     Vector3 coinOffset(-1.5f, 0.2f, -1.0f);
     Vector3 coinPos = roadPos + coinOffset;
     Entity coin = ecs.CreateEntity();
-    coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
+    auto& coinTrans = coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
     coin.AddComponent<MeshComponent>(coinModel);
-    Part coinPart{ coin, coinPos, EnvironmentType::Reward };
+    Part coinPart{ coin, coinPos, coinTrans, EnvironmentType::Reward};
 
     Vector3 boxOffset(0, 0, 1.0f);
     Vector3 boxPos = roadPos + boxOffset;
     Entity box = ecs.CreateEntity();
-    box.AddComponent<TransformComponent>(boxPos);
+    auto& boxTrans = box.AddComponent<TransformComponent>(boxPos);
     box.AddComponent<MeshComponent>(boxModel);
-    Part boxPart{ box, boxPos, EnvironmentType::Obstacle };
+    Part boxPart{ box, boxPos, boxTrans, EnvironmentType::Obstacle };
 
     EnvironmentPart envPart{ floorPart, {boxPart}, {coinPart} };
     EnvironmentAsset asset {envPart};
@@ -143,13 +143,13 @@ void ManageMovableMisc(std::deque<EnvironmentAsset>& assets, float deltaTime)
 
     // Check if recent block is out of bounds
     auto& firstBlock = assets.front();
-    TransformComponent& firstFloorTrans = firstBlock.floor.floorPart.entity.GetComponent<TransformComponent>();
+    TransformComponent& firstFloorTrans = firstBlock.floor.floorPart.transformComponent;
 
     if (firstFloorTrans.Position.z > 10.0f)
     {
         // Get last floor pos
         auto& lastBlock = assets.back();
-        Vector3 lastFloorPos = lastBlock.floor.floorPart.entity.GetComponent<TransformComponent>().Position;
+        Vector3 lastFloorPos = lastBlock.floor.floorPart.transformComponent.Position;
 
         // Calculate new pos and reset children
         Vector3 newBasePos = lastFloorPos - Vector3(0, 0, blockLength);
@@ -164,16 +164,16 @@ void ManageMovableMisc(std::deque<EnvironmentAsset>& assets, float deltaTime)
     Vector3 movement = -Vector3::Forward * speed;
     for (auto& asset : assets)
     {
-        asset.floor.floorPart.entity.GetComponent<TransformComponent>().Translate(movement);
+        asset.floor.floorPart.transformComponent.Translate(movement);
 
         for (auto& coll : asset.floor.collisions)
         {
-            coll.entity.GetComponent<TransformComponent>().Translate(movement);
+            coll.transformComponent.Translate(movement);
         }
 
         for (auto& reward : asset.floor.rewards)
         {
-            reward.entity.GetComponent<TransformComponent>().Translate(movement);
+            reward.transformComponent.Translate(movement);
         }
     }
 }
@@ -182,14 +182,14 @@ void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos)
 {
     Vector3 oldFloorPos = part.floorPart.originalPos;
 
-    part.floorPart.entity.GetComponent<TransformComponent>().SetPosition(newFloorPos);
+    part.floorPart.transformComponent.SetPosition(newFloorPos);
     part.floorPart.originalPos = newFloorPos;
 
     for (auto& coll : part.collisions)
     {
         Vector3 offset = coll.originalPos - oldFloorPos;
         Vector3 newPos = newFloorPos + offset;
-        coll.entity.GetComponent<TransformComponent>().SetPosition(newPos);
+        coll.transformComponent.SetPosition(newPos);
         coll.originalPos = newPos;
     }
 
@@ -197,7 +197,7 @@ void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos)
     {
         Vector3 offset = reward.originalPos - oldFloorPos;
         Vector3 newPos = newFloorPos + offset;
-        reward.entity.GetComponent<TransformComponent>().SetPosition(newPos);
+        reward.transformComponent.SetPosition(newPos);
         reward.originalPos = newPos;
     }
 }

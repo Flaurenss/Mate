@@ -52,7 +52,7 @@ public:
 	Entity CreateEntity();
 	void DestroyEntity(Entity entity);
 
-	template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
+	template <typename TComponent, typename ...TArgs> TComponent& AddComponent(Entity entity, TArgs&& ...args);
 	template <typename TComponent> void RemoveComponent(Entity entity);
 	template <typename TComponent> bool HasComponent(Entity entity) const;
 	template <typename TComponent> TComponent& GetComponent(Entity entity) const;

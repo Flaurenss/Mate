@@ -13,6 +13,7 @@ struct Part
 {
     Entity entity;
     Vector3 originalPos;
+    TransformComponent& transformComponent;
     EnvironmentType environmentType;
 };
 

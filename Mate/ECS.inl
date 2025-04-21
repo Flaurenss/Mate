@@ -4,7 +4,7 @@
 #include "Entity.h"
 
 template<typename TComponent, typename ...TArgs>
-void ECS::AddComponent(Entity entity, TArgs && ...args)
+TComponent& ECS::AddComponent(Entity entity, TArgs && ...args)
 {
 	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
@@ -29,6 +29,8 @@ void ECS::AddComponent(Entity entity, TArgs && ...args)
 	TComponent newComponent(std::forward<TArgs>(args)...);
 	componentRegistry->Set(entityId, newComponent);
 	entityComponentSignatures[entityId].set(componentId);
+
+	return componentRegistry->Get(entityId);
 }
 
 template<typename TComponent>

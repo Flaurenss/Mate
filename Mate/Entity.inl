@@ -5,9 +5,9 @@
 #include "ECS.h"
 
 template <typename TComponent, typename ...TArgs>
-void Entity::AddComponent(TArgs&& ...args)
+TComponent& Entity::AddComponent(TArgs&& ...args)
 {
-	registry->AddComponent<TComponent>(*this, std::forward<TArgs>(args)...);
+	return registry->AddComponent<TComponent>(*this, std::forward<TArgs>(args)...); 
 }
 
 template <typename TComponent>

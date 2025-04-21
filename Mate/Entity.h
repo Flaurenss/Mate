@@ -9,7 +9,7 @@ public:
     Entity(int id, ECS* registry);
     void Destroy();
 
-    template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
+    template <typename TComponent, typename ...TArgs> TComponent& AddComponent(TArgs&& ...args);
     template <typename TComponent> void RemoveComponent();
     template <typename TComponent> bool HasComponent() const;
     template <typename TComponent> TComponent& GetComponent() const;
