@@ -7,12 +7,12 @@
 #include "EnvironmentAssets.h"
 #include <deque>
 
-float yaw = -90.0f;
-float pitch = -20.0f;
+float yaw = 45.0f;
+float pitch = 0;
 float lastX = 0;
 float lastY = 0;
 bool firstMouse = true;
-const int POOL_LENGHT = 1; // 20
+const int POOL_LENGHT = 2; // 20
 
 void CreateFloor(ECS& ecs);
 Entity CreateCamera(ECS& ecs);
@@ -21,6 +21,9 @@ TransformComponent& CreateMisc(ECS& ecs);
 
 std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs);
 EnvironmentPart CreateMovableMisc(ECS& registry, int i);
+Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs);
+Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs);
+
 void ManageMovableMisc(std::deque<EnvironmentPart>& assets, float deltaTime);
 void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos);
 
@@ -118,44 +121,75 @@ std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs)
 
 EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
 {
-    auto coinModel = "./Assets/Environment/Misc/coin.glb";
-    auto boxModel = "./Assets/Environment/Misc/crate-color.glb";
     auto roadModel = "./Assets/Environment/Road/road-straight.glb";
 
     auto road = ecs.CreateEntity();
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
-    road.AddComponent<EnableComponent>().Enabled = false;;
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<MeshComponent>(roadModel);
+    if (i == 0)
+    {
+        road.AddComponent<EnableComponent>().Enabled = false;
+    }
     Part floorPart{ road, roadPos, roadTrans, EnvironmentType::Floor };
     
     std::vector<Part> rewards;
     std::vector<Part> obstacles;
     if (i != 0)
     {
-        Vector3 coinOffset(-1.5f, 0.2f, -1.0f);
-        Vector3 coinPos = roadPos + coinOffset;
-        Entity coin = ecs.CreateEntity();
-        auto& coinTrans = coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
-        coin.AddComponent<MeshComponent>(coinModel);
-        Part coinPart{ coin, coinPos, coinTrans, EnvironmentType::Reward};
 
-        Vector3 boxOffset(0, 0, 1.0f);
-        Vector3 boxPos = roadPos + boxOffset;
-        Entity box = ecs.CreateEntity();
-        auto& boxTrans = box.AddComponent<TransformComponent>(boxPos);
-        box.AddComponent<MeshComponent>(boxModel);
-        Part boxPart{ box, boxPos, boxTrans, EnvironmentType::Obstacle };
+        /*auto coinPart = CreateCoin(roadPos, ecs);
+        rewards.push_back(coinPart);*/
+        std::vector<float> columns = { -1.5f, 0.0f, 1.5f };
 
+        // Z axis that goes from -4 to 4
+        for (float z = -4; z <= 4; z += 1.0f)
+        {
+            // X axis that goes from column vector definition
+            for (float x : columns)
+            {
+                bool placeBox = true;
+                if (placeBox)
+                {
+                    auto boxPart = CreateBox(roadPos, x, z, ecs);
+                    obstacles.push_back(boxPart);
+                }
+            }
+        }
     }
 
     EnvironmentPart envPart{ floorPart, obstacles, rewards};
     return envPart;
 }
 
+Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
+{
+    auto coinModel = "./Assets/Environment/Misc/coin.glb";
+    Vector3 coinOffset(-1.5f, 0.2f, -1.0f);
+    Vector3 coinPos = roadPos + coinOffset;
+    Entity coin = ecs.CreateEntity();
+    auto& coinTrans = coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
+    coin.AddComponent<MeshComponent>(coinModel);
+    Part coinPart{ coin, coinPos, coinTrans, EnvironmentType::Reward };
+    return coinPart;
+}
+
+Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
+{
+    // Limits for item placement -1.5f ----- -4 ----- 1.5f
+    auto boxModel = "./Assets/Environment/Misc/crate-color.glb";
+    Vector3 boxOffset(xOffset, 0, zOffset);
+    Vector3 boxPos = roadPos + boxOffset;
+    Entity box = ecs.CreateEntity();
+    box.AddComponent<EnableComponent>();
+    auto& boxTrans = box.AddComponent<TransformComponent>(boxPos);
+    box.AddComponent<MeshComponent>(boxModel);
+    Part boxPart{ box, boxPos, boxTrans, EnvironmentType::Obstacle };
+    return boxPart;
+}
+
 void ManageMovableMisc(std::deque<EnvironmentPart>& environmentPartsQueue, float deltaTime)
 {
-    const float speed = deltaTime * 7.5f;
     const float blockLength = 10.0f;
 
     // Check if recent block is out of bounds
@@ -178,6 +212,8 @@ void ManageMovableMisc(std::deque<EnvironmentPart>& environmentPartsQueue, float
     }
 
     // Move all blocks
+    const float speed = deltaTime * 7.5f;
+    const float rotationSpeed = deltaTime * 200;
     Vector3 movement = -Vector3::Forward * speed;
     for (auto& environmentPart : environmentPartsQueue)
     {
@@ -190,6 +226,7 @@ void ManageMovableMisc(std::deque<EnvironmentPart>& environmentPartsQueue, float
 
         for (auto& reward : environmentPart.rewards)
         {
+            reward.transformComponent.Rotate(Vector3::Up * rotationSpeed);
             reward.transformComponent.Translate(movement);
         }
     }
@@ -262,12 +299,12 @@ void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& came
     float yPos = Input::MousePosition.y;
     float sensitivity = 0.1f;
 
-    if (firstMouse)
-    {
-        lastX = xPos;
-        lastY = yPos;
-        firstMouse = false;
-    }
+    //if (firstMouse)
+    //{
+    //    lastX = xPos;
+    //    lastY = yPos;
+    //    firstMouse = false;
+    //}
 
     float xoffset = lastX - xPos;
     float yoffset = lastY - yPos;
