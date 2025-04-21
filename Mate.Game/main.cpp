@@ -12,7 +12,7 @@ float pitch = 0;
 float lastX = 0;
 float lastY = 0;
 bool firstMouse = true;
-const int POOL_LENGHT = 2; // 20
+const int POOL_LENGHT = 10;
 
 void CreateFloor(ECS& ecs);
 Entity CreateCamera(ECS& ecs);
@@ -54,7 +54,7 @@ int main()
         float deltaTime = engine->DeltaTime;
         ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
         //ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
-        ManageMovableMisc(environmentAssets, 0);
+        ManageMovableMisc(environmentAssets, deltaTime);
 
         engine->Update();
         engine->Render();
@@ -127,10 +127,6 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<MeshComponent>(roadModel);
-    if (i == 0)
-    {
-        road.AddComponent<EnableComponent>().Enabled = false;
-    }
     Part floorPart{ road, roadPos, roadTrans, EnvironmentType::Floor };
     
     std::vector<Part> rewards;
