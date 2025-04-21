@@ -22,7 +22,7 @@ EnvironmentAsset CreateMovableMisc(ECS& registry, int i);
 void ManageMovableMisc(std::deque<EnvironmentAsset>& assets, float deltaTime);
 void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos);
 
-void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vector3 originalPos);
+void ManagePlayerInputRails(TransformComponent& transform, PlayerRailState& state, float playerOriginalX, float deltaTime);
 void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& transformCamera, float deltaTime);
 void ManagePlayerInput(TransformComponent& transform, float deltaTime);
 
@@ -46,10 +46,13 @@ int main()
     float rotationSpeedDegrees = 90.0f;
     float movementSpeedUnits = 0.1f;
     Vector3 originalPos = playerTransform.Position;
+    PlayerRailState railState;
+    railState.targetX = playerTransform.Position.x;
+    railState.currentRail = 0;
     while (engine->IsRunning())
     {
         float deltaTime = engine->DeltaTime;
-        ManagePlayerInputRails(playerTransform, deltaTime, originalPos);
+        ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
         //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
         ManageMovableMisc(environmentAssets, deltaTime);
 
@@ -199,27 +202,39 @@ void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos)
     }
 }
 
-void ManagePlayerInputRails(TransformComponent& transform, float deltaTime, Vector3 originalPos)
-{
-    float space = 1.5f;
-    float maxRight = originalPos.x + space;
-    float maxLeft = originalPos.x - space;
 
-    if (Input::GetKeyDown(KeyCode::D))
+void ManagePlayerInputRails(TransformComponent& transform, PlayerRailState& state, float playerOriginalX, float deltaTime)
+{
+    const float space = 1.5f;
+    const float speed = 5.0f;
+
+    if (Input::GetKeyDown(KeyCode::D) && state.currentRail < 1)
     {
-        float newX = transform.Position.x + space;
-        if (newX <= maxRight)
-        {
-            transform.Position.x = newX;
-        }
+        state.currentRail++;
+        state.targetX = state.currentRail * space;
     }
 
-    if (Input::GetKeyDown(KeyCode::A))
+    if (Input::GetKeyDown(KeyCode::A) && state.currentRail > -1)
     {
-        float newX = transform.Position.x - space;
-        if (newX >= maxLeft)
+        state.currentRail--;
+        state.targetX = state.currentRail * space;
+    }
+
+    float currentX = transform.Position.x;
+    float deltaX = state.targetX - currentX;
+
+    if (std::abs(deltaX) > 0.01f)
+    {
+        float direction = (deltaX > 0) ? 1.0f : -1.0f;
+        float move = speed * deltaTime;
+
+        if (std::abs(move) >= std::abs(deltaX))
         {
-            transform.Position.x = newX;
+            transform.SetPosition(Vector3(state.targetX, transform.Position.y, transform.Position.z));
+        }
+        else
+        {
+            transform.Translate(Vector3::Right * move * direction);
         }
     }
 }

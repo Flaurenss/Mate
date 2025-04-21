@@ -27,5 +27,9 @@ struct EnvironmentAsset
     EnvironmentPart floor;
 };
 
-
+struct PlayerRailState
+{
+    float targetX = 0.0f; // Posición destino del jugador en eje X
+    int currentRail = 0;
+};
 
