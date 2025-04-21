@@ -5,6 +5,7 @@
 
 #include "MeshComponent.h"
 #include "TransformComponent.h"
+#include "EnableComponent.h"
 #include "CameraComponent.h"
 #include "MathUtils.h"
 #include "Logger.h"

@@ -12,6 +12,7 @@ float pitch = -20.0f;
 float lastX = 0;
 float lastY = 0;
 bool firstMouse = true;
+const int POOL_LENGHT = 1; // 20
 
 void CreateFloor(ECS& ecs);
 Entity CreateCamera(ECS& ecs);
@@ -107,7 +108,7 @@ TransformComponent& CreateMisc(ECS& ecs)
 std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs)
 {
     std::deque<EnvironmentPart> environmentAssets;
-    for (auto i = 0; i < 20; i++)
+    for (auto i = 0; i < POOL_LENGHT; i++)
     {
         environmentAssets.push_back(CreateMovableMisc(ecs, i));
     }
@@ -123,6 +124,7 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
 
     auto road = ecs.CreateEntity();
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
+    road.AddComponent<EnableComponent>().Enabled = false;;
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<MeshComponent>(roadModel);
     Part floorPart{ road, roadPos, roadTrans, EnvironmentType::Floor };

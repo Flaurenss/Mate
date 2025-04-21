@@ -153,6 +153,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentRegistry.cpp" />
     <ClCompile Include="ECS.cpp" />
+    <ClCompile Include="EnableComponent.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FbxImporterExperimental.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentRegistry.h" />
     <ClInclude Include="ECS.h" />
+    <ClInclude Include="EnableComponent.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FbxImporterExperimental.h" />

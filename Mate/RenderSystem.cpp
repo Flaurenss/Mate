@@ -1,5 +1,6 @@
 #include "RenderSystem.h"
 #include "TransformComponent.h"
+#include "EnableComponent.h"
 #include "MeshComponent.h"
 
 RenderSystem::RenderSystem(Shader& sh) : shader(sh)
@@ -12,6 +13,12 @@ void RenderSystem::Update()
 {
 	for (Entity& entity : GetEntities())
 	{
+		if (entity.HasComponent<EnableComponent>() &&
+			!entity.GetComponent<EnableComponent>().Enabled)
+		{
+			return;
+		}
+
 		MeshComponent& meshComponent = entity.GetComponent<MeshComponent>();
 		TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
 		shader.Use();
