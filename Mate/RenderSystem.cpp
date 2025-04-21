@@ -16,7 +16,7 @@ void RenderSystem::Update()
 		if (entity.HasComponent<EnableComponent>() &&
 			!entity.GetComponent<EnableComponent>().Enabled)
 		{
-			return;
+			continue;
 		}
 
 		MeshComponent& meshComponent = entity.GetComponent<MeshComponent>();
