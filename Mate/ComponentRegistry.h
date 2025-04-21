@@ -60,6 +60,10 @@ void ComponentRegistry<TComponent>::Add(TComponent component)
 template<typename TComponent>
 void ComponentRegistry<TComponent>::Set(int index, TComponent component)
 {
+	if (index >= data.size())
+	{
+		data.resize(index + 1, nullptr);
+	}
 	data[index] = std::make_shared<TComponent>(component);
 }
 
