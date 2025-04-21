@@ -29,7 +29,7 @@ struct EnvironmentAsset
 
 struct PlayerRailState
 {
-    float targetX = 0.0f; // Posición destino del jugador en eje X
+    float targetX = 0.0f;
     int currentRail = 0;
 };
 
