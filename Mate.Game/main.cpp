@@ -6,13 +6,16 @@
 #include <Mate.h>
 #include "EnvironmentAssets.h"
 #include <deque>
+#include <random>
 
 float yaw = 45.0f;
 float pitch = 0;
 float lastX = 0;
 float lastY = 0;
 bool firstMouse = true;
-const int POOL_LENGHT = 10;
+const int ROAD_LENGHT = 2;
+const int START_COINS = 10;
+const int START_OBSTACLES = 2;
 
 void CreateFloor(ECS& ecs);
 Entity CreateCamera(ECS& ecs);
@@ -26,6 +29,7 @@ Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs);
 
 void ManageMovableMisc(std::deque<EnvironmentPart>& assets, float deltaTime);
 void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos);
+void RedoPart(EnvironmentPart& part);
 
 void ManagePlayerInputRails(TransformComponent& transform, PlayerRailState& state, float playerOriginalX, float deltaTime);
 void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& transformCamera, float deltaTime);
@@ -33,7 +37,7 @@ void ManagePlayerInput(TransformComponent& transform, float deltaTime);
 
 int main()
 {
-    Engine* engine = new Engine();
+    auto engine = std::make_unique<Engine>();
     ECS& ecs = engine->GetRegistry();
     
     auto camera = CreateCamera(ecs);
@@ -54,14 +58,16 @@ int main()
         float deltaTime = engine->DeltaTime;
         ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
         //ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
-        ManageMovableMisc(environmentAssets, deltaTime);
+        ManageMovableMisc(environmentAssets, 0);
+
+        if (Input::GetKeyDown(KeyCode::Space))
+        {
+            RedoPart(environmentAssets.back());
+        }
 
         engine->Update();
         engine->Render();
     }
-
-    delete engine;
-    engine = nullptr;
 }
 
 void CreateFloor(ECS& ecs)
@@ -110,13 +116,15 @@ TransformComponent& CreateMisc(ECS& ecs)
 
 std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs)
 {
-    std::deque<EnvironmentPart> environmentAssets;
-    for (auto i = 0; i < POOL_LENGHT; i++)
+    std::deque<EnvironmentPart> environmentParts;
+    for (auto i = 0; i < ROAD_LENGHT; i++)
     {
-        environmentAssets.push_back(CreateMovableMisc(ecs, i));
+        auto envPart = CreateMovableMisc(ecs, i);
+        RedoPart(envPart);
+        environmentParts.push_back(CreateMovableMisc(ecs, i));
     }
 
-    return environmentAssets;
+    return environmentParts;
 }
 
 EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
@@ -133,24 +141,16 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
     std::vector<Part> obstacles;
     if (i != 0)
     {
-
-        /*auto coinPart = CreateCoin(roadPos, ecs);
-        rewards.push_back(coinPart);*/
-        std::vector<float> columns = { -1.5f, 0.0f, 1.5f };
-
-        // Z axis that goes from -4 to 4
-        for (float z = -4; z <= 4; z += 1.0f)
+        for (auto i = 0; i < START_OBSTACLES; i ++)
         {
-            // X axis that goes from column vector definition
-            for (float x : columns)
-            {
-                bool placeBox = true;
-                if (placeBox)
-                {
-                    auto boxPart = CreateBox(roadPos, x, z, ecs);
-                    obstacles.push_back(boxPart);
-                }
-            }
+            auto boxPart = CreateBox(roadPos, 0, 0, ecs);
+            obstacles.push_back(boxPart);
+        }
+
+        for (auto i = 0; i < START_COINS; i++)
+        {
+            auto coinPart = CreateCoin(roadPos, 0, 0, ecs);
+            rewards.push_back(coinPart);
         }
     }
 
@@ -161,9 +161,10 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
 Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
 {
     auto coinModel = "./Assets/Environment/Misc/coin.glb";
-    Vector3 coinOffset(-1.5f, 0.2f, -1.0f);
+    Vector3 coinOffset(xOffset, 0.2f, zOffset);
     Vector3 coinPos = roadPos + coinOffset;
     Entity coin = ecs.CreateEntity();
+    coin.AddComponent<EnableComponent>();
     auto& coinTrans = coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
     coin.AddComponent<MeshComponent>(coinModel);
     Part coinPart{ coin, coinPos, coinTrans, EnvironmentType::Reward };
@@ -235,23 +236,106 @@ void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos)
     part.floorPart.transformComponent.SetPosition(newFloorPos);
     part.floorPart.originalPos = newFloorPos;
 
-    for (auto& coll : part.collisions)
-    {
-        Vector3 offset = coll.originalPos - oldFloorPos;
-        Vector3 newPos = newFloorPos + offset;
-        coll.transformComponent.SetPosition(newPos);
-        coll.originalPos = newPos;
-    }
-
-    for (auto& reward : part.rewards)
-    {
-        Vector3 offset = reward.originalPos - oldFloorPos;
-        Vector3 newPos = newFloorPos + offset;
-        reward.transformComponent.SetPosition(newPos);
-        reward.originalPos = newPos;
-    }
+    RedoPart(part);
 }
 
+// Used to reposition assets again when floor reset happens
+void RedoPart(EnvironmentPart& part)
+{
+    static std::vector<float> columns = { -1.5f, 0.0f, 1.5f };
+    static std::default_random_engine rng(std::random_device{}());
+
+    std::vector<Vector3> newObstacleOffsets;
+    std::vector<Vector3> newRewardOffsets;
+
+    // Calculate coins to use
+    size_t maxCoinsAvailable = part.rewards.size();
+    size_t coinsUsed = 0;
+
+    // Generate coins pos
+    std::vector<int> columnIndices = { 0, 1, 2 };
+    std::shuffle(columnIndices.begin(), columnIndices.end(), rng);
+
+    int maxColumns = std::min(3, static_cast<int>(maxCoinsAvailable / 4)); // cada columna necesita mínimo 4
+    int coinColumnCount = 1 + rand() % (std::max(1, maxColumns)); // 1 a maxColumns
+
+    for (int c = 0; c < coinColumnCount && coinsUsed < maxCoinsAvailable; ++c)
+    {
+        float coinX = columns[columnIndices[c]];
+        int coinCount = std::min(4 + rand() % 3, static_cast<int>(maxCoinsAvailable - coinsUsed)); // 4–6, pero no pasar del total
+
+        for (int i = 0; i < coinCount; ++i)
+        {
+            int z = 4 - i;
+            if (z < -4) break;
+            newRewardOffsets.emplace_back(coinX, 0.2f, static_cast<float>(z));
+            coinsUsed++;
+        }
+    }
+
+    // Generate box pos
+    for (int z = -4; z <= 4; ++z)
+    {
+        int rowType = rand() % 3;
+
+        if (rowType == 0) continue;
+
+        std::vector<int> indices = { 0, 1, 2 };
+        std::shuffle(indices.begin(), indices.end(), rng);
+        int count = (rowType == 1) ? 1 : 2;
+
+        for (int j = 0; j < count; ++j)
+        {
+            float x = columns[indices[j]];
+
+            bool overlapsCoin = std::any_of(
+                newRewardOffsets.begin(), newRewardOffsets.end(),
+                [&](const Vector3& coinOffset) {
+                    return coinOffset.x == x && static_cast<int>(coinOffset.z) == z;
+                });
+
+            if (overlapsCoin) continue;
+
+            newObstacleOffsets.emplace_back(x, 0.0f, static_cast<float>(z));
+        }
+    }
+
+    const Vector3& basePos = part.floorPart.originalPos;
+
+    // Boxes repos
+    size_t i = 0;
+    for (; i < part.collisions.size(); ++i)
+    {
+        if (i < newObstacleOffsets.size())
+        {
+            Vector3 newPos = basePos + newObstacleOffsets[i];
+            part.collisions[i].transformComponent.SetPosition(newPos);
+            part.collisions[i].originalPos = newPos;
+            part.collisions[i].entity.GetComponent<EnableComponent>().Enabled = true;
+        }
+        else
+        {
+            part.collisions[i].entity.GetComponent<EnableComponent>().Enabled = false;
+        }
+    }
+
+    // Coin repos
+    i = 0;
+    for (; i < part.rewards.size(); ++i)
+    {
+        if (i < newRewardOffsets.size())
+        {
+            Vector3 newPos = basePos + newRewardOffsets[i];
+            part.rewards[i].transformComponent.SetPosition(newPos);
+            part.rewards[i].originalPos = newPos;
+            part.rewards[i].entity.GetComponent<EnableComponent>().Enabled = true;
+        }
+        else
+        {
+            part.rewards[i].entity.GetComponent<EnableComponent>().Enabled = false;
+        }
+    }
+}
 
 void ManagePlayerInputRails(TransformComponent& transform, PlayerRailState& state, float playerOriginalX, float deltaTime)
 {
@@ -294,13 +378,6 @@ void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& came
     float xPos = Input::MousePosition.x;
     float yPos = Input::MousePosition.y;
     float sensitivity = 0.1f;
-
-    //if (firstMouse)
-    //{
-    //    lastX = xPos;
-    //    lastY = yPos;
-    //    firstMouse = false;
-    //}
 
     float xoffset = lastX - xPos;
     float yoffset = lastY - yPos;
