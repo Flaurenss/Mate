@@ -13,9 +13,9 @@ float pitch = 0;
 float lastX = 0;
 float lastY = 0;
 bool firstMouse = true;
-const int ROAD_LENGHT = 2;
+const int ROAD_LENGHT = 10;
 const int START_COINS = 10;
-const int START_OBSTACLES = 2;
+const int START_OBSTACLES = 3;
 
 void CreateFloor(ECS& ecs);
 Entity CreateCamera(ECS& ecs);
@@ -56,14 +56,14 @@ int main()
     while (engine->IsRunning())
     {
         float deltaTime = engine->DeltaTime;
-        ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
-        //ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
-        ManageMovableMisc(environmentAssets, 0);
+        //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
+        ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
+        ManageMovableMisc(environmentAssets, deltaTime);
 
-        if (Input::GetKeyDown(KeyCode::Space))
-        {
-            RedoPart(environmentAssets.back());
-        }
+        //if (Input::GetKeyDown(KeyCode::Space))
+        //{
+        //    RedoPart(environmentAssets.back());
+        //}
 
         engine->Update();
         engine->Render();
@@ -121,7 +121,7 @@ std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs)
     {
         auto envPart = CreateMovableMisc(ecs, i);
         RedoPart(envPart);
-        environmentParts.push_back(CreateMovableMisc(ecs, i));
+        environmentParts.push_back(envPart);
     }
 
     return environmentParts;
@@ -164,7 +164,7 @@ Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
     Vector3 coinOffset(xOffset, 0.2f, zOffset);
     Vector3 coinPos = roadPos + coinOffset;
     Entity coin = ecs.CreateEntity();
-    coin.AddComponent<EnableComponent>();
+    coin.AddComponent<EnableComponent>().Enabled = false;
     auto& coinTrans = coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
     coin.AddComponent<MeshComponent>(coinModel);
     Part coinPart{ coin, coinPos, coinTrans, EnvironmentType::Reward };
@@ -178,7 +178,7 @@ Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
     Vector3 boxOffset(xOffset, 0, zOffset);
     Vector3 boxPos = roadPos + boxOffset;
     Entity box = ecs.CreateEntity();
-    box.AddComponent<EnableComponent>();
+    box.AddComponent<EnableComponent>().Enabled = false;
     auto& boxTrans = box.AddComponent<TransformComponent>(boxPos);
     box.AddComponent<MeshComponent>(boxModel);
     Part boxPart{ box, boxPos, boxTrans, EnvironmentType::Obstacle };
@@ -216,7 +216,7 @@ void ManageMovableMisc(std::deque<EnvironmentPart>& environmentPartsQueue, float
     {
         environmentPart.floorPart.transformComponent.Translate(movement);
 
-        for (auto& coll : environmentPart.collisions)
+        for (auto& coll : environmentPart.obstacles)
         {
             coll.transformComponent.Translate(movement);
         }
@@ -242,51 +242,73 @@ void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos)
 // Used to reposition assets again when floor reset happens
 void RedoPart(EnvironmentPart& part)
 {
+    if (part.obstacles.empty() && part.rewards.empty())
+    {
+        return;
+    }
+
     static std::vector<float> columns = { -1.5f, 0.0f, 1.5f };
     static std::default_random_engine rng(std::random_device{}());
 
-    std::vector<Vector3> newObstacleOffsets;
-    std::vector<Vector3> newRewardOffsets;
-
     // Calculate coins to use
-    size_t maxCoinsAvailable = part.rewards.size();
-    size_t coinsUsed = 0;
+    int maxCoinsAvailable = part.rewards.size();
+    int coinsUsed = 0;
 
     // Generate coins pos
     std::vector<int> columnIndices = { 0, 1, 2 };
     std::shuffle(columnIndices.begin(), columnIndices.end(), rng);
 
-    int maxColumns = std::min(3, static_cast<int>(maxCoinsAvailable / 4)); // cada columna necesita mínimo 4
-    int coinColumnCount = 1 + rand() % (std::max(1, maxColumns)); // 1 a maxColumns
+    int maxColumns = std::min(3, static_cast<int>(maxCoinsAvailable / 4)); // Min 4 coins per column
+    maxColumns = std::max(1, maxColumns); // Ensure 1 column min
 
-    for (int c = 0; c < coinColumnCount && coinsUsed < maxCoinsAvailable; ++c)
+    std::vector<Vector3> newRewardOffsets;
+    int coinColumnCount = 1 + rand() % maxColumns;
+
+    for (int c = 0; c < coinColumnCount && coinsUsed < maxCoinsAvailable; c++)
     {
         float coinX = columns[columnIndices[c]];
-        int coinCount = std::min(4 + rand() % 3, static_cast<int>(maxCoinsAvailable - coinsUsed)); // 4–6, pero no pasar del total
+        int remainingCoins = static_cast<int>(maxCoinsAvailable - coinsUsed);
+        int coinCount = std::min(4 + rand() % 3, remainingCoins); // 4–6, limited by remaining coins
 
-        for (int i = 0; i < coinCount; ++i)
+        bool fromTop = rand() % 2 == 0;
+
+        int startZ = fromTop ? -4 : 4;
+        int direction = fromTop ? 1 : -1;
+
+        for (int i = 0; i < coinCount; i++)
         {
-            int z = 4 - i;
-            if (z < -4) break;
+            int z = startZ + i * direction;
+            if (z < -4 || z > 4) break;
+
             newRewardOffsets.emplace_back(coinX, 0.2f, static_cast<float>(z));
             coinsUsed++;
         }
     }
 
-    // Generate box pos
-    for (int z = -4; z <= 4; ++z)
+    std::vector<Vector3> newObstacleOffsets;
+    int maxObstaclesAvailable = part.obstacles.size();
+    int assignedObstaclePoses = 0;
+    // Generate box poses
+    std::vector<int> zRows;
+    for (int z = -4; z <= 4; z += 2) // Add some space btw boxes in case appear same column
     {
-        int rowType = rand() % 3;
+        zRows.push_back(z);
+    }
 
-        if (rowType == 0) continue;
+    std::shuffle(zRows.begin(), zRows.end(), rng);
 
-        std::vector<int> indices = { 0, 1, 2 };
-        std::shuffle(indices.begin(), indices.end(), rng);
-        int count = (rowType == 1) ? 1 : 2;
+    int obstaclesPlaced = 0;
 
-        for (int j = 0; j < count; ++j)
+    for (int z : zRows)
+    {
+        std::shuffle(columnIndices.begin(), columnIndices.end(), rng); // Mezclamos columnas
+
+        int maxBoxesPerRow = 2; // max 2 per row to leave free path
+        int placedInRow = 0;
+
+        for (int i = 0; i < columns.size() && obstaclesPlaced < maxObstaclesAvailable && placedInRow < maxBoxesPerRow; i++)
         {
-            float x = columns[indices[j]];
+            float x = columns[columnIndices[i]];
 
             bool overlapsCoin = std::any_of(
                 newRewardOffsets.begin(), newRewardOffsets.end(),
@@ -294,34 +316,39 @@ void RedoPart(EnvironmentPart& part)
                     return coinOffset.x == x && static_cast<int>(coinOffset.z) == z;
                 });
 
-            if (overlapsCoin) continue;
+            if (overlapsCoin)
+            {
+                continue;
+            }
 
             newObstacleOffsets.emplace_back(x, 0.0f, static_cast<float>(z));
+            obstaclesPlaced++;
+            placedInRow++;
         }
     }
 
     const Vector3& basePos = part.floorPart.originalPos;
 
     // Boxes repos
-    size_t i = 0;
-    for (; i < part.collisions.size(); ++i)
+    int i = 0;
+    for (; i < part.obstacles.size(); i++)
     {
         if (i < newObstacleOffsets.size())
         {
             Vector3 newPos = basePos + newObstacleOffsets[i];
-            part.collisions[i].transformComponent.SetPosition(newPos);
-            part.collisions[i].originalPos = newPos;
-            part.collisions[i].entity.GetComponent<EnableComponent>().Enabled = true;
+            part.obstacles[i].transformComponent.SetPosition(newPos);
+            part.obstacles[i].originalPos = newPos;
+            part.obstacles[i].entity.GetComponent<EnableComponent>().Enabled = true;
         }
         else
         {
-            part.collisions[i].entity.GetComponent<EnableComponent>().Enabled = false;
+            part.obstacles[i].entity.GetComponent<EnableComponent>().Enabled = false;
         }
     }
 
     // Coin repos
     i = 0;
-    for (; i < part.rewards.size(); ++i)
+    for (; i < part.rewards.size(); i++)
     {
         if (i < newRewardOffsets.size())
         {

@@ -20,7 +20,7 @@ struct Part
 struct EnvironmentPart
 {
     Part floorPart;
-    std::vector<Part> collisions;
+    std::vector<Part> obstacles;
     std::vector<Part> rewards;
 
     TransformComponent& GetFloorTransform()
