@@ -46,9 +46,6 @@
     <Filter Include="Source Files\Core\ECS\Components">
       <UniqueIdentifier>{ac3b5715-6981-402e-9fec-a6ccd857cc73}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Core\ECS\Systems">
-      <UniqueIdentifier>{509e3ead-6e19-4773-9784-dd887ee4b264}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Core\ECS">
       <UniqueIdentifier>{de35974b-e989-487f-9ac8-82355c8c467d}</UniqueIdentifier>
     </Filter>
@@ -156,6 +153,9 @@
     <ClCompile Include="EnableComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
@@ -232,9 +232,6 @@
     <ClInclude Include="RenderSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="MovementSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="CameraComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -252,6 +249,9 @@
     </ClInclude>
     <ClInclude Include="EnableComponent.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSystem.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

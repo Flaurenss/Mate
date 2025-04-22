@@ -23,7 +23,6 @@ public:
 
 	static float DeltaTime;
 
-	static Engine* instance;
 private:
 	std::string title;
 	float lastFrame;

@@ -119,6 +119,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Mate.Math;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,6 +165,7 @@
     <ClCompile Include="IRenderable.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PrimitivesHelper.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -201,7 +203,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="MovementSystem.h" />
+    <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="PrimitivesHelper.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="stb_image.h" />

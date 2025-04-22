@@ -9,8 +9,8 @@
 #include "Model.h"
 #include "CameraComponent.h"
 #include "Input.h"
+#include "PhysicsSystem.h"
 
-Engine* Engine::instance = nullptr;
 int Engine::width = 1920;
 int Engine::height = 1080;
 float Engine::DeltaTime = 0;
@@ -38,9 +38,9 @@ Engine::~Engine()
 
 void Engine::Initialize()
 {
-	instance = this;
 	CoreInitialize();
 	Shader shader("./Assets/vertexShader.shader", "./Assets/fragmentShader.shader");
+	registry->AddSystem<PhysicsSystem>();
 	registry->AddSystem<RenderSystem>(shader);
 	registry->AddSystem<CameraSystem>(shader);
 }
@@ -141,6 +141,7 @@ void Engine::Render()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	registry->GetSystem<PhysicsSystem>().Update();
 	registry->GetSystem<CameraSystem>().SetResolution(width, height);
 	registry->GetSystem<CameraSystem>().Update();
 	registry->GetSystem<RenderSystem>().Update();
