@@ -16,32 +16,35 @@ public:
 		return *registry;
 	}
 
-	bool IsRunning();
-	void ProcessInput();
-	void Update();
-	void Render();
-
 	static float DeltaTime;
 
-private:
-	std::string title;
-	float lastFrame;
-	float accumulator = 0.0f;
+	bool IsRunning();
+	void Update();
 
+private:
+	const float fixedDeltaTime = 1.0f / 60.0f;
+
+	bool isRunning;
+	std::string title;
 	static int width;
 	static int height;
 	
-	bool isRunning;
-	void Run();
+	float lastFrame;
+	float accumulator = 0.0f;
+
 	void Initialize();
 	void CoreInitialize();
-	
+
+	void ComputeDelta();
+	void FixedUpdate();
+	void RenderUpdate();
+
 	GLFWwindow* window;
 	std::unique_ptr<ECS> registry;
 
 	float frameTimeAccumulator = 0.0f;
 	int frameCount = 0;
-	void ComputeFps(float deltaTime);
+	void DebugFps(float deltaTime);
 
 	static void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	void testProcessInput(GLFWwindow* window);

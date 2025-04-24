@@ -64,9 +64,7 @@ int main()
         //{
         //    RedoPart(environmentAssets.back());
         //}
-
         engine->Update();
-        engine->Render();
     }
 }
 

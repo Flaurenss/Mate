@@ -108,49 +108,46 @@ bool Engine::IsRunning()
 	return isRunning;
 }
 
-void Engine::ProcessInput()
+void Engine::Update()
 {
+	ComputeDelta();
+	DebugFps(DeltaTime);
+	Input::Update();
+	testProcessInput(window);
+
+	FixedUpdate();
+	registry->Update();
+	RenderUpdate();
 }
 
-void Engine::Run()
-{
-	while (isRunning)
-	{
-		//ProcessInput();
-		Update();
-		Render();
-	}
-}
-const float fixedDeltaTime = 1.0f / 60.0f;
-void Engine::Update()
+void Engine::ComputeDelta()
 {
 	float currentFrame = static_cast<float>(glfwGetTime());
 	DeltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 	accumulator += DeltaTime;
+}
 
-	ComputeFps(DeltaTime);
-	Input::Update();
-	testProcessInput(window);
-
+void Engine::FixedUpdate()
+{
 	while (accumulator >= fixedDeltaTime)
 	{
 		registry->GetSystem<PhysicsSystem>().Update();
 		//registry->GetSystem<PhysicsSystem>().FixedUpdate(fixedDeltaTime);
 		accumulator -= fixedDeltaTime;
 	}
-
-	registry->Update();
 }
 
-void Engine::Render()
+void Engine::RenderUpdate()
 {
 	isRunning = !glfwWindowShouldClose(window);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	registry->GetSystem<CameraSystem>().SetResolution(width, height);
-	registry->GetSystem<CameraSystem>().Update();
+	auto& cameraSystem = registry->GetSystem<CameraSystem>();
+
+	cameraSystem.SetResolution(width, height);
+	cameraSystem.Update();
 	registry->GetSystem<RenderSystem>().Update();
 
 	// Swap buffers, front for already rendered colors an the back one in order to avoid artifacts.
@@ -159,7 +156,7 @@ void Engine::Render()
 	glfwPollEvents();
 }
 
-void Engine::ComputeFps(float deltaTime)
+void Engine::DebugFps(float deltaTime)
 {
 	float smoothedFPS = 0.0f;
 

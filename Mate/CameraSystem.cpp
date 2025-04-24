@@ -9,6 +9,10 @@ CameraSystem::CameraSystem(Shader& shader) : shader(shader)
 	RequireComponent<CameraComponent>();
 }
 
+void CameraSystem::Start()
+{
+}
+
 void CameraSystem::Update()
 {
     for (Entity& entity : GetEntities())
@@ -36,6 +40,10 @@ void CameraSystem::Update()
         shader.SetMat4("view", view);
         shader.SetMat4("projection", projection);
     }
+}
+
+void CameraSystem::End()
+{
 }
 
 void CameraSystem::SetResolution(int w, int h)
