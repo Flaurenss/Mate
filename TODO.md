@@ -1,7 +1,6 @@
 # TODO List
 
 ## TODO
-- [ ] Implement collision physics.
 - [ ] Add event system (input at least).
 - [ ] Implement animations.
 - [ ] Implement text rendering.
@@ -15,12 +14,14 @@
 - [ ] Separate Draw from Model object.
 - [ ] Separate Import model behaviour from model concept.
 - [ ] Add Texture independent concept so it can be added freely to any entity.
+- [ ] Investigate and implement Job thread engine.
 - [ ] Pack dependencies as nuget.
 
 ## In progress
-- [ ] Implement main procedural game movement.
+- [ ] Implement collision physics engine.
 
 ## DONE
+- [x] Implement main procedural game movement.
 - [x] Clean camera component.
 - [x] Update README with build instructions.
 - [x] Add player movement.

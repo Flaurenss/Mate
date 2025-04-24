@@ -79,6 +79,12 @@
     <Filter Include="Assets">
       <UniqueIdentifier>{3fa8b98c-c159-4fa7-8864-47cdd905e89f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\Physics">
+      <UniqueIdentifier>{ea201737-42e6-4f8e-956f-c701d11d5c13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Physics">
+      <UniqueIdentifier>{4b4be5fb-6fd7-4d25-b5e4-0f339076da01}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GltfImporter.cpp">
@@ -155,6 +161,21 @@
     </ClCompile>
     <ClCompile Include="PhysicsSystem.cpp">
       <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEngine.cpp">
+      <Filter>Source Files\Core\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="BPLayerInterfaceImpl.cpp">
+      <Filter>Source Files\Core\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectVsBPLayerFilterImpl.cpp">
+      <Filter>Source Files\Core\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectLayerPairFilterImpl.cpp">
+      <Filter>Source Files\Core\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -252,6 +273,24 @@
     </ClInclude>
     <ClInclude Include="PhysicsSystem.h">
       <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEngine.h">
+      <Filter>Header Files\Core\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="BPLayerInterfaceImpl.h">
+      <Filter>Header Files\Core\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectVsBPLayerFilterImpl.h">
+      <Filter>Header Files\Core\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectLayerPairFilterImpl.h">
+      <Filter>Header Files\Core\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonPhysics.h">
+      <Filter>Header Files\Core\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

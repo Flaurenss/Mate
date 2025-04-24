@@ -121,16 +121,24 @@ void Engine::Run()
 		Render();
 	}
 }
-
+const float fixedDeltaTime = 1.0f / 60.0f;
 void Engine::Update()
 {
 	float currentFrame = static_cast<float>(glfwGetTime());
 	DeltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
+	accumulator += DeltaTime;
 
 	ComputeFps(DeltaTime);
 	Input::Update();
 	testProcessInput(window);
+
+	while (accumulator >= fixedDeltaTime)
+	{
+		registry->GetSystem<PhysicsSystem>().Update();
+		//registry->GetSystem<PhysicsSystem>().FixedUpdate(fixedDeltaTime);
+		accumulator -= fixedDeltaTime;
+	}
 
 	registry->Update();
 }
@@ -141,7 +149,6 @@ void Engine::Render()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	registry->GetSystem<PhysicsSystem>().Update();
 	registry->GetSystem<CameraSystem>().SetResolution(width, height);
 	registry->GetSystem<CameraSystem>().Update();
 	registry->GetSystem<RenderSystem>().Update();

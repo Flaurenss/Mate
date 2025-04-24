@@ -26,6 +26,7 @@ public:
 private:
 	std::string title;
 	float lastFrame;
+	float accumulator = 0.0f;
 
 	static int width;
 	static int height;
