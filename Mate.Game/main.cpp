@@ -13,7 +13,7 @@ float pitch = 0;
 float lastX = 0;
 float lastY = 0;
 bool firstMouse = true;
-const int ROAD_LENGHT = 10;
+const int ROAD_LENGHT = 0;
 const int START_COINS = 10;
 const int START_OBSTACLES = 3;
 
@@ -53,17 +53,21 @@ int main()
     PlayerRailState railState;
     railState.targetX = playerTransform.Position.x;
     railState.currentRail = 0;
+    bool runGame = false;
     while (engine->IsRunning())
     {
         float deltaTime = engine->DeltaTime;
-        //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
-        ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
-        ManageMovableMisc(environmentAssets, deltaTime);
+        if (Input::GetKeyDown(KeyCode::P))
+        {
+            runGame = !runGame;
+        }
+        if (runGame)
+        {
+            //ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
+            ManageMovableMisc(environmentAssets, deltaTime);
+        }
 
-        //if (Input::GetKeyDown(KeyCode::Space))
-        //{
-        //    RedoPart(environmentAssets.back());
-        //}
+        ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
         engine->Update();
     }
 }
@@ -91,12 +95,19 @@ Entity CreateCamera(ECS& ecs)
 
 TransformComponent& CreatePlayer(ECS& ecs)
 {
+    auto boxModel = "./Assets/Environment/Misc/crate-color.glb";
+    Entity box = ecs.CreateEntity();
+    box.AddComponent<EnableComponent>().Enabled = true;
+    auto& boxTrans = box.AddComponent<TransformComponent>(Vector3::Zero);
+    box.AddComponent<MeshComponent>(boxModel);
+    box.AddComponent<PhysicsComponent>(MotionType::KINEMTAIC);
+
     auto playerModel = "./Assets/Player/character.glb";
     auto player = ecs.CreateEntity();
-    player.AddComponent<TransformComponent>(Vector3(0, 0.01f, 0), Vector3(0, -180, 0), Vector3(0.5f));
+    player.AddComponent<TransformComponent>(Vector3(0, 1.0f, 0), Vector3(0, -180, 0), Vector3(1));
     player.AddComponent<MeshComponent>(playerModel);
+    player.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
     TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
-    playerTransform.SetPosition(Vector3(0, 0.01f, 0));
     return playerTransform;
 }
 
@@ -133,6 +144,7 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<MeshComponent>(roadModel);
+    road.AddComponent<PhysicsComponent>();
     Part floorPart{ road, roadPos, roadTrans, EnvironmentType::Floor };
     
     std::vector<Part> rewards;

@@ -77,7 +77,7 @@ public:
 
 	Matrix4& operator=(const Matrix4& other);
 	Vector4 operator*(const Vector4& v) const;
-	Matrix4 operator*(const Matrix4& m);
+	Matrix4 operator*(const Matrix4& m) const;
 
 	void print();
 };

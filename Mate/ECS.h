@@ -29,8 +29,6 @@ public:
 	std::vector<Entity> GetEntities() const;
 	const Signature& GetComponentSignature() const;
 
-	virtual void Update() = 0;
-
 	/// <summary>
 	/// Define the component type TComponent that entities must have to be consdiered by the system.
 	/// </summary>

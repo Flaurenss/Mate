@@ -15,3 +15,8 @@ Model& MeshComponent::GetModel()
 {
 	return *model;
 }
+
+Vector3 MeshComponent::GetExtents()
+{
+	return model->GetExtents();
+}

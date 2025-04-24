@@ -44,6 +44,7 @@ struct Vector3
 	Vector3& operator*=(const Vector3& v);
 	
 	Vector3 operator/(Vector3& v) const;
+	Vector3 operator/(float v) const;
 
 	static const Vector3 Forward;
 	static const Vector3 Back;

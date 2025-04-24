@@ -5,6 +5,10 @@
 #include <Jolt/Core/JobSystemThreadPool.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 
+#include <unordered_map>
+#include "Vector.h"
+#include "MateMotionTypes.h"
+
 /// <summary>
 /// Physics engine consuming Jolt library: https://github.com/jrouwe/JoltPhysics
 /// Alpha implementation following best practices described on their samples.
@@ -16,13 +20,18 @@ public:
 	~PhysicsEngine();
 
 	void Update(float deltaTime);
+	void RegisterBody(int entityId, Vector3 halfExtents, Vector3 position, Vector3 eulerAngles, MotionType mode);
+	Vector3 GetPosition(int entityId);
+
+	// Map Entity ID to Jolt Body ID
+	std::unordered_map<int, JPH::BodyID> bodyMap;
 private:
 	const unsigned int cMaxBodies = 65536; // Recommended value by Jolt
 	const unsigned int cNumBodyMutexes = 0;
-	const unsigned int cMaxBodyPairs = 1024;
-	const unsigned int cMaxContactConstraints = 65536; // Recommended value by Jolt
+	const unsigned int cMaxBodyPairs = 65536;
+	const unsigned int cMaxContactConstraints = 10240; // Recommended value by Jolt
 
-	std::unique_ptr<JPH::TempAllocatorImpl> tempAllocator;
+	std::unique_ptr<JPH::TempAllocator> tempAllocator;
 	std::unique_ptr<JPH::JobSystemThreadPool> jobSystem;
 
 	std::unique_ptr<JPH::PhysicsSystem> system;
@@ -30,5 +39,6 @@ private:
 	std::unique_ptr<JPH::BroadPhaseLayerInterface> broadPhaseLayerInterface;
 	std::unique_ptr<JPH::ObjectVsBroadPhaseLayerFilter> objectVsBroadPhaseLayerFilter;
 	std::unique_ptr<JPH::ObjectLayerPairFilter> objectLayerPairFilter;
+
 };
 

@@ -7,7 +7,7 @@ class RenderSystem : public System
 public:
 	RenderSystem(Shader& shader);
 
-	virtual void Update();
+	void Update();
 private:
 	Shader shader;
 };

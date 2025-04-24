@@ -10,6 +10,7 @@
 #include "CameraComponent.h"
 #include "Input.h"
 #include "PhysicsSystem.h"
+#include "DebugDraw.h"
 
 int Engine::width = 1920;
 int Engine::height = 1080;
@@ -39,6 +40,7 @@ Engine::~Engine()
 void Engine::Initialize()
 {
 	CoreInitialize();
+	DebugDraw::Init();
 	Shader shader("./Assets/vertexShader.shader", "./Assets/fragmentShader.shader");
 	registry->AddSystem<PhysicsSystem>();
 	registry->AddSystem<RenderSystem>(shader);
@@ -89,8 +91,8 @@ void Engine::CoreInitialize()
 	//glfwSetCursorPosCallback(window, mouse_callback);
 
 	// Draw primitives configuration
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	isRunning = true;
 }
@@ -112,6 +114,7 @@ void Engine::Update()
 {
 	ComputeDelta();
 	DebugFps(DeltaTime);
+	
 	Input::Update();
 	testProcessInput(window);
 
@@ -132,8 +135,7 @@ void Engine::FixedUpdate()
 {
 	while (accumulator >= fixedDeltaTime)
 	{
-		registry->GetSystem<PhysicsSystem>().Update();
-		//registry->GetSystem<PhysicsSystem>().FixedUpdate(fixedDeltaTime);
+		registry->GetSystem<PhysicsSystem>().Update(fixedDeltaTime);
 		accumulator -= fixedDeltaTime;
 	}
 }
@@ -145,7 +147,6 @@ void Engine::RenderUpdate()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	auto& cameraSystem = registry->GetSystem<CameraSystem>();
-
 	cameraSystem.SetResolution(width, height);
 	cameraSystem.Update();
 	registry->GetSystem<RenderSystem>().Update();

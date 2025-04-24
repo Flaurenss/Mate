@@ -248,7 +248,7 @@ Vector4 Matrix4::operator*(const Vector4& v) const
 		m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w);
 }
 
-Matrix4 Matrix4::operator*(const Matrix4& n)
+Matrix4 Matrix4::operator*(const Matrix4& n) const
 {
     auto m00 = m[0] * n[0] + m[4] * n[1] + m[8] * n[2] + m[12] * n[3];
     auto m10 = m[1] * n[0] + m[5] * n[1] + m[9] * n[2] + m[13] * n[3];

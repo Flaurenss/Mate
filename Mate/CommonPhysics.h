@@ -2,6 +2,9 @@
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 
+#include "MateMotionTypes.h"
+
+
 // Layer that objects can be in, determines which other objects it can collide with
 // Typically you at least want to have 1 layer for moving bodies and 1 layer for static bodies, but you can have more
 // layers if you want. E.g. you could have a layer for high detail collision (which is not used by the physics simulation
@@ -24,3 +27,16 @@ namespace BroadPhaseLayers
 	static constexpr JPH::BroadPhaseLayer MOVING(1);
 	static constexpr unsigned int NUM_LAYERS(2);
 };
+
+inline JPH::EMotionType MotionTypeToEMotionType(MotionType motionType)
+{
+	switch (motionType)
+	{
+		case MotionType::STATIC:
+			return JPH::EMotionType::Static;
+		case MotionType::DYNAMIC:
+			return JPH::EMotionType::Dynamic;
+		case MotionType::KINEMTAIC:
+			return JPH::EMotionType::Kinematic;
+	}
+}

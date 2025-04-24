@@ -7,6 +7,7 @@
 #include "TransformComponent.h"
 #include "EnableComponent.h"
 #include "CameraComponent.h"
+#include "PhysicsComponent.h"
 #include "MathUtils.h"
 #include "Logger.h"
 

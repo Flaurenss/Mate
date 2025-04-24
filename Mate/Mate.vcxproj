@@ -154,6 +154,7 @@
     <ClCompile Include="CameraSystem.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentRegistry.cpp" />
+    <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="EnableComponent.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="CommonPhysics.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentRegistry.h" />
+    <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="EnableComponent.h" />
     <ClInclude Include="Engine.h" />
@@ -207,6 +209,7 @@
     <ClInclude Include="IRenderable.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Mate.h" />
+    <ClInclude Include="MateMotionTypes.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="Model.h" />

@@ -146,6 +146,14 @@ Vector3 Vector3::operator/(Vector3& v) const
 		z / v.z
 	);
 }
+Vector3 Vector3::operator/(float v) const
+{
+	return Vector3(
+		x / v,
+		y / v,
+		z / v
+	);
+}
 #pragma endregion Vector3
 #pragma region Vector4
 Vector4::Vector4(float x, float y, float z, float w) :

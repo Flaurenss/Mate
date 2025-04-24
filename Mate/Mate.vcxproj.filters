@@ -177,6 +177,9 @@
     <ClCompile Include="ObjectLayerPairFilterImpl.cpp">
       <Filter>Source Files\Core\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="DebugDraw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
@@ -291,6 +294,12 @@
     </ClInclude>
     <ClInclude Include="CommonPhysics.h">
       <Filter>Header Files\Core\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="MateMotionTypes.h">
+      <Filter>Header Files\Core\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugDraw.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
