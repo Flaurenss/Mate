@@ -7,6 +7,9 @@
 class FbxImporterExperimental : public IModelImporter
 {
 public:
+    FbxImporterExperimental() = default;
+    ~FbxImporterExperimental() = default;
+
 	virtual std::vector<std::shared_ptr<Mesh>> Load(const std::string& path);
 
     void ProcessNode(ufbx_node* node, const ufbx_scene* scene);

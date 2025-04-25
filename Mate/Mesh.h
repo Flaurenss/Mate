@@ -35,6 +35,7 @@ public:
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 	~Mesh();
 
+	void SetupMesh();
 	virtual void Draw(Shader& shader);
 private:
 
@@ -45,6 +46,5 @@ private:
 	// Element Buffer Object: stores index data
 	unsigned int EBO;
 
-	void SetupMesh();
 };
 

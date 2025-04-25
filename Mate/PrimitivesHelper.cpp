@@ -18,5 +18,5 @@ Model* PrimitivesHelper::CreatePlane()
     std::vector<Texture> textures; // Empty since textures are not required
     /*textures.push_back();*/
     std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(vertices, indices, textures);
-    return new Model(mesh);
+    return new Model({ mesh });
 }

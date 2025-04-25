@@ -17,6 +17,8 @@ const int ROAD_LENGHT = 0;
 const int START_COINS = 10;
 const int START_OBSTACLES = 3;
 
+static ModelImporter modelImporter = ModelImporter();
+
 void CreateFloor(ECS& ecs);
 Entity CreateCamera(ECS& ecs);
 TransformComponent& CreatePlayer(ECS& ecs);
@@ -54,6 +56,7 @@ int main()
     railState.targetX = playerTransform.Position.x;
     railState.currentRail = 0;
     bool runGame = false;
+
     while (engine->IsRunning())
     {
         float deltaTime = engine->DeltaTime;
@@ -96,21 +99,22 @@ Entity CreateCamera(ECS& ecs)
 
 TransformComponent& CreatePlayer(ECS& ecs)
 {
-    //CreateFloor(ecs);
+    CreateFloor(ecs);
 
-    //auto boxModel = "./Assets/Environment/Misc/crate-color.glb";
+    //auto boxModelPath = "./Assets/Environment/Misc/crate-color.glb";
+    //auto boxMeshes = modelImporter.Load(boxModelPath);
     //Entity box = ecs.CreateEntity();
-    //box.AddComponent<EnableComponent>().Enabled = true;
-    //auto& boxTrans = box.AddComponent<TransformComponent>(Vector3(0, 3, 0));
-    //boxTrans.DoScale(2);
-    //box.AddComponent<MeshComponent>(boxModel);
+    //auto& boxTrans = box.AddComponent<TransformComponent>(Vector3(1, 3, 0));
+    ////boxTrans.DoScale(2);
+    //box.AddComponent<MeshComponent>(boxMeshes);
     //box.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
 
     auto playerModel = "./Assets/Player/character.glb";
+    auto modelMeshes = modelImporter.Load(playerModel);
     auto player = ecs.CreateEntity();
-    player.AddComponent<TransformComponent>(Vector3(0, 0.0f, 0), Vector3(0, -180, 0), Vector3(1));
-    player.AddComponent<MeshComponent>(playerModel);
-    player.AddComponent<PhysicsComponent>(MotionType::STATIC);
+    player.AddComponent<TransformComponent>(Vector3(0, 1.0f, 0), Vector3(0, -180, 0), Vector3(1));
+    player.AddComponent<MeshComponent>(modelMeshes);
+    player.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
     TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
     return playerTransform;
 }
@@ -118,9 +122,10 @@ TransformComponent& CreatePlayer(ECS& ecs)
 TransformComponent& CreateMisc(ECS& ecs)
 {
     auto avocadoModel = "./Assets/Avocado/Avocado.gltf";
+    auto avMeshes = modelImporter.Load(avocadoModel);
     auto avocado = ecs.CreateEntity();
     avocado.AddComponent<TransformComponent>();
-    avocado.AddComponent<MeshComponent>(avocadoModel);
+    avocado.AddComponent<MeshComponent>(avMeshes);
     TransformComponent& avcTransform = avocado.GetComponent<TransformComponent>();
     avcTransform.SetPosition(Vector3(0, 0.01f, 0));
     avcTransform.DoScale(2);
@@ -142,12 +147,12 @@ std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs)
 
 EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
 {
-    auto roadModel = "./Assets/Environment/Road/road-straight.glb";
-
+    auto roadModelPath = "./Assets/Environment/Road/road-straight.glb";
+    auto roadMeshes = modelImporter.Load(roadModelPath);
     auto road = ecs.CreateEntity();
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
-    road.AddComponent<MeshComponent>(roadModel);
+    road.AddComponent<MeshComponent>(roadMeshes);
     //road.AddComponent<PhysicsComponent>();
     Part floorPart{ road, roadPos, roadTrans, EnvironmentType::Floor };
     
@@ -174,27 +179,29 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
 
 Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
 {
-    auto coinModel = "./Assets/Environment/Misc/coin.glb";
+    auto coinModelPath = "./Assets/Environment/Misc/coin.glb";
+    auto coinMeshes = modelImporter.Load(coinModelPath);
     Vector3 coinOffset(xOffset, 0.2f, zOffset);
     Vector3 coinPos = roadPos + coinOffset;
     Entity coin = ecs.CreateEntity();
     coin.AddComponent<EnableComponent>().Enabled = false;
     auto& coinTrans = coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
-    coin.AddComponent<MeshComponent>(coinModel);
+    coin.AddComponent<MeshComponent>(coinMeshes);
     Part coinPart{ coin, coinPos, coinTrans, EnvironmentType::Reward };
     return coinPart;
 }
 
 Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
 {
+    auto boxModelPath = "./Assets/Environment/Misc/crate-color.glb";
+    auto boxMeshes = modelImporter.Load(boxModelPath);
     // Limits for item placement -1.5f ----- -4 ----- 1.5f
-    auto boxModel = "./Assets/Environment/Misc/crate-color.glb";
     Vector3 boxOffset(xOffset, 0, zOffset);
     Vector3 boxPos = roadPos + boxOffset;
     Entity box = ecs.CreateEntity();
     box.AddComponent<EnableComponent>().Enabled = false;
     auto& boxTrans = box.AddComponent<TransformComponent>(boxPos);
-    box.AddComponent<MeshComponent>(boxModel);
+    box.AddComponent<MeshComponent>(boxMeshes);
     Part boxPart{ box, boxPos, boxTrans, EnvironmentType::Obstacle };
     return boxPart;
 }

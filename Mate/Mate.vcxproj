@@ -167,6 +167,7 @@
     <ClCompile Include="IRenderable.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="ModelImporter.cpp" />
     <ClCompile Include="ObjectLayerPairFilterImpl.cpp" />
     <ClCompile Include="ObjectVsBPLayerFilterImpl.cpp" />
     <ClCompile Include="PhysicsComponent.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelImporter.h" />
     <ClInclude Include="ObjectLayerPairFilterImpl.h" />
     <ClInclude Include="ObjectVsBPLayerFilterImpl.h" />
     <ClInclude Include="PhysicsComponent.h" />

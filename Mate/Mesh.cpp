@@ -7,9 +7,7 @@ Mesh::Mesh(
 		vertices(vertices),
 		indices(indices),
 		textures(textures)
-{
-	SetupMesh();
-}
+{ }
 
 Mesh::~Mesh()
 {

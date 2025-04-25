@@ -180,6 +180,9 @@
     <ClCompile Include="DebugDraw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ModelImporter.cpp">
+      <Filter>Source Files\Importers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
@@ -300,6 +303,9 @@
     </ClInclude>
     <ClInclude Include="DebugDraw.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelImporter.h">
+      <Filter>Header Files\Importers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

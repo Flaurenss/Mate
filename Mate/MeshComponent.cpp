@@ -1,9 +1,8 @@
 #include "MeshComponent.h"
 
-MeshComponent::MeshComponent(std::string modelPath)
+MeshComponent::MeshComponent(std::vector<std::shared_ptr<Mesh>> meshes)
 {
-	Model newModel(modelPath);
-	model = new Model(modelPath);
+	model = new Model(meshes);
 }
 
 MeshComponent::MeshComponent(Model* newModel)

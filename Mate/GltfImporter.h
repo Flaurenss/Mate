@@ -7,6 +7,8 @@
 class GltfImporter : public IModelImporter
 {
 public:
+	GltfImporter() = default;
+	~GltfImporter() = default;
 	virtual std::vector<std::shared_ptr<Mesh>> Load(const std::string& path);
 
 private:

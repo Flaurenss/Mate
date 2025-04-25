@@ -3,24 +3,14 @@
 #include "GltfImporter.h"
 #include "stb_image.h"
 
-Model::Model(const std::string& path)
+Model::Model(std::vector<std::shared_ptr<Mesh>> newMeshes)
 {
-    modelImporter = new GltfImporter();
-    meshes = modelImporter->Load(path);
-	ComputeExtends();
-}
-
-Model::Model(std::shared_ptr<Mesh> mesh)
-{
-    modelImporter = nullptr;
-    meshes.push_back(mesh);
+    meshes = newMeshes;
 	ComputeExtends();
 }
 
 Model::~Model()
 {
-    delete modelImporter;
-    modelImporter = nullptr;
     meshes.clear();
 }
 
@@ -58,4 +48,17 @@ void Model::ComputeExtends()
     }
 
     aabb = max - min;
+
+    // Este es el centro del modelo en el espacio local original
+    Vector3 center = (min + max) / 2.0f;
+
+    // Desplazar todos los vértices para centrar el modelo
+    for (auto& mesh : meshes)
+    {
+        for (auto& vertex : mesh->vertices)
+        {
+            vertex.Position -= center;
+        }
+        mesh->SetupMesh();
+    }
 }

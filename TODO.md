@@ -3,6 +3,7 @@
 ## TODO
 - [ ] Add event system (input at least).
 - [ ] Implement animations.
+- [ ] Add more collections to Model concept as: animations, textures...
 - [ ] Implement text rendering.
 - [ ] Implement basic lighting.
 - [ ] Add cubemaps.
@@ -11,7 +12,6 @@
 - [ ] Implement parent-children concept.
 - [ ] Implement UI for debug.
 - [ ] Implement scripting.
-- [ ] Separate Draw from Model object.
 - [ ] Separate Import model behaviour from model concept.
 - [ ] Add Texture independent concept so it can be added freely to any entity.
 - [ ] Investigate and implement Job thread engine.
@@ -21,6 +21,7 @@
 - [ ] Implement collision physics engine.
 
 ## DONE
+- [x] Separate Draw from Model object.
 - [x] Implement main procedural game movement.
 - [x] Clean camera component.
 - [x] Update README with build instructions.

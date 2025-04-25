@@ -8,8 +8,7 @@
 class Model : public IRenderable
 {
 public:
-    Model(const std::string& path);
-    Model(std::shared_ptr<Mesh> mesh);
+    Model(std::vector<std::shared_ptr<Mesh>> newMeshes);
     ~Model();
 
     virtual void Draw(Shader& shader);
@@ -22,7 +21,6 @@ public:
 private:
     Vector3 aabb;
     std::vector<std::shared_ptr<Mesh>> meshes;
-    IModelImporter* modelImporter;
 
     void ComputeExtends();
 };

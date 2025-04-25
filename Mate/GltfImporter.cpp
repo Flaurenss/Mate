@@ -238,7 +238,7 @@ Texture GltfImporter::LoadMaterialTextures(cgltf_texture* texture, const std::st
     {
         if (t.filePath == texPath)
         {
-            return customTexture;
+            return t;
         }
     }
 
