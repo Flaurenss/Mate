@@ -24,6 +24,7 @@ public:
 	Vector3 GetPosition(int entityId);
 	Vector3 GetEulerAngles(int entityId);
 	Vector3 SetPosition(int entityId, Vector3 position);
+	void MoveKinematic(int entityId, Vector3 targetPosition, Vector3 targetRotation, float deltaTime);
 
 	bool TryGetBodyId(int entityId, JPH::BodyID& body);
 
@@ -44,5 +45,6 @@ private:
 	std::unique_ptr<JPH::ObjectVsBroadPhaseLayerFilter> objectVsBroadPhaseLayerFilter;
 	std::unique_ptr<JPH::ObjectLayerPairFilter> objectLayerPairFilter;
 
+	JPH::Quat EulerToQuat(Vector3 eulerAngles);
 };
 

@@ -21,13 +21,12 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 		{
 			return;
 		}
-
+		auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
+		auto transform = entity.GetComponent<TransformComponent>();
 		if (phyEngine->bodyMap.find(entity.GetId()) == phyEngine->bodyMap.end())
 		{
 			// Register new body
-			auto transform = entity.GetComponent<TransformComponent>();
 			Vector3 position = transform.Position;
-			MotionType motionType = entity.GetComponent<PhysicsComponent>().motionType;
 			Vector3 extents = Vector3::One;
 			if (entity.HasComponent<MeshComponent>())
 			{
@@ -37,7 +36,19 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 			halfExtents.x = std::max(halfExtents.x, 0.05f);
 			halfExtents.y = std::max(halfExtents.y, 0.05f);
 			halfExtents.z = std::max(halfExtents.z, 0.05f);
-			phyEngine->RegisterBody(entity.GetId(), halfExtents, position, transform.EulerAngles, motionType);
+			phyEngine->RegisterBody(entity.GetId(), halfExtents, position, transform.EulerAngles, physicsComponent.motionType);
+		}
+		else
+		{
+			if (physicsComponent.IsDirty())
+			{
+				phyEngine->MoveKinematic(
+					entity.GetId(),
+					physicsComponent.GetActualTargetPosition(),
+					transform.EulerAngles,
+					fixedDeltaTime);
+				physicsComponent.Reset();
+			}
 		}
 	}
 

@@ -63,10 +63,7 @@ void PhysicsEngine::RegisterBody(int entityId, Vector3 halfExtents, Vector3 posi
 	JPH::ShapeSettings::ShapeResult shape_result = shape_settings.Create();
 	const JPH::Shape* shape = shape_result.Get();
 	
-	JPH::Quat rotationQuat =
-		JPH::Quat::sRotation(JPH::Vec3::sAxisZ(), MathUtils::radians(eulerAngles.z)) *
-		JPH::Quat::sRotation(JPH::Vec3::sAxisY(), MathUtils::radians(eulerAngles.y)) *
-		JPH::Quat::sRotation(JPH::Vec3::sAxisX(), MathUtils::radians(eulerAngles.x));
+	auto rotationQuat = EulerToQuat(eulerAngles);
 
 	auto eMotionType = MotionTypeToEMotionType(motionType);
 	JPH::ObjectLayer layer = Layers::NON_MOVING;
@@ -107,8 +104,8 @@ Vector3 PhysicsEngine::GetEulerAngles(int entityId)
 		assert(false && "PhysicsEngine::GetPosition: Entity ID not found in bodyMap");
 	}
 
-	auto& interface = system->GetBodyInterface();
-	auto rot = interface.GetRotation(bodyId);
+	auto& bodyInterface = system->GetBodyInterface();
+	auto rot = bodyInterface.GetRotation(bodyId);
 	auto euler = rot.GetEulerAngles();
 	return Vector3(
 		MathUtils::degrees(euler.GetX()),
@@ -121,6 +118,25 @@ Vector3 PhysicsEngine::SetPosition(int entityId, Vector3 position)
 	return Vector3();
 }
 
+void PhysicsEngine::MoveKinematic(int entityId, Vector3 targetPosition, Vector3 targetRotation, float deltaTime)
+{
+	// box1, currentPos + stepT, Quat::sIdentity(), cDeltaTime
+	JPH::BodyID bodyId;
+	if (!TryGetBodyId(entityId, bodyId))
+	{
+		assert(false && "PhysicsEngine::GetPosition: Entity ID not found in bodyMap");
+	}
+
+	auto rotationQuat = EulerToQuat(targetRotation);
+
+	auto& bodyInterface = system->GetBodyInterface();
+	bodyInterface.MoveKinematic(
+		bodyId,
+		JPH::RVec3(targetPosition.x, targetPosition.y, targetPosition.z),
+		rotationQuat,
+		deltaTime);
+}
+
 bool PhysicsEngine::TryGetBodyId(int entityId, JPH::BodyID& body)
 {
 	auto it = bodyMap.find(entityId);
@@ -130,4 +146,11 @@ bool PhysicsEngine::TryGetBodyId(int entityId, JPH::BodyID& body)
 	}
 	body = it->second;
 	return true;
+}
+
+JPH::Quat PhysicsEngine::EulerToQuat(Vector3 eulerAngles)
+{
+	return JPH::Quat::sRotation(JPH::Vec3::sAxisZ(), MathUtils::radians(eulerAngles.z)) *
+		JPH::Quat::sRotation(JPH::Vec3::sAxisY(), MathUtils::radians(eulerAngles.y)) *
+		JPH::Quat::sRotation(JPH::Vec3::sAxisX(), MathUtils::radians(eulerAngles.x));
 }

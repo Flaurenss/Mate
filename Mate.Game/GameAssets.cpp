@@ -1,14 +1,14 @@
 #include "GameAssets.h"
 
-TransformComponent& GameAssets::CreatePlayer(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos)
+Entity GameAssets::CreatePlayer(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos)
 {
     auto playerModel = "./Assets/Player/character.glb";
     auto modelMeshes = modelImporter.Load(playerModel);
     auto player = ecs.CreateEntity();
-    player.AddComponent<TransformComponent>(Vector3(0, 1.0f, 0), Vector3(75, -180, 0), Vector3(1));
+    player.AddComponent<TransformComponent>(Vector3(0, 1.0f, 0), Vector3(0, -180, 0), Vector3(1));
     player.AddComponent<MeshComponent>(modelMeshes);
-    player.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
-    return player.GetComponent<TransformComponent>();
+    player.AddComponent<PhysicsComponent>(MotionType::KINEMTAIC);
+    return player;
 }
 
 void GameAssets::CreateReward(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos)

@@ -37,7 +37,7 @@ void RedoPart(EnvironmentPart& part);
 
 void ManagePlayerInputRails(TransformComponent& transform, PlayerRailState& state, float playerOriginalX, float deltaTime);
 void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& transformCamera, float deltaTime);
-void ManagePlayerInput(TransformComponent& transform, float deltaTime);
+void ManagePlayerInput(Entity& entity, float deltaTime);
 
 int main()
 {
@@ -49,7 +49,7 @@ int main()
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     
     EngineDemo::CreateBaseFloor(ecs);
-    TransformComponent& pTransform = GameAssets::CreatePlayer(ecs, modelImporter);
+    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter);
     //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
     //std::deque<EnvironmentPart> environmentAssets = CreateEnvironment(ecs);
     
@@ -72,12 +72,14 @@ int main()
         }
         if (runGame)
         {
-            //ManagePlayerInput(pTransform, deltaTime);
+            auto& phy = playerEntity.GetComponent<PhysicsComponent>();
+            auto& trans = playerEntity.GetComponent<TransformComponent>();
+            ManagePlayerInput(playerEntity, deltaTime);
             //ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
             //ManageMovableMisc(environmentAssets, deltaTime);
         }
 
-        ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
+        //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
         engine->Update();
     }
 }
@@ -474,9 +476,9 @@ void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& came
     cameraTransform.Translate(direction.normalize() * speed);
 }
 
-void ManagePlayerInput(TransformComponent& transform, float deltaTime)
+void ManagePlayerInput(Entity& entity, float deltaTime)
 {
-    auto velocity = deltaTime * 1.1f;
+    auto velocity = deltaTime * 2.0f;
     Vector3 direction = Vector3::Zero;
     if (Input::GetKey(KeyCode::W))
     {
@@ -498,5 +500,9 @@ void ManagePlayerInput(TransformComponent& transform, float deltaTime)
         direction += Vector3::Left;
     }
 
-    transform.Translate(direction.normalize() * velocity);
+    auto& pos = entity.GetComponent<TransformComponent>().Position;
+    auto& physics = entity.GetComponent<PhysicsComponent>();
+    Vector3 posToMove = pos + direction.normalize() * velocity;
+    //physics.Translate(direction.normalize() * velocity);
+    physics.MoveKinematic(posToMove);
 }
