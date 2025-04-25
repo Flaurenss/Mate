@@ -154,7 +154,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EngineDemo.cpp" />
     <ClCompile Include="EnvironmentAssets.cpp" />
+    <ClCompile Include="GameAssets.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,7 +164,9 @@
     <None Include="copyDependencies.bat" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EngineDemo.h" />
     <ClInclude Include="EnvironmentAssets.h" />
+    <ClInclude Include="GameAssets.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

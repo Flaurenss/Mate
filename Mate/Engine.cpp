@@ -123,6 +123,11 @@ void Engine::Update()
 	RenderUpdate();
 }
 
+void Engine::SetSimulationTo(bool status)
+{
+	runSimulation = status;
+}
+
 void Engine::ComputeDelta()
 {
 	float currentFrame = static_cast<float>(glfwGetTime());
@@ -135,7 +140,10 @@ void Engine::FixedUpdate()
 {
 	while (accumulator >= fixedDeltaTime)
 	{
-		registry->GetSystem<PhysicsSystem>().Update(fixedDeltaTime);
+		if (runSimulation)
+		{
+			registry->GetSystem<PhysicsSystem>().Update(fixedDeltaTime);
+		}
 		accumulator -= fixedDeltaTime;
 	}
 }

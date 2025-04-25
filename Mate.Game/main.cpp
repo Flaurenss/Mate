@@ -7,6 +7,8 @@
 #include "EnvironmentAssets.h"
 #include <deque>
 #include <random>
+#include "EngineDemo.h"
+#include "GameAssets.h"
 
 float yaw = 45.0f;
 float pitch = 0;
@@ -46,15 +48,18 @@ int main()
     TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     
-    TransformComponent& playerTransform = CreatePlayer(ecs);
-    std::deque<EnvironmentPart> environmentAssets = CreateEnvironment(ecs);
+    EngineDemo::CreateBaseFloor(ecs);
+    TransformComponent& pTransform = GameAssets::CreatePlayer(ecs, modelImporter);
+    //std::deque<EnvironmentPart> environmentAssets = CreateEnvironment(ecs);
     
+    //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
+
     float rotationSpeedDegrees = 90.0f;
     float movementSpeedUnits = 0.1f;
-    Vector3 originalPos = playerTransform.Position;
-    PlayerRailState railState;
+    //Vector3 originalPos = playerTransform.Position;
+    /*PlayerRailState railState;
     railState.targetX = playerTransform.Position.x;
-    railState.currentRail = 0;
+    railState.currentRail = 0;*/
     bool runGame = false;
 
     while (engine->IsRunning())
@@ -63,14 +68,16 @@ int main()
         if (Input::GetKeyDown(KeyCode::P))
         {
             runGame = !runGame;
+            engine->SetSimulationTo(runGame);
         }
         if (runGame)
         {
+            ManagePlayerInput(pTransform, deltaTime);
             //ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
-            ManageMovableMisc(environmentAssets, deltaTime);
+            //ManageMovableMisc(environmentAssets, deltaTime);
         }
 
-        ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
+        //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
         engine->Update();
     }
 }
@@ -101,14 +108,14 @@ TransformComponent& CreatePlayer(ECS& ecs)
 {
     CreateFloor(ecs);
 
-    //auto boxModelPath = "./Assets/Environment/Misc/crate-color.glb";
-    //auto boxMeshes = modelImporter.Load(boxModelPath);
-    //Entity box = ecs.CreateEntity();
-    //auto& boxTrans = box.AddComponent<TransformComponent>(Vector3(1, 3, 0));
-    ////boxTrans.DoScale(2);
-    //box.AddComponent<MeshComponent>(boxMeshes);
-    //box.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
-
+    auto boxModelPath = "./Assets/Environment/Misc/crate-color.glb";
+    auto boxMeshes = modelImporter.Load(boxModelPath);
+    Entity box = ecs.CreateEntity();
+    auto& boxTrans = box.AddComponent<TransformComponent>(Vector3(1, 3, 0));
+    //boxTrans.DoScale(2);
+    box.AddComponent<MeshComponent>(boxMeshes);
+    box.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
+    //return boxTrans;
     auto playerModel = "./Assets/Player/character.glb";
     auto modelMeshes = modelImporter.Load(playerModel);
     auto player = ecs.CreateEntity();
@@ -426,6 +433,13 @@ void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& came
     float xPos = Input::MousePosition.x;
     float yPos = Input::MousePosition.y;
     float sensitivity = 0.1f;
+
+    if (firstMouse)
+    {
+        lastX = xPos;
+        lastY = yPos;
+        firstMouse = false;
+    }
 
     float xoffset = lastX - xPos;
     float yoffset = lastY - yPos;

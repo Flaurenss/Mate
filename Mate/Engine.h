@@ -20,10 +20,12 @@ public:
 
 	bool IsRunning();
 	void Update();
+	void SetSimulationTo(bool status);
 
 private:
 	const float fixedDeltaTime = 1.0f / 60.0f;
 
+	bool runSimulation;
 	bool isRunning;
 	std::string title;
 	static int width;
