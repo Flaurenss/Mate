@@ -7,7 +7,6 @@ unsigned int DebugDraw::VBO = 0;
 
 void DebugDraw::Init()
 {
-    // 12 lines = 24 vertices
     float vertices[24 * 3] = {
         // Bottom square
         -1, -1, -1,   1, -1, -1,
@@ -15,13 +14,11 @@ void DebugDraw::Init()
          1, -1,  1,  -1, -1,  1,
         -1, -1,  1,  -1, -1, -1,
 
-        // Top square
         -1, 1, -1,    1, 1, -1,
          1, 1, -1,    1, 1,  1,
          1, 1,  1,   -1, 1,  1,
         -1, 1,  1,   -1, 1, -1,
 
-        // Vertical lines
         -1, -1, -1,  -1, 1, -1,
          1, -1, -1,   1, 1, -1,
          1, -1,  1,   1, 1,  1,
@@ -39,20 +36,21 @@ void DebugDraw::Init()
     glBindVertexArray(0);
 }
 
-void DebugDraw::DrawAABB(const Vector3& center, const Vector3& halfExtents, Matrix4& model, Shader& shader)
+void DebugDraw::DrawAABB( const Vector3& halfExtents, Matrix4& model, Shader& shader)
 {
     shader.Use();
 
     Matrix4 scale;
-    scale.scale(halfExtents); // NO dividir entre 2
+    scale.scale(halfExtents);
 
-    Matrix4 finalModel = model * scale; // model ya tiene la posición
+    Matrix4 finalModel = model * scale;
 
     shader.SetBool("valid", false);
     shader.SetVec4("defaultColor", Vector4(1.0f, 1.0f, 0.0f, 1.0f));
     shader.SetMat4("model", finalModel);
 
     glBindVertexArray(VAO);
+    glLineWidth(2.0f);
     glDrawArrays(GL_LINES, 0, 24);
     glBindVertexArray(0);
 }

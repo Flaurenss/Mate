@@ -77,6 +77,7 @@ void CreateFloor(ECS& ecs)
     auto floorMesh = PrimitivesHelper::CreatePlane();
     auto floor = ecs.CreateEntity();
     floor.AddComponent<TransformComponent>();
+    floor.AddComponent<PhysicsComponent>();
     floor.AddComponent<MeshComponent>(floorMesh);
     TransformComponent& floorTrans = floor.GetComponent<TransformComponent>();
     floorTrans.Scale = Vector3(5, 1, 5);
@@ -95,12 +96,15 @@ Entity CreateCamera(ECS& ecs)
 
 TransformComponent& CreatePlayer(ECS& ecs)
 {
+    CreateFloor(ecs);
+
     auto boxModel = "./Assets/Environment/Misc/crate-color.glb";
     Entity box = ecs.CreateEntity();
     box.AddComponent<EnableComponent>().Enabled = true;
-    auto& boxTrans = box.AddComponent<TransformComponent>(Vector3::Zero);
+    auto& boxTrans = box.AddComponent<TransformComponent>(Vector3(0, 3, 0));
+    boxTrans.DoScale(2);
     box.AddComponent<MeshComponent>(boxModel);
-    box.AddComponent<PhysicsComponent>(MotionType::KINEMTAIC);
+    box.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
 
     auto playerModel = "./Assets/Player/character.glb";
     auto player = ecs.CreateEntity();
@@ -108,7 +112,7 @@ TransformComponent& CreatePlayer(ECS& ecs)
     player.AddComponent<MeshComponent>(playerModel);
     player.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
     TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
-    return playerTransform;
+    return boxTrans;
 }
 
 TransformComponent& CreateMisc(ECS& ecs)
@@ -144,7 +148,7 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<MeshComponent>(roadModel);
-    road.AddComponent<PhysicsComponent>();
+    //road.AddComponent<PhysicsComponent>();
     Part floorPart{ road, roadPos, roadTrans, EnvironmentType::Floor };
     
     std::vector<Part> rewards;

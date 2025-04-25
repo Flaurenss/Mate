@@ -91,8 +91,8 @@ void Engine::CoreInitialize()
 	//glfwSetCursorPosCallback(window, mouse_callback);
 
 	// Draw primitives configuration
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	isRunning = true;
 }

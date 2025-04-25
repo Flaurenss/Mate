@@ -14,6 +14,7 @@ Model::Model(std::shared_ptr<Mesh> mesh)
 {
     meshes.push_back(mesh);
     modelImporter = nullptr;
+	ComputeExtends();
 }
 
 Model::~Model()
@@ -33,28 +34,28 @@ void Model::Draw(Shader& shader)
 
 void Model::ComputeExtends()
 {
-	if (meshes.empty())
-	{
-		aabb = Vector3::Zero;
-	}
+    if (meshes.empty())
+    {
+        aabb = Vector3::Zero;
+        return;
+    }
 
-	Vector3 min(FLT_MAX, FLT_MAX, FLT_MAX);
-	Vector3 max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+    Vector3 min(FLT_MAX, FLT_MAX, FLT_MAX);
+    Vector3 max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
-	for (const auto& mesh : meshes)
-	{
-		for (const Vertex& vertex : mesh->vertices)
-		{
-			min.x = std::min(min.x, vertex.Position.x);
-			min.y = std::min(min.y, vertex.Position.y);
-			min.z = std::min(min.z, vertex.Position.z);
+    for (const auto& mesh : meshes)
+    {
+        for (const Vertex& vertex : mesh->vertices)
+        {
+            min.x = std::min(min.x, vertex.Position.x);
+            min.y = std::min(min.y, vertex.Position.y);
+            min.z = std::min(min.z, vertex.Position.z);
 
-			max.x = std::max(max.x, vertex.Position.x);
-			max.y = std::max(max.y, vertex.Position.y);
-			max.z = std::max(max.z, vertex.Position.z);
-		}
-	}
+            max.x = std::max(max.x, vertex.Position.x);
+            max.y = std::max(max.y, vertex.Position.y);
+            max.z = std::max(max.z, vertex.Position.z);
+        }
+    }
 
-	Vector3 extents = max - min;
-	aabb = extents;
+    aabb = max - min;
 }
