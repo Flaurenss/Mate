@@ -6,6 +6,7 @@
 
 std::vector<std::shared_ptr<Mesh>> GltfImporter::Load(const std::string& path)
 {
+    meshes.clear();
     cgltf_options options = {};
     cgltf_data* data = NULL;
     std::filesystem::path base = std::filesystem::path(path).parent_path();

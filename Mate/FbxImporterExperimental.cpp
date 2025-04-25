@@ -3,6 +3,7 @@
 
 std::vector<std::shared_ptr<Mesh>> FbxImporterExperimental::Load(const std::string& path)
 {
+    meshes.clear();
     ufbx_load_opts opts = { };
     opts.target_axes = ufbx_axes_right_handed_y_up;
     opts.load_external_files = true;

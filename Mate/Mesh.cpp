@@ -6,7 +6,10 @@ Mesh::Mesh(
 	std::vector<Texture> textures) :
 		vertices(vertices),
 		indices(indices),
-		textures(textures)
+		textures(textures),
+		VAO(0),
+		VBO(0),
+		EBO(0)
 { }
 
 Mesh::~Mesh()
