@@ -12,8 +12,8 @@ Model::Model(const std::string& path)
 
 Model::Model(std::shared_ptr<Mesh> mesh)
 {
-    meshes.push_back(mesh);
     modelImporter = nullptr;
+    meshes.push_back(mesh);
 	ComputeExtends();
 }
 

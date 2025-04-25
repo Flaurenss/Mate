@@ -96,23 +96,23 @@ Entity CreateCamera(ECS& ecs)
 
 TransformComponent& CreatePlayer(ECS& ecs)
 {
-    CreateFloor(ecs);
+    //CreateFloor(ecs);
 
-    auto boxModel = "./Assets/Environment/Misc/crate-color.glb";
-    Entity box = ecs.CreateEntity();
-    box.AddComponent<EnableComponent>().Enabled = true;
-    auto& boxTrans = box.AddComponent<TransformComponent>(Vector3(0, 3, 0));
-    boxTrans.DoScale(2);
-    box.AddComponent<MeshComponent>(boxModel);
-    box.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
+    //auto boxModel = "./Assets/Environment/Misc/crate-color.glb";
+    //Entity box = ecs.CreateEntity();
+    //box.AddComponent<EnableComponent>().Enabled = true;
+    //auto& boxTrans = box.AddComponent<TransformComponent>(Vector3(0, 3, 0));
+    //boxTrans.DoScale(2);
+    //box.AddComponent<MeshComponent>(boxModel);
+    //box.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
 
     auto playerModel = "./Assets/Player/character.glb";
     auto player = ecs.CreateEntity();
-    player.AddComponent<TransformComponent>(Vector3(0, 1.0f, 0), Vector3(0, -180, 0), Vector3(1));
+    player.AddComponent<TransformComponent>(Vector3(0, 0.0f, 0), Vector3(0, -180, 0), Vector3(1));
     player.AddComponent<MeshComponent>(playerModel);
-    player.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
+    player.AddComponent<PhysicsComponent>(MotionType::STATIC);
     TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
-    return boxTrans;
+    return playerTransform;
 }
 
 TransformComponent& CreateMisc(ECS& ecs)
