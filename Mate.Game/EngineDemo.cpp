@@ -18,7 +18,7 @@ void EngineDemo::PhysicsCubeDemo(ECS& ecs, ModelImporter& modelImporter)
     CreateBaseFloor(ecs);
 
     const float spacing = 1;
-    const int cubeNumber = 9;
+    const int cubeNumber = 2;
     for (int x = 0; x < cubeNumber; x++)
     {
         for (int y = 0; y < cubeNumber; y++)

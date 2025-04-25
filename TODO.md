@@ -2,16 +2,17 @@
 
 ## TODO
 - [ ] Add event system (input at least).
-- [ ] Implement animations.
+- [ ] Implement [animations](https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_007_Animations.md).
 - [ ] Add more collections to Model concept as: animations, textures...
 - [ ] Implement text rendering.
 - [ ] Implement basic lighting.
 - [ ] Add cubemaps.
+- [ ] Implement scripting.
+- [ ] Add quaternions to be used in physics simulation.
 - [ ] Refactor ECS implementation to follow a more Data Oriented Design.
 - [ ] Fix graphics memory management with ECS.
 - [ ] Implement parent-children concept.
 - [ ] Implement UI for debug.
-- [ ] Implement scripting.
 - [ ] Separate Import model behaviour from model concept.
 - [ ] Add Texture independent concept so it can be added freely to any entity.
 - [ ] Investigate and implement Job thread engine.

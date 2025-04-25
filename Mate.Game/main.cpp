@@ -50,9 +50,9 @@ int main()
     
     EngineDemo::CreateBaseFloor(ecs);
     TransformComponent& pTransform = GameAssets::CreatePlayer(ecs, modelImporter);
+    //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
     //std::deque<EnvironmentPart> environmentAssets = CreateEnvironment(ecs);
     
-    //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
 
     float rotationSpeedDegrees = 90.0f;
     float movementSpeedUnits = 0.1f;
@@ -72,12 +72,12 @@ int main()
         }
         if (runGame)
         {
-            ManagePlayerInput(pTransform, deltaTime);
+            //ManagePlayerInput(pTransform, deltaTime);
             //ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
             //ManageMovableMisc(environmentAssets, deltaTime);
         }
 
-        //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
+        ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
         engine->Update();
     }
 }

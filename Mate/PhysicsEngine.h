@@ -22,6 +22,10 @@ public:
 	void Update(float deltaTime);
 	void RegisterBody(int entityId, Vector3 halfExtents, Vector3 position, Vector3 eulerAngles, MotionType mode);
 	Vector3 GetPosition(int entityId);
+	Vector3 GetEulerAngles(int entityId);
+	Vector3 SetPosition(int entityId, Vector3 position);
+
+	bool TryGetBodyId(int entityId, JPH::BodyID& body);
 
 	// Map Entity ID to Jolt Body ID
 	std::unordered_map<int, JPH::BodyID> bodyMap;

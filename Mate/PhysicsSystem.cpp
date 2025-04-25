@@ -16,9 +16,15 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 {
 	for (Entity& entity : GetEntities())
 	{
+		if (entity.HasComponent<EnableComponent>()
+			&& !entity.GetComponent<EnableComponent>().Enabled)
+		{
+			return;
+		}
+
 		if (phyEngine->bodyMap.find(entity.GetId()) == phyEngine->bodyMap.end())
 		{
-			// TODO: register new body
+			// Register new body
 			auto transform = entity.GetComponent<TransformComponent>();
 			Vector3 position = transform.Position;
 			MotionType motionType = entity.GetComponent<PhysicsComponent>().motionType;
@@ -33,10 +39,6 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 			halfExtents.z = std::max(halfExtents.z, 0.05f);
 			phyEngine->RegisterBody(entity.GetId(), halfExtents, position, transform.EulerAngles, motionType);
 		}
-
-		if (entity.HasComponent<EnableComponent>()
-			&& entity.GetComponent<EnableComponent>().Enabled)
-		{ }
 	}
 
 	phyEngine->Update(fixedDeltaTime);
@@ -48,7 +50,9 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 		{
 			auto& transformComponent = entity.GetComponent<TransformComponent>();
 			Vector3 newPosition = phyEngine->GetPosition(entity.GetId());
+			Vector3 newEulerRotation = phyEngine->GetEulerAngles(entity.GetId());
 			transformComponent.Position = newPosition;
+			transformComponent.EulerAngles = newEulerRotation;
 		}
 	}
 }

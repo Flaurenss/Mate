@@ -63,9 +63,10 @@ void PhysicsEngine::RegisterBody(int entityId, Vector3 halfExtents, Vector3 posi
 	JPH::ShapeSettings::ShapeResult shape_result = shape_settings.Create();
 	const JPH::Shape* shape = shape_result.Get();
 	
-	JPH::Quat rotationQuat = JPH::Quat::sRotation(JPH::Vec3::sAxisZ(), MathUtils::radians(eulerAngles.z))
-		* JPH::Quat::sRotation(JPH::Vec3::sAxisY(), MathUtils::radians(eulerAngles.y))
-		* JPH::Quat::sRotation(JPH::Vec3::sAxisX(), MathUtils::radians(eulerAngles.x));
+	JPH::Quat rotationQuat =
+		JPH::Quat::sRotation(JPH::Vec3::sAxisZ(), MathUtils::radians(eulerAngles.z)) *
+		JPH::Quat::sRotation(JPH::Vec3::sAxisY(), MathUtils::radians(eulerAngles.y)) *
+		JPH::Quat::sRotation(JPH::Vec3::sAxisX(), MathUtils::radians(eulerAngles.x));
 
 	auto eMotionType = MotionTypeToEMotionType(motionType);
 	JPH::ObjectLayer layer = Layers::NON_MOVING;
@@ -87,14 +88,46 @@ void PhysicsEngine::RegisterBody(int entityId, Vector3 halfExtents, Vector3 posi
 
 Vector3 PhysicsEngine::GetPosition(int entityId)
 {
-	auto it = bodyMap.find(entityId);
-	if (it != bodyMap.end())
+	JPH::BodyID bodyId;
+	if (!TryGetBodyId(entityId, bodyId))
 	{
-		const JPH::BodyID& bodyID = it->second;
-		auto& interface = system->GetBodyInterface();
-		auto pos = interface.GetCenterOfMassPosition(bodyID);
-		return Vector3(pos.GetX(), pos.GetY(), pos.GetZ());
+		assert(false && "PhysicsEngine::GetPosition: Entity ID not found in bodyMap");
 	}
 
-	assert(false && "PhysicsEngine::GetPosition: Entity ID not found in bodyMap");
+	auto& interface = system->GetBodyInterface();
+	auto pos = interface.GetCenterOfMassPosition(bodyId);
+	return Vector3(pos.GetX(), pos.GetY(), pos.GetZ());
+}
+
+Vector3 PhysicsEngine::GetEulerAngles(int entityId)
+{
+	JPH::BodyID bodyId;
+	if (!TryGetBodyId(entityId, bodyId))
+	{
+		assert(false && "PhysicsEngine::GetPosition: Entity ID not found in bodyMap");
+	}
+
+	auto& interface = system->GetBodyInterface();
+	auto rot = interface.GetRotation(bodyId);
+	auto euler = rot.GetEulerAngles();
+	return Vector3(
+		MathUtils::degrees(euler.GetX()),
+		MathUtils::degrees(euler.GetY()),
+		MathUtils::degrees(euler.GetZ()));
+}
+
+Vector3 PhysicsEngine::SetPosition(int entityId, Vector3 position)
+{
+	return Vector3();
+}
+
+bool PhysicsEngine::TryGetBodyId(int entityId, JPH::BodyID& body)
+{
+	auto it = bodyMap.find(entityId);
+	if (it == bodyMap.end())
+	{
+		return false;
+	}
+	body = it->second;
+	return true;
 }
