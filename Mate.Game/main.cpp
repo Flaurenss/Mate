@@ -49,7 +49,8 @@ int main()
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     
     EngineDemo::CreateBaseFloor(ecs);
-    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter);
+    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3::Right);
+    GameAssets::CreateObstacle(ecs, modelImporter);
     //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
     //std::deque<EnvironmentPart> environmentAssets = CreateEnvironment(ecs);
     

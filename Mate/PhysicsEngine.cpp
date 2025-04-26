@@ -27,6 +27,8 @@ PhysicsEngine::PhysicsEngine()
 	system = std::make_unique<JPH::PhysicsSystem>();
 	bodyInterface = &system->GetBodyInterface();
 
+	contactListener = std::make_unique<MateContactListener>();
+
 	broadPhaseLayerInterface = std::make_unique<BPLayerInterfaceImpl>();
 	objectVsBroadPhaseLayerFilter = std::make_unique<ObjectVsBPLayerFilterImpl>();
 	objectLayerPairFilter = std::make_unique<ObjectLayerPairFilterImpl>();
@@ -40,6 +42,8 @@ PhysicsEngine::PhysicsEngine()
 		*objectVsBroadPhaseLayerFilter,
 		*objectLayerPairFilter
 	);
+
+	system->SetContactListener(contactListener.get());
 }
 
 PhysicsEngine::~PhysicsEngine()
@@ -65,7 +69,7 @@ void PhysicsEngine::Update(float fixedDeltaTime)
 	system->Update(fixedDeltaTime, cCollisionSteps, tempAllocator.get(), jobSystem.get());
 }
 
-void PhysicsEngine::RegisterBody(int entityId, Vector3 halfExtents, Vector3 position, Vector3 eulerAngles, MotionType motionType)
+void PhysicsEngine::RegisterBody(int entityId, Vector3 halfExtents, Vector3 position, Vector3 eulerAngles, MotionType motionType, bool isSensor)
 {
 	JPH::BoxShapeSettings shape_settings(JPH::Vec3(halfExtents.x, halfExtents.y, halfExtents.z));
 	JPH::ShapeSettings::ShapeResult shape_result = shape_settings.Create();
@@ -87,6 +91,7 @@ void PhysicsEngine::RegisterBody(int entityId, Vector3 halfExtents, Vector3 posi
 		Layers::MOVING);
 
 	JPH::Body* body = bodyInterface->CreateBody(settings);
+	body->SetIsSensor(isSensor);
 	bodyInterface->AddBody(body->GetID(), JPH::EActivation::Activate);
 	bodyMap.insert(std::make_pair(entityId, body->GetID()));
 }

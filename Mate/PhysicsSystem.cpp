@@ -36,7 +36,7 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 			halfExtents.x = std::max(halfExtents.x, 0.05f);
 			halfExtents.y = std::max(halfExtents.y, 0.05f);
 			halfExtents.z = std::max(halfExtents.z, 0.05f);
-			phyEngine->RegisterBody(entity.GetId(), halfExtents, position, transform.EulerAngles, physicsComponent.motionType);
+			phyEngine->RegisterBody(entity.GetId(), halfExtents, position, transform.EulerAngles, physicsComponent.motionType, physicsComponent.IsSensor());
 		}
 		else
 		{

@@ -29,7 +29,14 @@ public:
 		isDirty = false;
 		targetPosition = Vector3::Zero;
 	}
+	bool IsSensor() { return isSensor; }
+	void SetIsSensor(bool status = true)
+	{
+		isSensor = status;
+	}
+
 private:
 	bool isDirty = false;
+	bool isSensor = false;
 	Vector3 targetPosition = Vector3::Zero;
 };

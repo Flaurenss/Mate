@@ -183,6 +183,9 @@
     <ClCompile Include="ModelImporter.cpp">
       <Filter>Source Files\Importers</Filter>
     </ClCompile>
+    <ClCompile Include="MateContactListener.cpp">
+      <Filter>Source Files\Core\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
@@ -306,6 +309,9 @@
     </ClInclude>
     <ClInclude Include="ModelImporter.h">
       <Filter>Header Files\Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="MateContactListener.h">
+      <Filter>Header Files\Core\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

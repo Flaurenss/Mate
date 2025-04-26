@@ -166,6 +166,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="IRenderable.cpp" />
     <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="MateContactListener.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="ModelImporter.cpp" />
     <ClCompile Include="ObjectLayerPairFilterImpl.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="IRenderable.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Mate.h" />
+    <ClInclude Include="MateContactListener.h" />
     <ClInclude Include="MateMotionTypes.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshComponent.h" />

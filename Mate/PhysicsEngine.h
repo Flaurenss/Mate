@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include "Vector.h"
 #include "MateMotionTypes.h"
+#include "MateContactListener.h"
 
 /// <summary>
 /// Physics engine consuming Jolt library: https://github.com/jrouwe/JoltPhysics
@@ -20,7 +21,7 @@ public:
 	~PhysicsEngine();
 
 	void Update(float deltaTime);
-	void RegisterBody(int entityId, Vector3 halfExtents, Vector3 position, Vector3 eulerAngles, MotionType mode);
+	void RegisterBody(int entityId, Vector3 halfExtents, Vector3 position, Vector3 eulerAngles, MotionType mode, bool isSensor);
 	Vector3 GetPosition(int entityId);
 	Vector3 GetEulerAngles(int entityId);
 	Vector3 SetPosition(int entityId, Vector3 position);
@@ -40,6 +41,7 @@ private:
 	std::unique_ptr<JPH::JobSystemThreadPool> jobSystem;
 
 	std::unique_ptr<JPH::PhysicsSystem> system;
+	std::unique_ptr<MateContactListener> contactListener;
 	JPH::BodyInterface* bodyInterface;
 
 	std::unique_ptr<JPH::BroadPhaseLayerInterface> broadPhaseLayerInterface;
