@@ -25,6 +25,7 @@ PhysicsEngine::PhysicsEngine()
 	tempAllocator = std::make_unique<JPH::TempAllocatorImpl>(32 * 1024 * 1024);
 	jobSystem = std::make_unique<JPH::JobSystemThreadPool>(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, std::thread::hardware_concurrency() - 1);
 	system = std::make_unique<JPH::PhysicsSystem>();
+	bodyInterface = &system->GetBodyInterface();
 
 	broadPhaseLayerInterface = std::make_unique<BPLayerInterfaceImpl>();
 	objectVsBroadPhaseLayerFilter = std::make_unique<ObjectVsBPLayerFilterImpl>();
@@ -44,10 +45,17 @@ PhysicsEngine::PhysicsEngine()
 PhysicsEngine::~PhysicsEngine()
 {
 	JPH::UnregisterTypes();
+
 	delete JPH::Factory::sInstance;
 	JPH::Factory::sInstance = nullptr;
+	
 	tempAllocator = nullptr;
 	jobSystem = nullptr;
+	system = nullptr;
+
+	broadPhaseLayerInterface = nullptr;
+	objectVsBroadPhaseLayerFilter = nullptr;
+	objectLayerPairFilter = nullptr;
 }
 
 void PhysicsEngine::Update(float fixedDeltaTime)
@@ -78,34 +86,24 @@ void PhysicsEngine::RegisterBody(int entityId, Vector3 halfExtents, Vector3 posi
 		eMotionType,
 		Layers::MOVING);
 
-	JPH::Body* body = system->GetBodyInterface().CreateBody(settings);
-	system->GetBodyInterface().AddBody(body->GetID(), JPH::EActivation::Activate);
+	JPH::Body* body = bodyInterface->CreateBody(settings);
+	bodyInterface->AddBody(body->GetID(), JPH::EActivation::Activate);
 	bodyMap.insert(std::make_pair(entityId, body->GetID()));
 }
 
 Vector3 PhysicsEngine::GetPosition(int entityId)
 {
-	JPH::BodyID bodyId;
-	if (!TryGetBodyId(entityId, bodyId))
-	{
-		assert(false && "PhysicsEngine::GetPosition: Entity ID not found in bodyMap");
-	}
+	JPH::BodyID bodyId = GetBodyId(entityId);
 
-	auto& interface = system->GetBodyInterface();
-	auto pos = interface.GetCenterOfMassPosition(bodyId);
+	auto pos = bodyInterface->GetCenterOfMassPosition(bodyId);
 	return Vector3(pos.GetX(), pos.GetY(), pos.GetZ());
 }
 
 Vector3 PhysicsEngine::GetEulerAngles(int entityId)
 {
-	JPH::BodyID bodyId;
-	if (!TryGetBodyId(entityId, bodyId))
-	{
-		assert(false && "PhysicsEngine::GetPosition: Entity ID not found in bodyMap");
-	}
+	JPH::BodyID bodyId = GetBodyId(entityId);
 
-	auto& bodyInterface = system->GetBodyInterface();
-	auto rot = bodyInterface.GetRotation(bodyId);
+	auto rot = bodyInterface->GetRotation(bodyId);
 	auto euler = rot.GetEulerAngles();
 	return Vector3(
 		MathUtils::degrees(euler.GetX()),
@@ -120,17 +118,11 @@ Vector3 PhysicsEngine::SetPosition(int entityId, Vector3 position)
 
 void PhysicsEngine::MoveKinematic(int entityId, Vector3 targetPosition, Vector3 targetRotation, float deltaTime)
 {
-	// box1, currentPos + stepT, Quat::sIdentity(), cDeltaTime
-	JPH::BodyID bodyId;
-	if (!TryGetBodyId(entityId, bodyId))
-	{
-		assert(false && "PhysicsEngine::GetPosition: Entity ID not found in bodyMap");
-	}
+	JPH::BodyID bodyId = GetBodyId(entityId);
 
 	auto rotationQuat = EulerToQuat(targetRotation);
 
-	auto& bodyInterface = system->GetBodyInterface();
-	bodyInterface.MoveKinematic(
+	bodyInterface->MoveKinematic(
 		bodyId,
 		JPH::RVec3(targetPosition.x, targetPosition.y, targetPosition.z),
 		rotationQuat,
@@ -146,6 +138,16 @@ bool PhysicsEngine::TryGetBodyId(int entityId, JPH::BodyID& body)
 	}
 	body = it->second;
 	return true;
+}
+
+JPH::BodyID PhysicsEngine::GetBodyId(int entityId)
+{
+	JPH::BodyID bodyId;
+	if (!TryGetBodyId(entityId, bodyId))
+	{
+		assert(false && "PhysicsEngine::GetPosition: Entity ID not found in bodyMap");
+	}
+	return bodyId;
 }
 
 JPH::Quat PhysicsEngine::EulerToQuat(Vector3 eulerAngles)

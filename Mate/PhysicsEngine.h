@@ -27,7 +27,7 @@ public:
 	void MoveKinematic(int entityId, Vector3 targetPosition, Vector3 targetRotation, float deltaTime);
 
 	bool TryGetBodyId(int entityId, JPH::BodyID& body);
-
+	JPH::BodyID GetBodyId(int entityId);
 	// Map Entity ID to Jolt Body ID
 	std::unordered_map<int, JPH::BodyID> bodyMap;
 private:
@@ -40,6 +40,7 @@ private:
 	std::unique_ptr<JPH::JobSystemThreadPool> jobSystem;
 
 	std::unique_ptr<JPH::PhysicsSystem> system;
+	JPH::BodyInterface* bodyInterface;
 
 	std::unique_ptr<JPH::BroadPhaseLayerInterface> broadPhaseLayerInterface;
 	std::unique_ptr<JPH::ObjectVsBroadPhaseLayerFilter> objectVsBroadPhaseLayerFilter;

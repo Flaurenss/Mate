@@ -5,7 +5,7 @@ Entity GameAssets::CreatePlayer(ECS& ecs, ModelImporter& modelImporter, Vector3 
     auto playerModel = "./Assets/Player/character.glb";
     auto modelMeshes = modelImporter.Load(playerModel);
     auto player = ecs.CreateEntity();
-    player.AddComponent<TransformComponent>(Vector3(0, 1.0f, 0), Vector3(0, -180, 0), Vector3(1));
+    player.AddComponent<TransformComponent>(Vector3(0, 1.0f, 0), Vector3(0, -180, 0), Vector3(0.5f));
     player.AddComponent<MeshComponent>(modelMeshes);
     player.AddComponent<PhysicsComponent>(MotionType::KINEMTAIC);
     return player;
