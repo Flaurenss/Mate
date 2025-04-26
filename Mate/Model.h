@@ -11,7 +11,7 @@ public:
     Model(std::vector<std::shared_ptr<Mesh>> newMeshes);
     ~Model();
 
-    virtual void Draw(Shader& shader);
+    virtual void Draw(Shader& shader) override;
 
     Vector3 GetExtents()
     {

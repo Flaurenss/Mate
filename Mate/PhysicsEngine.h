@@ -9,6 +9,9 @@
 #include "Vector.h"
 #include "MateMotionTypes.h"
 #include "MateContactListener.h"
+#include "PhysicsData.h"
+
+class Entity;
 
 /// <summary>
 /// Physics engine consuming Jolt library: https://github.com/jrouwe/JoltPhysics
@@ -21,16 +24,26 @@ public:
 	~PhysicsEngine();
 
 	void Update(float deltaTime);
-	void RegisterBody(int entityId, Vector3 halfExtents, Vector3 position, Vector3 eulerAngles, MotionType mode, bool isSensor);
+	void RegisterBody(
+		int entityId,
+		Vector3 halfExtents,
+		Vector3 position,
+		Vector3 eulerAngles,
+		MotionType mode,
+		bool isSensor,
+		std::function<void(Entity)> onCollide);
 	Vector3 GetPosition(int entityId);
 	Vector3 GetEulerAngles(int entityId);
 	Vector3 SetPosition(int entityId, Vector3 position);
 	void MoveKinematic(int entityId, Vector3 targetPosition, Vector3 targetRotation, float deltaTime);
 
+	void OnCollision(int entityA, int entityB);
+
 	bool TryGetBodyId(int entityId, JPH::BodyID& body);
 	JPH::BodyID GetBodyId(int entityId);
-	// Map Entity ID to Jolt Body ID
-	std::unordered_map<int, JPH::BodyID> bodyMap;
+	PhysicsData GetEntityPhysicsData(int entityId);
+
+	std::unordered_map<int, PhysicsData> entityPhysicsDataMap;
 private:
 	const unsigned int cMaxBodies = 65536; // Recommended value by Jolt
 	const unsigned int cNumBodyMutexes = 0;

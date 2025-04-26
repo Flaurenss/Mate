@@ -3,7 +3,7 @@
 #include <Jolt/Physics/PhysicsSystem.h>
 #include "Logger.h"
 
-class PhysicsSystem;
+class PhysicsEngine;
 /// <summary>
 /// Basic Contact Listener class from Jolt Samples
 /// </summary>
@@ -11,7 +11,7 @@ class MateContactListener : public JPH::ContactListener
 {
 public:
 
-	MateContactListener() = default;
+	MateContactListener(PhysicsEngine* engine);
 	~MateContactListener() = default;
 
 	// See: ContactListener
@@ -23,6 +23,6 @@ public:
 
 	virtual void OnContactRemoved(const JPH::SubShapeIDPair& inSubShapePair) override;
 private:
-	PhysicsSystem* system;
+	PhysicsEngine* physicsEngine;
 };
 

@@ -51,19 +51,21 @@ int main()
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     
     bool runGame = false;
+    int points = 0;
     EngineDemo::CreateBaseFloor(ecs);
     Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3(1, 0.5f, 0));
     GameAssets::CreateObstacle(ecs, modelImporter, Vector3(0, 0.5f, 0));
-    playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&runGame](Entity otherEntity)
+    playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&runGame, &points](Entity otherEntity)
     {
         auto tag = otherEntity.GetComponent<PhysicsComponent>().GetTag();
         if (tag == REWARD_TAG)
         {
-
+            points++;
         }
         else if (tag == OBSTACLE_TAG)
         {
             runGame = false;
+            // TODO: 
         }
     };
     //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);

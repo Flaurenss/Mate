@@ -15,6 +15,8 @@
 #include <thread>
 #include <cassert>
 
+JPH_SUPPRESS_WARNINGS
+
 PhysicsEngine::PhysicsEngine()
 {
 	JPH::RegisterDefaultAllocator();
@@ -27,12 +29,12 @@ PhysicsEngine::PhysicsEngine()
 	system = std::make_unique<JPH::PhysicsSystem>();
 	bodyInterface = &system->GetBodyInterface();
 
-	contactListener = std::make_unique<MateContactListener>();
+	contactListener = std::make_unique<MateContactListener>(this);
 
 	broadPhaseLayerInterface = std::make_unique<BPLayerInterfaceImpl>();
 	objectVsBroadPhaseLayerFilter = std::make_unique<ObjectVsBPLayerFilterImpl>();
 	objectLayerPairFilter = std::make_unique<ObjectLayerPairFilterImpl>();
-	
+
 	system->Init(
 		cMaxBodies,
 		cNumBodyMutexes,
@@ -69,7 +71,14 @@ void PhysicsEngine::Update(float fixedDeltaTime)
 	system->Update(fixedDeltaTime, cCollisionSteps, tempAllocator.get(), jobSystem.get());
 }
 
-void PhysicsEngine::RegisterBody(int entityId, Vector3 halfExtents, Vector3 position, Vector3 eulerAngles, MotionType motionType, bool isSensor)
+void PhysicsEngine::RegisterBody(
+	int entityId,
+	Vector3 halfExtents,
+	Vector3 position,
+	Vector3 eulerAngles,
+	MotionType motionType,
+	bool isSensor,
+	std::function<void(Entity)> onCollide)
 {
 	JPH::BoxShapeSettings shape_settings(JPH::Vec3(halfExtents.x, halfExtents.y, halfExtents.z));
 	JPH::ShapeSettings::ShapeResult shape_result = shape_settings.Create();
@@ -91,9 +100,13 @@ void PhysicsEngine::RegisterBody(int entityId, Vector3 halfExtents, Vector3 posi
 		Layers::MOVING);
 
 	JPH::Body* body = bodyInterface->CreateBody(settings);
+	body->SetUserData(entityId);
 	body->SetIsSensor(isSensor);
 	bodyInterface->AddBody(body->GetID(), JPH::EActivation::Activate);
-	bodyMap.insert(std::make_pair(entityId, body->GetID()));
+	PhysicsData physicsData;
+	physicsData.bodyId = body->GetID();
+	physicsData.OnCollide = onCollide;
+	entityPhysicsDataMap.insert(std::make_pair(entityId, physicsData));
 }
 
 Vector3 PhysicsEngine::GetPosition(int entityId)
@@ -134,14 +147,18 @@ void PhysicsEngine::MoveKinematic(int entityId, Vector3 targetPosition, Vector3 
 		deltaTime);
 }
 
+void PhysicsEngine::OnCollision(int entityA, int entityB)
+{
+}
+
 bool PhysicsEngine::TryGetBodyId(int entityId, JPH::BodyID& body)
 {
-	auto it = bodyMap.find(entityId);
-	if (it == bodyMap.end())
+	auto it = entityPhysicsDataMap.find(entityId);
+	if (it == entityPhysicsDataMap.end())
 	{
 		return false;
 	}
-	body = it->second;
+	body = it->second.bodyId;
 	return true;
 }
 
@@ -150,9 +167,19 @@ JPH::BodyID PhysicsEngine::GetBodyId(int entityId)
 	JPH::BodyID bodyId;
 	if (!TryGetBodyId(entityId, bodyId))
 	{
-		assert(false && "PhysicsEngine::GetPosition: Entity ID not found in bodyMap");
+		assert(false && "PhysicsEngine::GetBodyId: Entity ID not found in bodyMap");
 	}
 	return bodyId;
+}
+
+PhysicsData PhysicsEngine::GetEntityPhysicsData(int entityId)
+{
+	auto it = entityPhysicsDataMap.find(entityId);
+	if (it == entityPhysicsDataMap.end())
+	{
+		assert(false && "PhysicsEngine::GetEntityPhysicsData: Entity ID not found in bodyMap");
+	}
+	return it->second;
 }
 
 JPH::Quat PhysicsEngine::EulerToQuat(Vector3 eulerAngles)

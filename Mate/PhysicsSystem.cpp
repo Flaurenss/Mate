@@ -19,11 +19,11 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 		if (entity.HasComponent<EnableComponent>()
 			&& !entity.GetComponent<EnableComponent>().Enabled)
 		{
-			return;
+			continue;
 		}
 		auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
 		auto transform = entity.GetComponent<TransformComponent>();
-		if (phyEngine->bodyMap.find(entity.GetId()) == phyEngine->bodyMap.end())
+		if (phyEngine->entityPhysicsDataMap.find(entity.GetId()) == phyEngine->entityPhysicsDataMap.end())
 		{
 			// Register new body
 			Vector3 position = transform.Position;
@@ -36,12 +36,24 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 			halfExtents.x = std::max(halfExtents.x, 0.05f);
 			halfExtents.y = std::max(halfExtents.y, 0.05f);
 			halfExtents.z = std::max(halfExtents.z, 0.05f);
-			phyEngine->RegisterBody(entity.GetId(), halfExtents, position, transform.EulerAngles, physicsComponent.motionType, physicsComponent.IsSensor());
+			phyEngine->RegisterBody(
+				entity.GetId(),
+				halfExtents,
+				position,
+				transform.EulerAngles,
+				physicsComponent.motionType,
+				physicsComponent.IsSensor(),
+				physicsComponent.OnCollide);
 		}
 		else
 		{
 			if (physicsComponent.IsDirty())
 			{
+				if (physicsComponent.OnCollide)
+				{
+					physicsComponent.OnCollide(entity);
+				}
+
 				phyEngine->MoveKinematic(
 					entity.GetId(),
 					physicsComponent.GetActualTargetPosition(),
@@ -56,6 +68,12 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 
 	for (Entity& entity : GetEntities())
 	{
+		if (entity.HasComponent<EnableComponent>()
+			&& !entity.GetComponent<EnableComponent>().Enabled)
+		{
+			continue;
+		}
+
 		auto phyComponent = entity.GetComponent<PhysicsComponent>();
 		if (phyComponent.motionType != STATIC)
 		{

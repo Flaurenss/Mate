@@ -36,7 +36,7 @@ public:
 	~Mesh();
 
 	void SetupMesh();
-	virtual void Draw(Shader& shader);
+	virtual void Draw(Shader& shader) override;
 private:
 
 	// Vertex Array Object: stores pointers to elements from VBO

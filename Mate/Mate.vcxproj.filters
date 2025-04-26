@@ -186,6 +186,9 @@
     <ClCompile Include="MateContactListener.cpp">
       <Filter>Source Files\Core\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsData.h">
+      <Filter>Header Files\Core\Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
