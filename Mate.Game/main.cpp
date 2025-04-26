@@ -18,6 +18,8 @@ bool firstMouse = true;
 const int ROAD_LENGHT = 0;
 const int START_COINS = 10;
 const int START_OBSTACLES = 3;
+const std::string REWARD_TAG = "COIN";
+const std::string OBSTACLE_TAG = "BOX";
 
 static ModelImporter modelImporter = ModelImporter();
 
@@ -48,9 +50,22 @@ int main()
     TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     
+    bool runGame = false;
     EngineDemo::CreateBaseFloor(ecs);
-    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3::Right);
-    GameAssets::CreateObstacle(ecs, modelImporter);
+    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3(1, 0.5f, 0));
+    GameAssets::CreateObstacle(ecs, modelImporter, Vector3(0, 0.5f, 0));
+    playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&runGame](Entity otherEntity)
+    {
+        auto tag = otherEntity.GetComponent<PhysicsComponent>().GetTag();
+        if (tag == REWARD_TAG)
+        {
+
+        }
+        else if (tag == OBSTACLE_TAG)
+        {
+            runGame = false;
+        }
+    };
     //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
     //std::deque<EnvironmentPart> environmentAssets = CreateEnvironment(ecs);
     
@@ -61,7 +76,6 @@ int main()
     /*PlayerRailState railState;
     railState.targetX = playerTransform.Position.x;
     railState.currentRail = 0;*/
-    bool runGame = false;
 
     while (engine->IsRunning())
     {

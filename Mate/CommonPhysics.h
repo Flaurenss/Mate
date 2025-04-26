@@ -38,5 +38,7 @@ inline JPH::EMotionType MotionTypeToEMotionType(MotionType motionType)
 			return JPH::EMotionType::Dynamic;
 		case MotionType::KINEMTAIC:
 			return JPH::EMotionType::Kinematic;
+		default:
+			return JPH::EMotionType::Dynamic;
 	}
 }
