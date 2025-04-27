@@ -16,7 +16,7 @@ void MateContactListener::OnContactAdded(const JPH::Body& inBody1, const JPH::Bo
 {
 	
 	Logger::Log("A contact was added");
-	physicsEngine->OnCollision(
+	physicsEngine->AddNewCollision(
 		static_cast<int>(inBody1.GetUserData()),
 		static_cast<int>(inBody2.GetUserData()));
 }

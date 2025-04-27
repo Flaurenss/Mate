@@ -10,4 +10,6 @@ public:
 	void Update(float fixedDeltaTime);
 private:
 	std::unique_ptr<PhysicsEngine> phyEngine;
+
+	void CallOnCollisionData(int selfId, int otherId);
 };

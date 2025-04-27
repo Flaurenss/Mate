@@ -10,6 +10,7 @@
 #include "MateMotionTypes.h"
 #include "MateContactListener.h"
 #include "PhysicsData.h"
+#include "CollisionData.h"
 
 class Entity;
 
@@ -37,13 +38,15 @@ public:
 	Vector3 SetPosition(int entityId, Vector3 position);
 	void MoveKinematic(int entityId, Vector3 targetPosition, Vector3 targetRotation, float deltaTime);
 
-	void OnCollision(int entityA, int entityB);
+	void AddNewCollision(int entityA, int entityB);
 
+	bool IsRegistered(int entityId);
 	bool TryGetBodyId(int entityId, JPH::BodyID& body);
 	JPH::BodyID GetBodyId(int entityId);
 	PhysicsData GetEntityPhysicsData(int entityId);
 
 	std::unordered_map<int, PhysicsData> entityPhysicsDataMap;
+	std::vector<CollisionData> collisions;
 private:
 	const unsigned int cMaxBodies = 65536; // Recommended value by Jolt
 	const unsigned int cNumBodyMutexes = 0;

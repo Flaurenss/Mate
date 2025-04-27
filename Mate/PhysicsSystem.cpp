@@ -23,7 +23,7 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 		}
 		auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
 		auto transform = entity.GetComponent<TransformComponent>();
-		if (phyEngine->entityPhysicsDataMap.find(entity.GetId()) == phyEngine->entityPhysicsDataMap.end())
+		if (phyEngine->IsRegistered(entity.GetId()))
 		{
 			// Register new body
 			Vector3 position = transform.Position;
@@ -49,11 +49,6 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 		{
 			if (physicsComponent.IsDirty())
 			{
-				if (physicsComponent.OnCollide)
-				{
-					physicsComponent.OnCollide(entity);
-				}
-
 				phyEngine->MoveKinematic(
 					entity.GetId(),
 					physicsComponent.GetActualTargetPosition(),
@@ -65,6 +60,14 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 	}
 
 	phyEngine->Update(fixedDeltaTime);
+
+	for (auto collisionData : phyEngine->collisions)
+	{
+		CallOnCollisionData(collisionData.EntityIdA, collisionData.EntityIdB);
+		CallOnCollisionData(collisionData.EntityIdB, collisionData.EntityIdA);
+	}
+
+	phyEngine->collisions.clear();
 
 	for (Entity& entity : GetEntities())
 	{
@@ -83,5 +86,16 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 			transformComponent.Position = newPosition;
 			transformComponent.EulerAngles = newEulerRotation;
 		}
+	}
+}
+
+void PhysicsSystem::CallOnCollisionData(int selfId, int otherId)
+{
+	auto physicsDataA = phyEngine->GetEntityPhysicsData(selfId);
+	auto physicsDataB = phyEngine->GetEntityPhysicsData(otherId);
+	auto& entityCallBack = physicsDataA.OnCollide;
+	if (entityCallBack)
+	{
+		entityCallBack(physicsDataB.Entity);
 	}
 }

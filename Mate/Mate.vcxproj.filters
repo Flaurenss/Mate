@@ -316,6 +316,9 @@
     <ClInclude Include="MateContactListener.h">
       <Filter>Header Files\Core\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionData.h">
+      <Filter>Header Files\Core\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="Resources\container.jpg">

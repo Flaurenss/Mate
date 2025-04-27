@@ -197,6 +197,7 @@
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CameraSystem.h" />
     <ClInclude Include="cgltf.h" />
+    <ClInclude Include="CollisionData.h" />
     <ClInclude Include="CommonPhysics.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentRegistry.h" />

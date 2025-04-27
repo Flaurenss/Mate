@@ -7,4 +7,5 @@ struct PhysicsData
 {
 	JPH::BodyID bodyId;
 	std::function<void(Entity otherEntity)> OnCollide;
+	Entity Entity;
 };

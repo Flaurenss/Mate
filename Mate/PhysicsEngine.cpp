@@ -147,8 +147,20 @@ void PhysicsEngine::MoveKinematic(int entityId, Vector3 targetPosition, Vector3 
 		deltaTime);
 }
 
-void PhysicsEngine::OnCollision(int entityA, int entityB)
+void PhysicsEngine::AddNewCollision(int entityA, int entityB)
 {
+	CollisionData newCollision {entityA, entityB};
+	collisions.push_back(newCollision);
+}
+
+bool PhysicsEngine::IsRegistered(int entityId)
+{
+	auto it = entityPhysicsDataMap.find(entityId);
+	if (it == entityPhysicsDataMap.end())
+	{
+		return false;
+	}
+	return true;
 }
 
 bool PhysicsEngine::TryGetBodyId(int entityId, JPH::BodyID& body)
