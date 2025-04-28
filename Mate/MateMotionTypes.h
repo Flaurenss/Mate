@@ -3,6 +3,6 @@
 enum MotionType
 {
 	STATIC,
-	KINEMTAIC,
+	KINEMATIC,
 	DYNAMIC,
 };

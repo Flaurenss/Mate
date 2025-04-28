@@ -10,43 +10,25 @@ class Entity;
 struct PhysicsComponent
 {
 public:
-	MotionType motionType;
-
+	MotionType BodyMotionType;
 	std::function<void(Entity otherEntity)> OnCollide;
 
-	PhysicsComponent() : motionType(STATIC) {}
-	PhysicsComponent(MotionType type) : motionType(type) {}
+	PhysicsComponent();
+	PhysicsComponent(MotionType type);
 
-	bool IsDirty() { return isDirty; }
-	void MoveKinematic(Vector3 newTargetPosition)
-	{
-		targetPosition = newTargetPosition;
-		isDirty = true;
-	}
-	Vector3 GetActualTargetPosition()
-	{
-		return targetPosition;
-	}
-	void SetDirty(bool status = true)
-	{
-		isDirty = status;
-	}
-	void Reset()
-	{
-		isDirty = false;
-		targetPosition = Vector3::Zero;
-	}
-	bool IsSensor() { return isSensor; }
-	void SetIsSensor(bool status = true)
-	{
-		isSensor = status;
-	}
+	bool IsDirty() const;
+	void SetDirty(bool status = true);
+	
+	void MoveKinematic(Vector3 newTargetPosition);
+	Vector3 GetActualTargetPosition() const;
+	
+	void Reset();
+	
+	bool IsSensor() const;
+	void SetIsSensor(bool status = true);
 
-	void SetTag(std::string newTag)
-	{
-		tag = newTag;
-	}
-	std::string GetTag() { return tag; }
+	std::string GetTag() const;
+	void SetTag(std::string newTag);
 
 private:
 	std::string tag;

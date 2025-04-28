@@ -11,5 +11,6 @@ public:
 private:
 	std::unique_ptr<PhysicsEngine> phyEngine;
 
+	void RegisterBody(Entity& entity);
 	void CallOnCollisionData(int selfId, int otherId);
 };

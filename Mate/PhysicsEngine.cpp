@@ -129,9 +129,22 @@ Vector3 PhysicsEngine::GetEulerAngles(int entityId)
 		MathUtils::degrees(euler.GetZ()));
 }
 
-Vector3 PhysicsEngine::SetPosition(int entityId, Vector3 position)
+void PhysicsEngine::SetPosition(int entityId, Vector3 position)
 {
-	return Vector3();
+	JPH::BodyID bodyId = GetBodyId(entityId);
+	auto jphPosition = JPH::RVec3(position.x, position.y, position.z);
+
+	bodyInterface->SetPositon(bodyId, jphPosition, true);
+}
+
+void PhysicsEngine::SetPositionAndRotation(int entityId, Vector3 position, Vector3 eulerAngles)
+{
+	JPH::BodyID bodyId = GetBodyId(entityId);
+	auto rotationQuat = EulerToQuat(eulerAngles);
+
+	auto jphPosition = JPH::RVec3(position.x, position.y, position.z);
+
+	bodyInterface->SetPositonAndRotation(bodyId, jphPosition, rotationQuat, true);
 }
 
 void PhysicsEngine::MoveKinematic(int entityId, Vector3 targetPosition, Vector3 targetRotation, float deltaTime)

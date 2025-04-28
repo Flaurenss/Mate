@@ -35,7 +35,9 @@ public:
 		std::function<void(Entity)> onCollide);
 	Vector3 GetPosition(int entityId);
 	Vector3 GetEulerAngles(int entityId);
-	Vector3 SetPosition(int entityId, Vector3 position);
+	
+	void SetPosition(int entityId, Vector3 position);
+	void SetPositionAndRotation(int entityId, Vector3 position, Vector3 eulerAngles);
 	void MoveKinematic(int entityId, Vector3 targetPosition, Vector3 targetRotation, float deltaTime);
 
 	void AddNewCollision(int entityA, int entityB);
