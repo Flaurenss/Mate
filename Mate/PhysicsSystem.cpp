@@ -58,13 +58,13 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 
 	phyEngine->Update(fixedDeltaTime);
 
-	for (auto collisionData : phyEngine->collisions)
+	for (auto collisionData : phyEngine->GetCollisions())
 	{
 		CallOnCollisionData(collisionData.EntityIdA, collisionData.EntityIdB);
 		CallOnCollisionData(collisionData.EntityIdB, collisionData.EntityIdA);
 	}
 
-	phyEngine->collisions.clear();
+	phyEngine->ClearCollisions();
 
 	for (Entity& entity : GetEntities())
 	{

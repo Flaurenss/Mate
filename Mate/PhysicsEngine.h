@@ -43,9 +43,16 @@ public:
 	JPH::BodyID GetBodyId(int entityId);
 	PhysicsData GetEntityPhysicsData(int entityId);
 
-	std::unordered_map<int, PhysicsData> entityPhysicsDataMap;
-	std::vector<CollisionData> collisions;
+	std::vector<CollisionData> GetCollisions();
+	void ClearCollisions();
+
+	void RmoveAndDestroy(int entityId);
+	void RmoveAndDestroyAll();
+
 private:
+	std::vector<CollisionData> collisions;
+	std::unordered_map<int, PhysicsData> entityPhysicsDataMap;
+
 	const unsigned int cMaxBodies = 65536; // Recommended value by Jolt
 	const unsigned int cNumBodyMutexes = 0;
 	const unsigned int cMaxBodyPairs = 65536;

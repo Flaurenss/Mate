@@ -39,6 +39,11 @@ void ECS::RemoveComponent(Entity entity)
 	const auto entityId = entity.GetId();
 	const auto componentId = Component<TComponent>::GetId();
 
+	// Get registry of component type
+	std::shared_ptr<ComponentRegistry<TComponent>> componentRegistry =
+		std::static_pointer_cast<ComponentRegistry<TComponent>>(componentsRegistry[componentId]);
+	componentRegistry->Remove(entityId);
+
 	// Put TComponent bit from entity at false:
 	entityComponentSignatures[entityId].set(componentId, false);
 }

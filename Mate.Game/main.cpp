@@ -50,6 +50,7 @@ int main()
     
     auto camera = CreateCamera(ecs);
     TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
+    
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     
     bool runGame = false;
@@ -58,6 +59,7 @@ int main()
     //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
     //Entity obstacleEntity = GameAssets::CreateObstacle(ecs, modelImporter, Vector3(0, 0.5f, 0));
     Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3::Up * 0.2f);
+
     playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&](Entity otherEntity)
     {
         auto& otherPhysicsComponent = otherEntity.GetComponent<PhysicsComponent>();

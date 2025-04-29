@@ -10,5 +10,5 @@ public:
 	std::vector<Vector3> GenerateCoinPoses();
 	void SetAssetsPoses(bool init);
 private:
-
+	float fixedDeltaTime = 1.0f / 60.0f;
 };

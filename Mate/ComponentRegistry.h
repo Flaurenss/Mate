@@ -21,6 +21,7 @@ public:
 	void Clear();
 	void Add(TComponent component);
 	void Set(int index, TComponent component);
+	void Remove(int ientityId);
 	TComponent& Get(int index);
 	TComponent& operator [](int index);
 private:
@@ -65,6 +66,12 @@ void ComponentRegistry<TComponent>::Set(int index, TComponent component)
 		data.resize(index + 1, nullptr);
 	}
 	data[index] = std::make_shared<TComponent>(component);
+}
+
+template<typename TComponent>
+inline void ComponentRegistry<TComponent>::Remove(int entityId)
+{
+	// TODO:... Delete entity
 }
 
 template<typename TComponent>

@@ -24,7 +24,6 @@ PhysicsEngine::PhysicsEngine()
 	JPH::Factory::sInstance = new JPH::Factory();
 	JPH::RegisterTypes();
 
-	//tempAllocator = std::make_unique<JPH::TempAllocatorMalloc>();
 	tempAllocator = std::make_unique<JPH::TempAllocatorImpl>(32 * 1024 * 1024);
 	jobSystem = std::make_unique<JPH::JobSystemThreadPool>(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, std::thread::hardware_concurrency() - 1);
 	system = std::make_unique<JPH::PhysicsSystem>();
@@ -51,6 +50,8 @@ PhysicsEngine::PhysicsEngine()
 
 PhysicsEngine::~PhysicsEngine()
 {
+	RmoveAndDestroyAll();
+
 	JPH::UnregisterTypes();
 
 	delete JPH::Factory::sInstance;
@@ -199,6 +200,31 @@ PhysicsData PhysicsEngine::GetEntityPhysicsData(int entityId)
 		assert(false && "PhysicsEngine::GetEntityPhysicsData: Entity ID not found in bodyMap");
 	}
 	return it->second;
+}
+
+std::vector<CollisionData> PhysicsEngine::GetCollisions()
+{
+	return collisions;
+}
+
+void PhysicsEngine::ClearCollisions()
+{
+	collisions.clear();
+}
+
+void PhysicsEngine::RmoveAndDestroy(int entityId)
+{
+	auto bodyId = GetBodyId(entityId);
+	bodyInterface->RemoveBody(bodyId);
+	bodyInterface->DestroyBody(bodyId);
+}
+
+void PhysicsEngine::RmoveAndDestroyAll()
+{
+	for (auto& physicalDataMap : entityPhysicsDataMap)
+	{
+		RmoveAndDestroy(physicalDataMap.first);
+	}
 }
 
 JPH::Quat PhysicsEngine::EulerToQuat(Vector3 eulerAngles)
