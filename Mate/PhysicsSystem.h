@@ -7,7 +7,7 @@ class PhysicsSystem : public System
 public:
 	PhysicsSystem();
 
-	void Update(float fixedDeltaTime);
+	void Update(float deltaTime);
 private:
 	std::unique_ptr<PhysicsEngine> phyEngine;
 

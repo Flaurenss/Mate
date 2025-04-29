@@ -14,7 +14,7 @@ namespace Layers
 {
 	static constexpr JPH::ObjectLayer NON_MOVING = 0;
 	static constexpr JPH::ObjectLayer MOVING = 1;
-	static constexpr JPH::ObjectLayer NUM_LAYERS = 2;
+	static constexpr JPH::ObjectLayer NUM_LAYERS = 3;
 };
 
 // Each broadphase layer results in a separate bounding volume tree in the broad phase. You at least want to have

@@ -12,7 +12,7 @@ PhysicsSystem::PhysicsSystem()
 	RequireComponent<PhysicsComponent>();
 }
 
-void PhysicsSystem::Update(float fixedDeltaTime)
+void PhysicsSystem::Update(float deltaTime)
 {
 	for (Entity& entity : GetEntities())
 	{
@@ -38,7 +38,7 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 						entity.GetId(),
 						physicsComponent.GetActualTargetPosition(),
 						transform.EulerAngles,
-						fixedDeltaTime);
+						deltaTime);
 				}
 				else if (physicsComponent.BodyMotionType == STATIC)
 				{
@@ -55,7 +55,7 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 		}
 	}
 
-	phyEngine->Update(fixedDeltaTime);
+	phyEngine->Update(deltaTime);
 
 	for (auto collisionData : phyEngine->collisions)
 	{
@@ -80,7 +80,7 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 			Vector3 newPosition = phyEngine->GetPosition(entity.GetId());
 			Vector3 newEulerRotation = phyEngine->GetEulerAngles(entity.GetId());
 			transformComponent.Position = newPosition;
-			transformComponent.EulerAngles = newEulerRotation;
+			//transformComponent.EulerAngles = newEulerRotation;
 		}
 	}
 }

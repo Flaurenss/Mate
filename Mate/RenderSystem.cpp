@@ -28,10 +28,9 @@ void RenderSystem::Update()
 		meshComponent.GetModel().Draw(shader);
 
 		// Draw bounding box
-		const Vector3& extent = meshComponent.GetExtents();
-		DebugDraw::DrawAABB((extent/2), modelTransform, shader);
-
+		//const Vector3& extent = meshComponent.GetExtents();
+		//DebugDraw::DrawAABB((extent/2), modelTransform, shader);
 		// Draw world axis
-		DebugDraw::DrawWorldAxes(shader);
+		//DebugDraw::DrawWorldAxes(shader);
 	}
 }

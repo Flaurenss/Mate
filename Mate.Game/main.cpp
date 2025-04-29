@@ -15,7 +15,7 @@ float pitch = 0;
 float lastX = 0;
 float lastY = 0;
 bool firstMouse = true;
-const int ROAD_LENGHT = 2;
+const int ROAD_LENGHT = 5;
 const int START_COINS = 10;
 const int START_OBSTACLES = 3;
 const std::string REWARD_TAG = "COIN";
@@ -54,13 +54,14 @@ int main()
     //EngineDemo::CreateBaseFloor(ecs);
     //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
     //Entity obstacleEntity = GameAssets::CreateObstacle(ecs, modelImporter, Vector3(0, 0.5f, 0));
-    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3::Up * 0.5f);
+    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3::Up * 0.2f);
     playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&](Entity otherEntity)
     {
         auto& otherPhysicsComponent = otherEntity.GetComponent<PhysicsComponent>();
         auto tag = otherPhysicsComponent.GetTag();
         if (tag == REWARD_TAG)
         {
+            otherEntity.GetComponent<EnableComponent>().Enabled = false;
             points++;
         }
         else if (tag == OBSTACLE_TAG)
@@ -168,6 +169,7 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
     auto road = ecs.CreateEntity();
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
+    road.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     road.AddComponent<MeshComponent>(roadMeshes);
     //road.AddComponent<PhysicsComponent>();
     Part floorPart{ road, roadPos, roadTrans, EnvironmentType::Floor };
@@ -203,7 +205,7 @@ Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
     coin.AddComponent<EnableComponent>().Enabled = false;
     coin.AddComponent<MeshComponent>(coinMeshes);
     auto& coinTrans = coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
-    auto& phy = coin.AddComponent<PhysicsComponent>(MotionType::KINEMATIC);
+    auto& phy = coin.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phy.SetIsSensor(true);
     phy.SetTag(REWARD_TAG);
     Part coinPart{ coin, coinPos, coinTrans, EnvironmentType::Reward };
@@ -218,7 +220,7 @@ Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
     Vector3 boxOffset(xOffset, 0, zOffset);
     Vector3 boxPos = roadPos + boxOffset;
     Entity box = ecs.CreateEntity();
-    auto& phyComponent = box.AddComponent<PhysicsComponent>(MotionType::KINEMATIC);
+    auto& phyComponent = box.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phyComponent.SetIsSensor(true);
     phyComponent.SetTag(OBSTACLE_TAG);
     box.AddComponent<EnableComponent>().Enabled = false;
@@ -252,19 +254,20 @@ void ManageMovableMisc(std::deque<EnvironmentPart>& environmentPartsQueue, float
     }
 
     // Move all blocks
-    const float speed = deltaTime * 7.5f;
+    const float speed = deltaTime * 20.5f;
     const float rotationSpeed = deltaTime * 200;
     Vector3 movement = -Vector3::Forward * speed;
     for (auto& environmentPart : environmentPartsQueue)
     {
-        environmentPart.floorPart.transformComponent.Translate(movement);
+        //environmentPart.floorPart.transformComponent.Translate(movement);
+        auto posToMove = environmentPart.floorPart.transformComponent.Position + movement;
+        environmentPart.floorPart.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
 
         for (auto& coll : environmentPart.obstacles)
         {
             auto posToMove = coll.transformComponent.Position + movement;
             coll.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
-            //coll.transformComponent.Translate(movement);
-            //coll.entity.GetComponent<PhysicsComponent>().SetDirty(true);
+            coll.entity.GetComponent<PhysicsComponent>().SetDirty(true);
         }
 
         for (auto& reward : environmentPart.rewards)
@@ -272,8 +275,7 @@ void ManageMovableMisc(std::deque<EnvironmentPart>& environmentPartsQueue, float
             auto posToMove = reward.transformComponent.Position + movement;
             reward.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
             reward.transformComponent.Rotate(Vector3::Up * rotationSpeed);
-            //reward.transformComponent.Translate(movement);
-            //reward.entity.GetComponent<PhysicsComponent>().SetDirty(true);
+            reward.entity.GetComponent<PhysicsComponent>().SetDirty(true);
         }
     }
 }
@@ -416,7 +418,7 @@ void RedoPart(EnvironmentPart& part)
 void ManagePlayerInputRails(Entity player, PlayerRailState& state, float playerOriginalX, float deltaTime)
 {
     const float space = 1.5f;
-    const float speed = 5.0f;
+    const float speed = 10.0f;
     const float epsilon = 0.01f; // margen pequeño para snap
 
     if (Input::GetKeyDown(KeyCode::D) && state.currentRail < 1)

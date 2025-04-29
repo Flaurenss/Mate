@@ -1,6 +1,6 @@
 #include "PhysicsComponent.h"
 
-PhysicsComponent::PhysicsComponent() : BodyMotionType(STATIC), Layer(PhysicLayer::MOVING)
+PhysicsComponent::PhysicsComponent() : BodyMotionType(DYNAMIC), Layer(PhysicLayer::MOVING)
 {}
 
 PhysicsComponent::PhysicsComponent(MotionType type) : BodyMotionType(type), Layer(PhysicLayer::MOVING)
