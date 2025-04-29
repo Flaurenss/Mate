@@ -30,6 +30,9 @@
     <ClCompile Include="GameAssets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EndlessRunner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Avocado\Avocado.gltf">
@@ -47,6 +50,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameAssets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EndlessRunner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

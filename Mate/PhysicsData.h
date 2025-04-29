@@ -11,7 +11,7 @@ struct PhysicsData
 	PhysicsData(JPH::BodyID bodyId, Entity entity);
 	Entity GetEntity();
 	PhysicsComponent& GetPhysicsComponent();
+
 private:
 	Entity entity;
-
 };

@@ -20,6 +20,7 @@ public:
 
 	bool IsRunning();
 	void Update();
+	void PhysicsUpdate(float fixedDeltaTime);
 	void SetSimulationTo(bool status);
 
 private:
@@ -32,13 +33,11 @@ private:
 	static int height;
 	
 	float lastFrame;
-	float accumulator = 0.0f;
 
 	void Initialize();
 	void CoreInitialize();
 
 	void ComputeDelta();
-	void FixedUpdate();
 	void RenderUpdate();
 
 	GLFWwindow* window;

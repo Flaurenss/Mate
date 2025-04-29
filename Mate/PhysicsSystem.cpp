@@ -12,7 +12,7 @@ PhysicsSystem::PhysicsSystem()
 	RequireComponent<PhysicsComponent>();
 }
 
-void PhysicsSystem::Update(float deltaTime)
+void PhysicsSystem::Update(float fixedDeltaTime)
 {
 	for (Entity& entity : GetEntities())
 	{
@@ -32,13 +32,14 @@ void PhysicsSystem::Update(float deltaTime)
 			auto& transform = entity.GetComponent<TransformComponent>();
 			if (physicsComponent.IsDirty())
 			{
+				//ProcessKinematicEntity(entity.GetId(), physicsComponent);
 				if (physicsComponent.BodyMotionType == KINEMATIC)
 				{
 					phyEngine->MoveKinematic(
 						entity.GetId(),
 						physicsComponent.GetActualTargetPosition(),
 						transform.EulerAngles,
-						deltaTime);
+						fixedDeltaTime);
 				}
 				else if (physicsComponent.BodyMotionType == STATIC)
 				{
@@ -55,7 +56,7 @@ void PhysicsSystem::Update(float deltaTime)
 		}
 	}
 
-	phyEngine->Update(deltaTime);
+	phyEngine->Update(fixedDeltaTime);
 
 	for (auto collisionData : phyEngine->collisions)
 	{

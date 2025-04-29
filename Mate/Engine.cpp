@@ -118,7 +118,7 @@ void Engine::Update()
 	Input::Update();
 	testProcessInput(window);
 
-	FixedUpdate();
+	//PhysicsUpdate();
 	registry->Update();
 	RenderUpdate();
 }
@@ -133,19 +133,11 @@ void Engine::ComputeDelta()
 	float currentFrame = static_cast<float>(glfwGetTime());
 	DeltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
-	accumulator += DeltaTime;
 }
 
-void Engine::FixedUpdate()
+void Engine::PhysicsUpdate(float fixedDeltaTime)
 {
-	while (accumulator >= fixedDeltaTime)
-	{
-		if (runSimulation)
-		{
-			registry->GetSystem<PhysicsSystem>().Update(fixedDeltaTime);
-		}
-		accumulator -= fixedDeltaTime;
-	}
+	registry->GetSystem<PhysicsSystem>().Update(fixedDeltaTime);
 }
 
 void Engine::RenderUpdate()

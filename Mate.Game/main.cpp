@@ -14,8 +14,9 @@ float yaw = 45.0f;
 float pitch = 0;
 float lastX = 0;
 float lastY = 0;
+float fixedDeltaTime = 1.0f / 60.0f;
 bool firstMouse = true;
-const int ROAD_LENGHT = 5;
+const int ROAD_LENGHT = 3;
 const int START_COINS = 10;
 const int START_OBSTACLES = 3;
 const std::string REWARD_TAG = "COIN";
@@ -34,9 +35,11 @@ Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs);
 
 void ManageMovableMisc(std::deque<EnvironmentPart>& assets, float deltaTime);
 void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos);
-void RedoPart(EnvironmentPart& part);
+void RedoPart(EnvironmentPart& part, bool init = false);
 
-void ManagePlayerInputRails(Entity player, PlayerRailState& state, float playerOriginalX, float deltaTime);
+void ManagePlayerInputRails(Entity player, PlayerRailState& state, float deltaTime);
+void ProcessPlayerInputRails(Entity player, PlayerRailState& state, float playerOriginalX);
+
 void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& transformCamera, float deltaTime);
 void ManagePlayerInput(Entity& entity, float deltaTime);
 
@@ -81,6 +84,7 @@ int main()
     railState.targetX = playerTransform.Position.x;
     railState.currentRail = 0;
 
+    float accumulator = 0.0f;
     while (engine->IsRunning())
     {
         float deltaTime = engine->DeltaTime;
@@ -93,14 +97,29 @@ int main()
         {
             //ManagePlayerInput(playerEntity, deltaTime);
             //transCube.Translate(Vector3(deltaTime, 0, 0));
-            ManagePlayerInputRails(playerEntity, railState, originalPos.x, deltaTime);
-            ManageMovableMisc(environmentAssets, deltaTime);
+            
+            //ManagePlayerInputRails(playerEntity, railState, originalPos.x, deltaTime);
+            //ManageMovableMisc(environmentAssets, deltaTime);
+
             //auto& phy = obstacleEntity.GetComponent<PhysicsComponent>();
             //auto& trans = obstacleEntity.GetComponent<TransformComponent>();
             //phy.MoveKinematic(trans.Position + Vector3::Right * deltaTime);
         }
 
-        //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
+        accumulator += deltaTime;
+        ProcessPlayerInputRails(playerEntity, railState, originalPos.x);
+        while (accumulator >= fixedDeltaTime)
+        {
+	        if (runGame)
+	        {
+                ManagePlayerInputRails(playerEntity, railState, fixedDeltaTime);
+                ManageMovableMisc(environmentAssets, fixedDeltaTime);
+		        engine->PhysicsUpdate(fixedDeltaTime);
+	        }
+	        accumulator -= fixedDeltaTime;
+        }
+
+        ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
         engine->Update();
     }
 }
@@ -155,7 +174,7 @@ std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs)
     for (auto i = 0; i < ROAD_LENGHT; i++)
     {
         auto envPart = CreateMovableMisc(ecs, i);
-        RedoPart(envPart);
+        RedoPart(envPart, true);
         environmentParts.push_back(envPart);
     }
 
@@ -234,32 +253,14 @@ void ManageMovableMisc(std::deque<EnvironmentPart>& environmentPartsQueue, float
 {
     const float blockLength = 10.0f;
 
-    // Check if recent block is out of bounds
-    auto& firstBlock = environmentPartsQueue.front();
-    TransformComponent& firstFloorTrans = firstBlock.GetFloorTransform();
-
-    if (firstFloorTrans.Position.z > 10.0f)
-    {
-        // Get last floor pos
-        auto& lastBlock = environmentPartsQueue.back();
-        Vector3 lastFloorPos = lastBlock.GetFloorTransform().Position;
-
-        // Calculate new pos and reset children
-        Vector3 newBasePos = lastFloorPos - Vector3(0, 0, blockLength);
-        ResetEnvironmentPart(firstBlock, newBasePos);
-
-        // Push to end queue
-        environmentPartsQueue.push_back(firstBlock);
-        environmentPartsQueue.pop_front();
-    }
-
-    // Move all blocks
-    const float speed = deltaTime * 20.5f;
+    // Movement Params
+    const float speed = deltaTime * 7.5f;
     const float rotationSpeed = deltaTime * 200;
     Vector3 movement = -Vector3::Forward * speed;
+
+    // Mover all assets on forward axis
     for (auto& environmentPart : environmentPartsQueue)
     {
-        //environmentPart.floorPart.transformComponent.Translate(movement);
         auto posToMove = environmentPart.floorPart.transformComponent.Position + movement;
         environmentPart.floorPart.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
 
@@ -267,7 +268,6 @@ void ManageMovableMisc(std::deque<EnvironmentPart>& environmentPartsQueue, float
         {
             auto posToMove = coll.transformComponent.Position + movement;
             coll.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
-            coll.entity.GetComponent<PhysicsComponent>().SetDirty(true);
         }
 
         for (auto& reward : environmentPart.rewards)
@@ -275,23 +275,33 @@ void ManageMovableMisc(std::deque<EnvironmentPart>& environmentPartsQueue, float
             auto posToMove = reward.transformComponent.Position + movement;
             reward.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
             reward.transformComponent.Rotate(Vector3::Up * rotationSpeed);
-            reward.entity.GetComponent<PhysicsComponent>().SetDirty(true);
         }
+    }
+
+    // Check if we need to reset
+    auto& firstBlock = environmentPartsQueue.front();
+    TransformComponent& firstFloorTrans = firstBlock.GetFloorTransform();
+    Vector3 lastFloorPosition = environmentPartsQueue.back().GetFloorTransform().Position;
+    if (firstFloorTrans.Position.z > 10.0f)
+    {
+        Vector3 newBasePos = lastFloorPosition - Vector3(0, 0, blockLength - movement.length());
+        ResetEnvironmentPart(firstBlock, newBasePos);
+
+        environmentPartsQueue.push_back(firstBlock);
+        environmentPartsQueue.pop_front();
     }
 }
 
 void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos)
 {
-    Vector3 oldFloorPos = part.floorPart.originalPos;
-
-    part.floorPart.transformComponent.SetPosition(newFloorPos);
+    part.floorPart.entity.GetComponent<PhysicsComponent>().MoveKinematic(newFloorPos);
     part.floorPart.originalPos = newFloorPos;
 
     RedoPart(part);
 }
 
 // Used to reposition assets again when floor reset happens
-void RedoPart(EnvironmentPart& part)
+void RedoPart(EnvironmentPart& part, bool init)
 {
     if (part.obstacles.empty() && part.rewards.empty())
     {
@@ -387,7 +397,14 @@ void RedoPart(EnvironmentPart& part)
         if (i < newObstacleOffsets.size())
         {
             Vector3 newPos = basePos + newObstacleOffsets[i];
-            part.obstacles[i].transformComponent.SetPosition(newPos);
+            if (init)
+            {
+                part.obstacles[i].transformComponent.SetPosition(newPos);
+            }
+            else
+            {
+                part.obstacles[i].entity.GetComponent<PhysicsComponent>().MoveKinematic(newPos);
+            }
             part.obstacles[i].originalPos = newPos;
             part.obstacles[i].entity.GetComponent<EnableComponent>().Enabled = true;
         }
@@ -404,7 +421,14 @@ void RedoPart(EnvironmentPart& part)
         if (i < newRewardOffsets.size())
         {
             Vector3 newPos = basePos + newRewardOffsets[i];
-            part.rewards[i].transformComponent.SetPosition(newPos);
+            if (init)
+            {
+                part.rewards[i].transformComponent.SetPosition(newPos);
+            }
+            else
+            {
+                part.rewards[i].entity.GetComponent<PhysicsComponent>().MoveKinematic(newPos);
+            }
             part.rewards[i].originalPos = newPos;
             part.rewards[i].entity.GetComponent<EnableComponent>().Enabled = true;
         }
@@ -415,23 +439,10 @@ void RedoPart(EnvironmentPart& part)
     }
 }
 
-void ManagePlayerInputRails(Entity player, PlayerRailState& state, float playerOriginalX, float deltaTime)
+void ManagePlayerInputRails(Entity player, PlayerRailState& state, float deltaTime)
 {
-    const float space = 1.5f;
     const float speed = 10.0f;
-    const float epsilon = 0.01f; // margen pequeño para snap
-
-    if (Input::GetKeyDown(KeyCode::D) && state.currentRail < 1)
-    {
-        state.currentRail++;
-        state.targetX = state.currentRail * space;
-    }
-
-    if (Input::GetKeyDown(KeyCode::A) && state.currentRail > -1)
-    {
-        state.currentRail--;
-        state.targetX = state.currentRail * space;
-    }
+    const float epsilon = 0.01f;
 
     auto& transform = player.GetComponent<TransformComponent>();
     auto& physicsComponent = player.GetComponent<PhysicsComponent>();
@@ -449,7 +460,6 @@ void ManagePlayerInputRails(Entity player, PlayerRailState& state, float playerO
         }
         else
         {
-            // Todavía estamos lejos, seguimos moviendo poco a poco
             Vector3 moveVec = Vector3::Right * move * direction;
             physicsComponent.MoveKinematic(transform.Position + moveVec);
         }
@@ -457,6 +467,23 @@ void ManagePlayerInputRails(Entity player, PlayerRailState& state, float playerO
     else
     {
         physicsComponent.MoveKinematic(Vector3(state.targetX, transform.Position.y, transform.Position.z));
+    }
+}
+
+void ProcessPlayerInputRails(Entity player, PlayerRailState& state, float playerOriginalX)
+{
+    const float space = 1.5f;
+
+    if (Input::GetKeyDown(KeyCode::D) && state.currentRail < 1)
+    {
+        state.currentRail++;
+        state.targetX = state.currentRail * space;
+    }
+
+    if (Input::GetKeyDown(KeyCode::A) && state.currentRail > -1)
+    {
+        state.currentRail--;
+        state.targetX = state.currentRail * space;
     }
 }
 

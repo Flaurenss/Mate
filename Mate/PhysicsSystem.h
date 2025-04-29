@@ -7,10 +7,11 @@ class PhysicsSystem : public System
 public:
 	PhysicsSystem();
 
-	void Update(float deltaTime);
+	void Update(float fixedDeltaTime);
+
 private:
 	std::unique_ptr<PhysicsEngine> phyEngine;
-
+	
 	void RegisterBody(Entity& entity);
 	void CallOnCollisionData(int selfId, int otherId);
 };
