@@ -172,6 +172,7 @@
     <ClCompile Include="ObjectLayerPairFilterImpl.cpp" />
     <ClCompile Include="ObjectVsBPLayerFilterImpl.cpp" />
     <ClCompile Include="PhysicsComponent.cpp" />
+    <ClCompile Include="PhysicsData.cpp" />
     <ClCompile Include="PhysicsData.h" />
     <ClCompile Include="PhysicsEngine.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />

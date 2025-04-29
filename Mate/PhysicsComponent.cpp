@@ -3,7 +3,7 @@
 PhysicsComponent::PhysicsComponent() : BodyMotionType(STATIC)
 {}
 
-PhysicsComponent::PhysicsComponent(MotionType type) : BodyMotionType(STATIC)
+PhysicsComponent::PhysicsComponent(MotionType type) : BodyMotionType(type)
 {}
 
 bool PhysicsComponent::IsDirty() const

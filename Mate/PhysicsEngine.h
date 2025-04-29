@@ -32,7 +32,7 @@ public:
 		Vector3 eulerAngles,
 		MotionType mode,
 		bool isSensor,
-		std::function<void(Entity)> onCollide);
+		PhysicsComponent& component);
 	Vector3 GetPosition(int entityId);
 	Vector3 GetEulerAngles(int entityId);
 	

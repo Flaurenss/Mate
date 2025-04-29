@@ -15,7 +15,7 @@ float pitch = 0;
 float lastX = 0;
 float lastY = 0;
 bool firstMouse = true;
-const int ROAD_LENGHT = 0;
+const int ROAD_LENGHT = 1;
 const int START_COINS = 10;
 const int START_OBSTACLES = 3;
 const std::string REWARD_TAG = "COIN";
@@ -52,12 +52,12 @@ int main()
     
     bool runGame = false;
     int points = 0;
-    EngineDemo::CreateBaseFloor(ecs);
+    //EngineDemo::CreateBaseFloor(ecs);
+    //GameAssets::CreateObstacle(ecs, modelImporter, Vector3(0, 0.5f, 0));
     Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3(1, 0.5f, 0));
-    GameAssets::CreateObstacle(ecs, modelImporter, Vector3(0, 0.5f, 0));
-    playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&runGame, &points](Entity otherEntity)
+    playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&runGame, &points](PhysicsComponent& otherEntity)
     {
-        auto tag = otherEntity.GetComponent<PhysicsComponent>().GetTag();
+        auto tag = otherEntity.GetTag();
         if (tag == REWARD_TAG)
         {
             points++;
@@ -69,15 +69,16 @@ int main()
         }
     };
     //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
-    //std::deque<EnvironmentPart> environmentAssets = CreateEnvironment(ecs);
+    std::deque<EnvironmentPart> environmentAssets = CreateEnvironment(ecs);
     
 
     float rotationSpeedDegrees = 90.0f;
     float movementSpeedUnits = 0.1f;
-    //Vector3 originalPos = playerTransform.Position;
-    /*PlayerRailState railState;
+    auto& playerTransform = playerEntity.GetComponent<TransformComponent>();
+    Vector3 originalPos = playerTransform.Position;
+    PlayerRailState railState;
     railState.targetX = playerTransform.Position.x;
-    railState.currentRail = 0;*/
+    railState.currentRail = 0;
 
     while (engine->IsRunning())
     {
@@ -91,9 +92,9 @@ int main()
         {
             auto& phy = playerEntity.GetComponent<PhysicsComponent>();
             auto& trans = playerEntity.GetComponent<TransformComponent>();
-            ManagePlayerInput(playerEntity, deltaTime);
-            //ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
-            //ManageMovableMisc(environmentAssets, deltaTime);
+            //ManagePlayerInput(playerEntity, deltaTime);
+            ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
+            ManageMovableMisc(environmentAssets, deltaTime);
         }
 
         //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);

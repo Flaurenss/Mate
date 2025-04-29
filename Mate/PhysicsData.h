@@ -1,11 +1,12 @@
 #pragma once
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/PhysicsSystem.h>
+#include "PhysicsComponent.h"
 
-class Entity;
 struct PhysicsData
 {
-	JPH::BodyID bodyId;
-	std::function<void(Entity otherEntity)> OnCollide;
-	Entity Entity;
+	JPH::BodyID BodyId;
+	PhysicsComponent& Component;
+
+	PhysicsData(JPH::BodyID bodyId, PhysicsComponent& physicsComponent);
 };

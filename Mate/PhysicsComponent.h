@@ -11,7 +11,7 @@ struct PhysicsComponent
 {
 public:
 	MotionType BodyMotionType;
-	std::function<void(Entity otherEntity)> OnCollide;
+	std::function<void(PhysicsComponent& otherPhysicsData)> OnCollide;
 
 	PhysicsComponent();
 	PhysicsComponent(MotionType type);

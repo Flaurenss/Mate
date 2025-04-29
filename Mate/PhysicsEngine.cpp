@@ -78,7 +78,7 @@ void PhysicsEngine::RegisterBody(
 	Vector3 eulerAngles,
 	MotionType motionType,
 	bool isSensor,
-	std::function<void(Entity)> onCollide)
+	PhysicsComponent& component)
 {
 	JPH::BoxShapeSettings shape_settings(JPH::Vec3(halfExtents.x, halfExtents.y, halfExtents.z));
 	JPH::ShapeSettings::ShapeResult shape_result = shape_settings.Create();
@@ -103,9 +103,9 @@ void PhysicsEngine::RegisterBody(
 	body->SetUserData(entityId);
 	body->SetIsSensor(isSensor);
 	bodyInterface->AddBody(body->GetID(), JPH::EActivation::Activate);
-	PhysicsData physicsData;
-	physicsData.bodyId = body->GetID();
-	physicsData.OnCollide = onCollide;
+	PhysicsData physicsData(body->GetID(), component);
+	/*physicsData.bodyId = body->GetID();
+	physicsData.OnCollide = onCollide;*/
 	entityPhysicsDataMap.insert(std::make_pair(entityId, physicsData));
 }
 
@@ -134,7 +134,7 @@ void PhysicsEngine::SetPosition(int entityId, Vector3 position)
 	JPH::BodyID bodyId = GetBodyId(entityId);
 	auto jphPosition = JPH::RVec3(position.x, position.y, position.z);
 
-	bodyInterface->SetPositon(bodyId, jphPosition, true);
+	bodyInterface->SetPosition(bodyId, jphPosition, JPH::EActivation::Activate);
 }
 
 void PhysicsEngine::SetPositionAndRotation(int entityId, Vector3 position, Vector3 eulerAngles)
@@ -144,7 +144,7 @@ void PhysicsEngine::SetPositionAndRotation(int entityId, Vector3 position, Vecto
 
 	auto jphPosition = JPH::RVec3(position.x, position.y, position.z);
 
-	bodyInterface->SetPositonAndRotation(bodyId, jphPosition, rotationQuat, true);
+	bodyInterface->SetPositionAndRotation(bodyId, jphPosition, rotationQuat, JPH::EActivation::Activate);
 }
 
 void PhysicsEngine::MoveKinematic(int entityId, Vector3 targetPosition, Vector3 targetRotation, float deltaTime)
@@ -183,7 +183,7 @@ bool PhysicsEngine::TryGetBodyId(int entityId, JPH::BodyID& body)
 	{
 		return false;
 	}
-	body = it->second.bodyId;
+	body = it->second.BodyId;
 	return true;
 }
 

@@ -22,7 +22,7 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 			continue;
 		}
 
-		if (phyEngine->IsRegistered(entity.GetId()))
+		if (!phyEngine->IsRegistered(entity.GetId()))
 		{
 			RegisterBody(entity);
 		}
@@ -108,16 +108,16 @@ void PhysicsSystem::RegisterBody(Entity& entity)
 		transform.EulerAngles,
 		physicsComponent.BodyMotionType,
 		physicsComponent.IsSensor(),
-		physicsComponent.OnCollide);
+		physicsComponent);
 }
 
 void PhysicsSystem::CallOnCollisionData(int selfId, int otherId)
 {
 	auto physicsDataA = phyEngine->GetEntityPhysicsData(selfId);
 	auto physicsDataB = phyEngine->GetEntityPhysicsData(otherId);
-	auto& entityCallBack = physicsDataA.OnCollide;
+	auto& entityCallBack = physicsDataA.Component.OnCollide;
 	if (entityCallBack)
 	{
-		entityCallBack(physicsDataB.Entity);
+		entityCallBack(physicsDataB.Component);
 	}
 }
