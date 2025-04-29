@@ -15,7 +15,7 @@ float pitch = 0;
 float lastX = 0;
 float lastY = 0;
 bool firstMouse = true;
-const int ROAD_LENGHT = 1;
+const int ROAD_LENGHT = 2;
 const int START_COINS = 10;
 const int START_OBSTACLES = 3;
 const std::string REWARD_TAG = "COIN";
@@ -37,7 +37,7 @@ void ManageMovableMisc(std::deque<EnvironmentPart>& assets, float deltaTime);
 void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos);
 void RedoPart(EnvironmentPart& part);
 
-void ManagePlayerInputRails(TransformComponent& transform, PlayerRailState& state, float playerOriginalX, float deltaTime);
+void ManagePlayerInputRails(Entity player, PlayerRailState& state, float playerOriginalX, float deltaTime);
 void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& transformCamera, float deltaTime);
 void ManagePlayerInput(Entity& entity, float deltaTime);
 
@@ -54,7 +54,7 @@ int main()
     int points = 0;
     //EngineDemo::CreateBaseFloor(ecs);
     //GameAssets::CreateObstacle(ecs, modelImporter, Vector3(0, 0.5f, 0));
-    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3(1, 0.5f, 0));
+    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3(0, 0.5f, 0));
     playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&runGame, &points](PhysicsComponent& otherEntity)
     {
         auto tag = otherEntity.GetTag();
@@ -90,11 +90,9 @@ int main()
         }
         if (runGame)
         {
-            auto& phy = playerEntity.GetComponent<PhysicsComponent>();
-            auto& trans = playerEntity.GetComponent<TransformComponent>();
             //ManagePlayerInput(playerEntity, deltaTime);
-            ManagePlayerInputRails(playerTransform, railState, originalPos.x, deltaTime);
-            ManageMovableMisc(environmentAssets, deltaTime);
+            ManagePlayerInputRails(playerEntity, railState, originalPos.x, deltaTime);
+            //ManageMovableMisc(environmentAssets, deltaTime);
         }
 
         //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
@@ -412,10 +410,11 @@ void RedoPart(EnvironmentPart& part)
     }
 }
 
-void ManagePlayerInputRails(TransformComponent& transform, PlayerRailState& state, float playerOriginalX, float deltaTime)
+void ManagePlayerInputRails(Entity player, PlayerRailState& state, float playerOriginalX, float deltaTime)
 {
     const float space = 1.5f;
     const float speed = 5.0f;
+    const float epsilon = 0.01f; // margen pequeño para snap
 
     if (Input::GetKeyDown(KeyCode::D) && state.currentRail < 1)
     {
@@ -429,22 +428,30 @@ void ManagePlayerInputRails(TransformComponent& transform, PlayerRailState& stat
         state.targetX = state.currentRail * space;
     }
 
+    auto& transform = player.GetComponent<TransformComponent>();
+    auto& physicsComponent = player.GetComponent<PhysicsComponent>();
     float currentX = transform.Position.x;
     float deltaX = state.targetX - currentX;
 
-    if (std::abs(deltaX) > 0.01f)
+    if (std::abs(deltaX) > epsilon)
     {
         float direction = (deltaX > 0) ? 1.0f : -1.0f;
         float move = speed * deltaTime;
 
-        if (std::abs(move) >= std::abs(deltaX))
+        if (std::abs(deltaX) <= move)
         {
-            transform.SetPosition(Vector3(state.targetX, transform.Position.y, transform.Position.z));
+            physicsComponent.MoveKinematic(Vector3(state.targetX, transform.Position.y, transform.Position.z));
         }
         else
         {
-            transform.Translate(Vector3::Right * move * direction);
+            // Todavía estamos lejos, seguimos moviendo poco a poco
+            Vector3 moveVec = Vector3::Right * move * direction;
+            physicsComponent.MoveKinematic(transform.Position + moveVec);
         }
+    }
+    else
+    {
+        physicsComponent.MoveKinematic(Vector3(state.targetX, transform.Position.y, transform.Position.z));
     }
 }
 
