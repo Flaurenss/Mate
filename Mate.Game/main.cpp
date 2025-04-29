@@ -26,7 +26,6 @@ static ModelImporter modelImporter = ModelImporter();
 void CreateFloor(ECS& ecs);
 Entity CreateCamera(ECS& ecs);
 TransformComponent& CreatePlayer(ECS& ecs);
-TransformComponent& CreateMisc(ECS& ecs);
 
 std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs);
 EnvironmentPart CreateMovableMisc(ECS& registry, int i);
@@ -53,11 +52,13 @@ int main()
     bool runGame = false;
     int points = 0;
     //EngineDemo::CreateBaseFloor(ecs);
-    //GameAssets::CreateObstacle(ecs, modelImporter, Vector3(0, 0.5f, 0));
-    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3(0, 0.5f, 0));
-    playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&runGame, &points](PhysicsComponent& otherEntity)
+    //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
+    //Entity obstacleEntity = GameAssets::CreateObstacle(ecs, modelImporter, Vector3(0, 0.5f, 0));
+    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3::Up * 0.5f);
+    playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&](Entity otherEntity)
     {
-        auto tag = otherEntity.GetTag();
+        auto& otherPhysicsComponent = otherEntity.GetComponent<PhysicsComponent>();
+        auto tag = otherPhysicsComponent.GetTag();
         if (tag == REWARD_TAG)
         {
             points++;
@@ -65,12 +66,11 @@ int main()
         else if (tag == OBSTACLE_TAG)
         {
             runGame = false;
-            // TODO: 
+            // TODO: put it in a PAUSE GAME method
+            engine->SetSimulationTo(runGame);
         }
     };
-    //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
-    std::deque<EnvironmentPart> environmentAssets = CreateEnvironment(ecs);
-    
+    auto environmentAssets = CreateEnvironment(ecs);
 
     float rotationSpeedDegrees = 90.0f;
     float movementSpeedUnits = 0.1f;
@@ -91,8 +91,12 @@ int main()
         if (runGame)
         {
             //ManagePlayerInput(playerEntity, deltaTime);
+            //transCube.Translate(Vector3(deltaTime, 0, 0));
             ManagePlayerInputRails(playerEntity, railState, originalPos.x, deltaTime);
-            //ManageMovableMisc(environmentAssets, deltaTime);
+            ManageMovableMisc(environmentAssets, deltaTime);
+            //auto& phy = obstacleEntity.GetComponent<PhysicsComponent>();
+            //auto& trans = obstacleEntity.GetComponent<TransformComponent>();
+            //phy.MoveKinematic(trans.Position + Vector3::Right * deltaTime);
         }
 
         //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
@@ -142,19 +146,6 @@ TransformComponent& CreatePlayer(ECS& ecs)
     player.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
     TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
     return playerTransform;
-}
-
-TransformComponent& CreateMisc(ECS& ecs)
-{
-    auto avocadoModel = "./Assets/Avocado/Avocado.gltf";
-    auto avMeshes = modelImporter.Load(avocadoModel);
-    auto avocado = ecs.CreateEntity();
-    avocado.AddComponent<TransformComponent>();
-    avocado.AddComponent<MeshComponent>(avMeshes);
-    TransformComponent& avcTransform = avocado.GetComponent<TransformComponent>();
-    avcTransform.SetPosition(Vector3(0, 0.01f, 0));
-    avcTransform.DoScale(2);
-    return avcTransform;
 }
 
 std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs)
@@ -210,8 +201,11 @@ Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
     Vector3 coinPos = roadPos + coinOffset;
     Entity coin = ecs.CreateEntity();
     coin.AddComponent<EnableComponent>().Enabled = false;
-    auto& coinTrans = coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
     coin.AddComponent<MeshComponent>(coinMeshes);
+    auto& coinTrans = coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
+    auto& phy = coin.AddComponent<PhysicsComponent>(MotionType::KINEMATIC);
+    phy.SetIsSensor(true);
+    phy.SetTag(REWARD_TAG);
     Part coinPart{ coin, coinPos, coinTrans, EnvironmentType::Reward };
     return coinPart;
 }
@@ -224,9 +218,12 @@ Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
     Vector3 boxOffset(xOffset, 0, zOffset);
     Vector3 boxPos = roadPos + boxOffset;
     Entity box = ecs.CreateEntity();
+    auto& phyComponent = box.AddComponent<PhysicsComponent>(MotionType::KINEMATIC);
+    phyComponent.SetIsSensor(true);
+    phyComponent.SetTag(OBSTACLE_TAG);
     box.AddComponent<EnableComponent>().Enabled = false;
-    auto& boxTrans = box.AddComponent<TransformComponent>(boxPos);
     box.AddComponent<MeshComponent>(boxMeshes);
+    auto& boxTrans = box.AddComponent<TransformComponent>(boxPos);
     Part boxPart{ box, boxPos, boxTrans, EnvironmentType::Obstacle };
     return boxPart;
 }
@@ -264,13 +261,19 @@ void ManageMovableMisc(std::deque<EnvironmentPart>& environmentPartsQueue, float
 
         for (auto& coll : environmentPart.obstacles)
         {
-            coll.transformComponent.Translate(movement);
+            auto posToMove = coll.transformComponent.Position + movement;
+            coll.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
+            //coll.transformComponent.Translate(movement);
+            //coll.entity.GetComponent<PhysicsComponent>().SetDirty(true);
         }
 
         for (auto& reward : environmentPart.rewards)
         {
+            auto posToMove = reward.transformComponent.Position + movement;
+            reward.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
             reward.transformComponent.Rotate(Vector3::Up * rotationSpeed);
-            reward.transformComponent.Translate(movement);
+            //reward.transformComponent.Translate(movement);
+            //reward.entity.GetComponent<PhysicsComponent>().SetDirty(true);
         }
     }
 }
@@ -528,6 +531,5 @@ void ManagePlayerInput(Entity& entity, float deltaTime)
     auto& pos = entity.GetComponent<TransformComponent>().Position;
     auto& physics = entity.GetComponent<PhysicsComponent>();
     Vector3 posToMove = pos + direction.normalize() * velocity;
-    //physics.Translate(direction.normalize() * velocity);
     physics.MoveKinematic(posToMove);
 }

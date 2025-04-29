@@ -1,8 +1,9 @@
 #pragma once
 #include "MateMotionTypes.h"
-#include "Vector.h"
 #include <functional>
 #include <string>
+#include "Vector.h"
+#include "PhysicLayer.h"
 
 
 class Entity;
@@ -11,10 +12,12 @@ struct PhysicsComponent
 {
 public:
 	MotionType BodyMotionType;
-	std::function<void(PhysicsComponent& otherPhysicsData)> OnCollide;
+	PhysicLayer Layer;
+	std::function<void(Entity otherPhysicsData)> OnCollide;
 
 	PhysicsComponent();
 	PhysicsComponent(MotionType type);
+	PhysicsComponent(MotionType type, PhysicLayer layer);
 
 	bool IsDirty() const;
 	void SetDirty(bool status = true);

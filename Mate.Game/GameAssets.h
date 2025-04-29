@@ -7,6 +7,6 @@ class GameAssets
 public:
 	static Entity CreatePlayer(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos = Vector3());
 	static void CreateReward(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos = Vector3());
-	static void CreateObstacle(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos = Vector3());
+	static Entity CreateObstacle(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos = Vector3());
 };
 

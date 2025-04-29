@@ -1,9 +1,12 @@
 #include "PhysicsComponent.h"
 
-PhysicsComponent::PhysicsComponent() : BodyMotionType(STATIC)
+PhysicsComponent::PhysicsComponent() : BodyMotionType(STATIC), Layer(PhysicLayer::MOVING)
 {}
 
-PhysicsComponent::PhysicsComponent(MotionType type) : BodyMotionType(type)
+PhysicsComponent::PhysicsComponent(MotionType type) : BodyMotionType(type), Layer(PhysicLayer::MOVING)
+{}
+
+PhysicsComponent::PhysicsComponent(MotionType type, PhysicLayer layer) : BodyMotionType(type), Layer(layer)
 {}
 
 bool PhysicsComponent::IsDirty() const

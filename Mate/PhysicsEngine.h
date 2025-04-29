@@ -12,8 +12,6 @@
 #include "PhysicsData.h"
 #include "CollisionData.h"
 
-class Entity;
-
 /// <summary>
 /// Physics engine consuming Jolt library: https://github.com/jrouwe/JoltPhysics
 /// Alpha implementation following best practices described on their samples.
@@ -30,9 +28,7 @@ public:
 		Vector3 halfExtents,
 		Vector3 position,
 		Vector3 eulerAngles,
-		MotionType mode,
-		bool isSensor,
-		PhysicsComponent& component);
+		Entity entity);
 	Vector3 GetPosition(int entityId);
 	Vector3 GetEulerAngles(int entityId);
 	

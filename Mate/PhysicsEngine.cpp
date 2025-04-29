@@ -14,6 +14,7 @@
 
 #include <thread>
 #include <cassert>
+#include "PhysicsComponent.h"
 
 JPH_SUPPRESS_WARNINGS
 
@@ -76,36 +77,29 @@ void PhysicsEngine::RegisterBody(
 	Vector3 halfExtents,
 	Vector3 position,
 	Vector3 eulerAngles,
-	MotionType motionType,
-	bool isSensor,
-	PhysicsComponent& component)
+	Entity entity)
 {
 	JPH::BoxShapeSettings shape_settings(JPH::Vec3(halfExtents.x, halfExtents.y, halfExtents.z));
 	JPH::ShapeSettings::ShapeResult shape_result = shape_settings.Create();
 	const JPH::Shape* shape = shape_result.Get();
 	
 	auto rotationQuat = EulerToQuat(eulerAngles);
-
-	auto eMotionType = MotionTypeToEMotionType(motionType);
-	JPH::ObjectLayer layer = Layers::NON_MOVING;
-	if (motionType == STATIC)
-	{
-		layer = Layers::NON_MOVING;
-	}
+	auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
+	auto eMotionType = MotionTypeToEMotionType(physicsComponent.BodyMotionType);
+	auto layer = LayerToObjectLayer(physicsComponent.Layer);
+	
 	JPH::BodyCreationSettings settings(
 		shape,
 		JPH::Vec3(position.x, position.y, position.z),
 		rotationQuat,
 		eMotionType,
-		Layers::MOVING);
+		layer);
 
 	JPH::Body* body = bodyInterface->CreateBody(settings);
 	body->SetUserData(entityId);
-	body->SetIsSensor(isSensor);
+	body->SetIsSensor(physicsComponent.IsSensor());
 	bodyInterface->AddBody(body->GetID(), JPH::EActivation::Activate);
-	PhysicsData physicsData(body->GetID(), component);
-	/*physicsData.bodyId = body->GetID();
-	physicsData.OnCollide = onCollide;*/
+	PhysicsData physicsData(body->GetID(), entity);
 	entityPhysicsDataMap.insert(std::make_pair(entityId, physicsData));
 }
 

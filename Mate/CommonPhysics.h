@@ -3,6 +3,7 @@
 #include <Jolt/Physics/PhysicsSystem.h>
 
 #include "MateMotionTypes.h"
+#include "PhysicLayer.h"
 
 
 // Layer that objects can be in, determines which other objects it can collide with
@@ -40,5 +41,18 @@ inline JPH::EMotionType MotionTypeToEMotionType(MotionType motionType)
 			return JPH::EMotionType::Kinematic;
 		default:
 			return JPH::EMotionType::Static;
+	}
+}
+
+inline JPH::ObjectLayer LayerToObjectLayer(PhysicLayer layer)
+{
+	switch (layer)
+	{
+	case PhysicLayer::MOVING:
+		return Layers::MOVING;
+	case PhysicLayer::NON_MOVING:
+		return Layers::NON_MOVING;
+	default:
+		return Layers::MOVING;
 	}
 }

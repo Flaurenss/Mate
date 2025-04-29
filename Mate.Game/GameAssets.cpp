@@ -21,13 +21,15 @@ void GameAssets::CreateReward(ECS& ecs, ModelImporter& modelImporter, Vector3 ba
     coin.AddComponent<MeshComponent>(coinMeshes);
 }
 
-void GameAssets::CreateObstacle(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos)
+Entity GameAssets::CreateObstacle(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos)
 {
     auto boxModelPath = "./Assets/Environment/Misc/crate-color.glb";
     auto boxMeshes = modelImporter.Load(boxModelPath);
     Entity box = ecs.CreateEntity();
     auto& boxTrans = box.AddComponent<TransformComponent>(basePos, Vector3(0), Vector3(1));
     box.AddComponent<MeshComponent>(boxMeshes);
-    auto& phy = box.AddComponent<PhysicsComponent>(MotionType::STATIC);
+    auto& phy = box.AddComponent<PhysicsComponent>(MotionType::KINEMATIC);
     phy.SetIsSensor(true);
+
+    return box;
 }

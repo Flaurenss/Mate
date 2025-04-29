@@ -42,13 +42,13 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 				}
 				else if (physicsComponent.BodyMotionType == STATIC)
 				{
-					//phyEngine->SetPositionAndRotation(
-					//	entity.GetId(),
-					//	transform.Position,
-					//	transform.EulerAngles);
-					phyEngine->SetPosition(
+					phyEngine->SetPositionAndRotation(
 						entity.GetId(),
-						transform.Position);
+						transform.Position,
+						transform.EulerAngles);
+					//phyEngine->SetPosition(
+					//	entity.GetId(),
+					//	transform.Position);
 				}
 				physicsComponent.Reset();
 			}
@@ -90,7 +90,6 @@ void PhysicsSystem::RegisterBody(Entity& entity)
 	// Register new body
 	auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
 	auto& transform = entity.GetComponent<TransformComponent>();
-	Vector3 position = transform.Position;
 	Vector3 extents = Vector3::One;
 	if (entity.HasComponent<MeshComponent>())
 	{
@@ -104,20 +103,18 @@ void PhysicsSystem::RegisterBody(Entity& entity)
 	phyEngine->RegisterBody(
 		entity.GetId(),
 		halfExtents,
-		position,
+		transform.Position,
 		transform.EulerAngles,
-		physicsComponent.BodyMotionType,
-		physicsComponent.IsSensor(),
-		physicsComponent);
+		entity);
 }
 
 void PhysicsSystem::CallOnCollisionData(int selfId, int otherId)
 {
 	auto physicsDataA = phyEngine->GetEntityPhysicsData(selfId);
 	auto physicsDataB = phyEngine->GetEntityPhysicsData(otherId);
-	auto& entityCallBack = physicsDataA.Component.OnCollide;
+	auto& entityCallBack = physicsDataA.GetPhysicsComponent().OnCollide;
 	if (entityCallBack)
 	{
-		entityCallBack(physicsDataB.Component);
+		entityCallBack(physicsDataB.GetEntity());
 	}
 }
