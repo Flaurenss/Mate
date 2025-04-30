@@ -3,6 +3,7 @@
 #include "IModelImporter.h"
 #include "cgltf.h"
 #include <Matrix.h>
+#include "Texture.h"
 
 class GltfImporter : public IModelImporter
 {
@@ -13,7 +14,6 @@ public:
 
 private:
 	std::vector<std::shared_ptr<Mesh>> meshes;
-	std::vector<Texture> loadedTextures;
 	std::string basePath;
 
 	void ProcessNode(cgltf_node* node, Matrix4 matrix);
@@ -24,6 +24,6 @@ private:
 	Vector3 ProcessNormal(cgltf_accessor* accesor, size_t index, Matrix4 matrix);
 	Vector2 ProcessTextureCoordinate(cgltf_accessor* accesor, size_t index);
 
-	Texture LoadMaterialTextures(cgltf_texture* texture, const std::string& typeName);
+	std::shared_ptr<Texture> LoadMaterialTextures(cgltf_texture* texture, TextureType type);
 	unsigned int LoadTexture(const char* path);
 };

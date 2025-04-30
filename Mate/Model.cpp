@@ -14,12 +14,14 @@ Model::~Model()
     meshes.clear();
 }
 
-void Model::Draw(Shader& shader)
+Vector3 Model::GetExtents()
 {
-	for (auto i = 0; i < meshes.size(); i++)
-	{
-		meshes[i]->Draw(shader);
-	}
+    return aabb;
+}
+
+std::vector<std::shared_ptr<Mesh>> Model::GetMeshes()
+{
+    return meshes;
 }
 
 void Model::ComputeExtends()

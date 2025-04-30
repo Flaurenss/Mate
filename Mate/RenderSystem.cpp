@@ -2,6 +2,7 @@
 #include "TransformComponent.h"
 #include "EnableComponent.h"
 #include "MeshComponent.h"
+#include "AssetManager.h"
 #include "DebugDraw.h"
 
 RenderSystem::RenderSystem(Shader& sh) : shader(sh)
@@ -21,16 +22,77 @@ void RenderSystem::Update()
 		}
 
 		MeshComponent& meshComponent = entity.GetComponent<MeshComponent>();
-		TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
-		shader.Use();
-		Matrix4 modelTransform = transformComponent.GetTransform();
-		shader.SetMat4("model", modelTransform);
-		meshComponent.GetModel().Draw(shader);
+		auto model = AssetManager::GetInstance().GetModel(meshComponent.GetModelId());
+		if (!model)
+		{
+			continue;
+		}
 
+		TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
+		Matrix4 modelTransform = transformComponent.GetTransform();
+		
+		for (const auto& mesh : model->GetMeshes())
+		{
+			shader.Use();
+			shader.SetMat4("model", modelTransform);
+			
+			BindTexture(mesh.get());
+			DrawMesh(mesh.get());
+		}
+
+		// ========= DEBUG =========
 		// Draw bounding box
 		const Vector3& extent = meshComponent.GetExtents();
 		DebugDraw::DrawAABB((extent/2), modelTransform, shader);
 		// Draw world axis
 		DebugDraw::DrawWorldAxes(shader);
 	}
+}
+
+void RenderSystem::BindTexture(Mesh* mesh)
+{
+	std::unordered_map<TextureType, int> textureTypeCounters;
+	bool validTexture = false;
+	int textureUnit = 0;
+
+	for (const auto& texture : mesh->textures)
+	{
+		if (!texture || !texture->IsValid())
+		{
+			continue;
+		}
+
+		validTexture = true;
+		TextureType type = texture->GetType();
+		std::string baseName = Texture::TextureTypeToUniformName(type);
+		int index = ++textureTypeCounters[type]; // Start at 1
+		std::string uniformName = baseName + std::to_string(index);
+
+		// Set uniform to tell shader which texture unit to use
+		shader.SetInt(uniformName.c_str(), textureUnit);
+
+		// Bind texture to that unit
+		texture->Bind(textureUnit);
+
+		textureUnit++;
+	}
+
+	if (validTexture)
+	{
+		shader.SetBool("valid", true);
+	}
+	else
+	{
+		shader.SetVec4("defaultColor", Texture::DefaultColor);
+	}
+}
+
+void RenderSystem::DrawMesh(Mesh* mesh)
+{
+	glBindVertexArray(mesh->GetVAO());
+	glDrawElements(GL_TRIANGLES, mesh->GetIndexCount(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	// Reset
+	glActiveTexture(GL_TEXTURE0);
 }

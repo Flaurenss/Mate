@@ -3,6 +3,7 @@
 #include "GltfImporter.h"
 #include "stb_image.h"
 #include <filesystem>
+#include "AssetManager.h"
 
 std::vector<std::shared_ptr<Mesh>> GltfImporter::Load(const std::string& path)
 {
@@ -95,7 +96,7 @@ std::shared_ptr<Mesh> GltfImporter::ProcessPrimitive(cgltf_primitive& primitive,
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices; 
-    std::vector<Texture> textures;
+    std::vector<std::shared_ptr<Texture>> textures;
 
     const cgltf_attribute* posAttr = nullptr;
     const cgltf_attribute* normAttr = nullptr;
@@ -149,7 +150,7 @@ std::shared_ptr<Mesh> GltfImporter::ProcessPrimitive(cgltf_primitive& primitive,
     cgltf_accessor* indexAccessor = primitive.indices;
     if (indexAccessor)
     {
-        indices.resize(indexAccessor->count); // Reservar espacio
+        indices.resize(indexAccessor->count);
         for (size_t i = 0; i < indexAccessor->count; ++i)
         {
             indices[i] = cgltf_accessor_read_index(indexAccessor, i);
@@ -171,24 +172,24 @@ std::shared_ptr<Mesh> GltfImporter::ProcessPrimitive(cgltf_primitive& primitive,
     {
         cgltf_material* mat = primitive.material;
         auto baseColor = mat->pbr_metallic_roughness.base_color_factor;
-        auto diffuse = LoadMaterialTextures(mat->pbr_metallic_roughness.base_color_texture.texture, DIFFUSE_NAME);
-        if (baseColor)
+        auto diffuse = LoadMaterialTextures(mat->pbr_metallic_roughness.base_color_texture.texture, TextureType::Diffuse);
+        if (!diffuse)
         {
-            diffuse.defaultColor = Vector4(baseColor[0], baseColor[1], baseColor[2], baseColor[3]);
+            // TODO: store default material
         }
         textures.push_back(diffuse);
     }
     else
     {
-        Texture texture;
-        texture.id = 0;
-        texture.valid = false;
-        texture.defaultColor = DefaultColor;
+        // Use default texture
+        //Texture texture;
+        //texture.id = 0;
+        //texture.valid = false;
+        //texture.defaultColor = DefaultColor;
 
-        textures.push_back(texture);
+        //textures.push_back(texture);
     }
-    return std::make_unique<Mesh>(vertices, indices, textures);
-    //return new Mesh(vertices, indices, textures);
+    return std::make_shared<Mesh>(vertices, indices, textures);
 }
 
 Vector3 GltfImporter::ProcessPosition(cgltf_accessor* accesor, size_t index, Matrix4 matrix)
@@ -224,34 +225,24 @@ Vector2 GltfImporter::ProcessTextureCoordinate(cgltf_accessor* accesor, size_t i
     return Vector2(uv[0], uv[1]);
 }
 
-Texture GltfImporter::LoadMaterialTextures(cgltf_texture* texture, const std::string& typeName)
+std::shared_ptr<Texture> GltfImporter::LoadMaterialTextures(cgltf_texture* texture, TextureType type)
 {
     Texture customTexture;
     if (!texture || !texture->image || !texture->image->uri)
     {
-        customTexture.valid = false;
-        return customTexture;
+        return nullptr;
     }
 
     std::string texPath = basePath + "/" + texture->image->uri;
 
-    for (const Texture& t : loadedTextures)
+    auto newTexture = AssetManager::GetInstance().LoadTexture(texPath, texPath);
+
+    if (newTexture != nullptr)
     {
-        if (t.filePath == texPath)
-        {
-            return t;
-        }
+        newTexture->SetType(type);
     }
 
-    customTexture.type = typeName;
-    customTexture.filePath = texPath;
-    customTexture.valid = true;
-    customTexture.defaultColor = DefaultColor;
-    customTexture.id = LoadTexture(texPath.c_str());
-
-    loadedTextures.push_back(customTexture);
-
-    return customTexture;
+    return newTexture;
 }
 
 unsigned int GltfImporter::LoadTexture(const char* path)

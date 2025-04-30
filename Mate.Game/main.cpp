@@ -8,7 +8,7 @@
 #include <random>
 #include "EngineDemo.h"
 #include "GameAssets.h"
-#include "EndlessRunner.h"
+#include "Mate.h"
 
 float yaw = 45.0f;
 float pitch = 0;
@@ -21,8 +21,6 @@ const int START_COINS = 10;
 const int START_OBSTACLES = 3;
 const std::string REWARD_TAG = "COIN";
 const std::string OBSTACLE_TAG = "BOX";
-
-static ModelImporter modelImporter = ModelImporter();
 
 Entity CreateCamera(ECS& ecs);
 
@@ -61,7 +59,7 @@ void GameLoop(ECS& ecs, Engine* engine)
 {
     bool runGame = false;
     int points = 0;
-    Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3::Up * 0.2f);
+    Entity playerEntity = GameAssets::CreatePlayer(ecs, Vector3::Up * 0.2f);
 
     playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&](Entity otherEntity)
         {
@@ -143,12 +141,12 @@ std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs)
 EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
 {
     auto roadModelPath = "./Assets/Environment/Road/road-straight.glb";
-    auto roadMeshes = modelImporter.Load(roadModelPath);
+    AssetManager::GetInstance().LoadModel("road", roadModelPath);
     auto road = ecs.CreateEntity();
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
-    road.AddComponent<MeshComponent>(roadMeshes);
+    road.AddComponent<MeshComponent>("road");
     Part floorPart{ road, roadPos, roadTrans, EnvironmentType::Floor };
     
     std::vector<Part> rewards;
@@ -175,7 +173,7 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
 Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
 {
     Vector3 coinPos = roadPos + Vector3::Up * 0.2f;
-    auto reward = GameAssets::CreateReward(ecs, modelImporter, coinPos);
+    auto reward = GameAssets::CreateReward(ecs, coinPos);
     reward.AddComponent<EnableComponent>().Enabled = false;
     auto& phy = reward.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phy.SetIsSensor(true);
@@ -187,7 +185,7 @@ Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
 Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
 {
     Vector3 boxPos = roadPos + Vector3::Up * 0.2f;
-    auto obstacle = GameAssets::CreateObstacle(ecs, modelImporter, boxPos);
+    auto obstacle = GameAssets::CreateObstacle(ecs, boxPos);
     obstacle.AddComponent<EnableComponent>().Enabled = false;
     auto& phyComponent = obstacle.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phyComponent.SetIsSensor(true);

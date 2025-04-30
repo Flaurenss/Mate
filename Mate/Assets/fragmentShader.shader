@@ -7,12 +7,12 @@ out vec4 FragColor;
 
 uniform bool valid;
 uniform vec4 defaultColor;
-uniform sampler2D texture_diffuse1;
+uniform sampler2D diffuse1;
 
 void main()
 {
     if(valid) {
-        FragColor = texture(texture_diffuse1, TextCoords); 
+        FragColor = texture(diffuse1, TextCoords); 
     }
     else {
         FragColor = defaultColor;

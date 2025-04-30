@@ -4,7 +4,7 @@
 ModelImporter::ModelImporter()
 {
     gltfImporter = std::make_unique<GltfImporter>();
-    fbxImporter = std::make_unique<FbxImporterExperimental>();
+    //fbxImporter = std::make_unique<FbxImporterExperimental>();
 }
 
 IModelImporter* ModelImporter::SelectImporter(const std::string& modelFilePath) const
@@ -12,10 +12,6 @@ IModelImporter* ModelImporter::SelectImporter(const std::string& modelFilePath) 
     if (EndsWith(modelFilePath, ".gltf") || EndsWith(modelFilePath, ".glb"))
     {
         return gltfImporter.get();
-    }
-    else if (EndsWith(modelFilePath, ".fbx"))
-    {
-        return fbxImporter.get();
     }
     else
     {

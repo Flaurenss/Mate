@@ -5,11 +5,12 @@
 class MeshComponent
 {
 public:
-	MeshComponent(std::vector<std::shared_ptr<Mesh>> meshes);
-	MeshComponent(Model* model);
-	Model& GetModel();
-	Vector3 GetExtents();
+	MeshComponent(const std::string modelId);
+	const std::string& GetModelId() const;
+
+	Vector3 GetExtents() const;
+
 private:
-	Model* model;
+	std::string modelId;
 };
 

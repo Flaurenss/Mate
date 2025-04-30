@@ -15,7 +15,7 @@ public:
 	std::vector<std::shared_ptr<Mesh>> Load(const std::string& modelFilePath) const;
 private:
 	std::unique_ptr<GltfImporter> gltfImporter;
-	std::unique_ptr<FbxImporterExperimental> fbxImporter;
+	//std::unique_ptr<FbxImporterExperimental> fbxImporter;
 
 	IModelImporter* SelectImporter(const std::string& modelFilePath) const;
 	bool EndsWith(const std::string& value, const std::string& ending) const;

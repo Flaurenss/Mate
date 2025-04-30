@@ -1,21 +1,15 @@
 #include "MeshComponent.h"
+#include "AssetManager.h"
 
-MeshComponent::MeshComponent(std::vector<std::shared_ptr<Mesh>> meshes)
+MeshComponent::MeshComponent(const std::string modelId) : modelId(modelId)
+{ }
+
+const std::string& MeshComponent::GetModelId() const
 {
-	model = new Model(meshes);
+	return modelId;
 }
-
-MeshComponent::MeshComponent(Model* newModel)
+Vector3 MeshComponent::GetExtents() const
 {
-	model = newModel;
-}
-
-Model& MeshComponent::GetModel()
-{
-	return *model;
-}
-
-Vector3 MeshComponent::GetExtents()
-{
-	return model->GetExtents();
+    auto model = AssetManager::GetInstance().GetModel(modelId);
+    return model ? model->GetExtents() : Vector3::Zero;
 }

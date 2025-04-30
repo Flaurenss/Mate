@@ -1,12 +1,12 @@
 # TODO List
 
 ## TODO
-- [ ] Refactor Render system
 - [ ] Implement [animations](https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_007_Animations.md).
 - [ ] Add more collections to Model concept as: animations, textures...
 - [ ] Implement text rendering.
 - [ ] Implement basic lighting.
 - [ ] Add cubemaps.
+- [ ] Refactor Game project
 - [ ] Add event system (input at least).
 - [ ] Refactor ECS implementation to follow a more Data Oriented Design including destroy entities and related data.
 - [ ] Implement scripting.
@@ -20,7 +20,7 @@
 - [ ] Pack dependencies as nuget.
 
 ## In progress
-- [ ] Refactor Game project
+- [ ] Refactor Render system
 
 ## DONE
 - [x] Implement collision physics engine.

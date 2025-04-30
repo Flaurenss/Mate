@@ -4,6 +4,6 @@
 class PrimitivesHelper
 {
 public:
-	static Model* CreatePlane();
+	static std::shared_ptr<Model> CreatePlane();
 };
 

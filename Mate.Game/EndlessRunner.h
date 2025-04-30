@@ -20,7 +20,6 @@ public:
 
 private:
 	ECS& ecs;
-	ModelImporter modelImporter;
 
 	std::unique_ptr<Entity> player;
 	std::deque<EnvironmentPart> environmentParts;

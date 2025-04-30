@@ -3,7 +3,7 @@
 Mesh::Mesh(
 	std::vector<Vertex> vertices,
 	std::vector<unsigned int> indices,
-	std::vector<Texture> textures) :
+	std::vector<std::shared_ptr<Texture>> textures) :
 		vertices(vertices),
 		indices(indices),
 		textures(textures),
@@ -17,52 +17,6 @@ Mesh::~Mesh()
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
-}
-
-void Mesh::Draw(Shader& shader)
-{
-	unsigned int diffuseNr = 1;
-	unsigned int specularNr = 1;
-	
-	if (textures.empty())
-	{
-		shader.SetBool("valid", false);
-		shader.SetVec4("defaultColor", DefaultColor);
-	}
-
-	for (unsigned int i = 0; i < textures.size(); i++)
-	{
-		// Activate Texture unit
-		glActiveTexture(GL_TEXTURE0 + i);
-		std::string number;
-		std::string name = textures[i].type;
-		if (name == DIFFUSE_NAME)
-		{
-			number = std::to_string(diffuseNr++);
-		}
-		else if (name == SPECULAR_NAME)
-		{
-			number = std::to_string(specularNr++);
-		}
-
-		shader.SetBool("valid", textures[i].valid);
-		if (textures[i].valid)
-		{
-			shader.SetInt(("material." + name + number).c_str(), i);
-			glBindTexture(GL_TEXTURE_2D, textures[i].id);
-		}
-		else
-		{
-			shader.SetVec4("defaultColor", textures[i].defaultColor);
-		}
-	}
-
-	// Draw mesh
-	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-
-	glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::SetupMesh()
@@ -98,4 +52,14 @@ void Mesh::SetupMesh()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexureCoordinate));
 	
 	glBindVertexArray(0);
+}
+
+unsigned int Mesh::GetVAO()
+{
+	return VAO;
+}
+
+int Mesh::GetIndexCount()
+{
+	return indices.size();
 }

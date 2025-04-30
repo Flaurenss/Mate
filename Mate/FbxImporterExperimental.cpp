@@ -1,5 +1,6 @@
 #include "FbxImporterExperimental.h"
 #include "stb_image.h"
+#include "AssetManager.h"
 
 std::vector<std::shared_ptr<Mesh>> FbxImporterExperimental::Load(const std::string& path)
 {
@@ -47,10 +48,6 @@ void FbxImporterExperimental::ProcessNode(ufbx_node* node, const ufbx_scene* sce
 
 void FbxImporterExperimental::ProcessMesh(ufbx_mesh* mesh, const ufbx_scene* scene, const ufbx_matrix& transform)
 {
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
-    std::vector<Texture> textures;
-
     // If no materials defined, there will be a single material part for convenience
     for (auto partIndex = 0; partIndex < mesh->material_parts.count; partIndex++)
     {
@@ -63,7 +60,7 @@ std::shared_ptr<Mesh> FbxImporterExperimental::ProcessPart(ufbx_mesh_part part, 
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<Texture> textures;
+    std::vector<std::shared_ptr<Texture>> textures;
 
     indices.resize(mesh->max_face_triangles * 3);
     for (auto faceIndex : part.face_indices)
@@ -116,92 +113,24 @@ std::shared_ptr<Mesh> FbxImporterExperimental::ProcessPart(ufbx_mesh_part part, 
     if (mesh->materials.count > 0)
     {
         auto material = mesh->materials[part.index];
-        auto diffuseMaps = LoadMaterialTextures(material, UFBX_MATERIAL_PBR_BASE_COLOR, DIFFUSE_NAME);
-        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+        auto tex = LoadMaterialTexture(material->pbr.base_color, TextureType::Diffuse);
+        if (tex) textures.push_back(tex);
     }
     return std::make_shared<Mesh>(vertices, indices, textures);
 }
 
-std::vector<Texture> FbxImporterExperimental::LoadMaterialTextures(ufbx_material* material, ufbx_material_pbr_map type, std::string typeName)
+std::shared_ptr<Texture> FbxImporterExperimental::LoadMaterialTexture(const ufbx_material_map& materialMap, TextureType type)
 {
-    std::vector<Texture> textures;
-    switch (type)
+    if (!materialMap.texture)
     {
-        case UFBX_MATERIAL_PBR_BASE_COLOR:
-        {
-            Texture texture;
-            texture.type = DIFFUSE_NAME;
-            ufbx_material_map const& materialMap = material->pbr.base_color;
-            if (materialMap.has_value)
-            {
-                const ufbx_material_map& baseFactorMaterialMap = material->pbr.base_color;
-                float baseFactor = baseFactorMaterialMap.has_value ? baseFactorMaterialMap.value_real : 1.0f;
-
-                auto color = baseFactorMaterialMap.value_vec4;
-                texture.defaultColor = Vector4(color.x, color.y, color.z, color.w);
-
-                if (materialMap.texture)
-                {
-                    bool skip = false;
-                    for (unsigned int j = 0; j < loadedTextures.size(); j++)
-                    {
-                        if (std::strcmp(loadedTextures[j].filePath.data(), materialMap.texture->filename.data) == 0)
-                        {
-                            textures.push_back(loadedTextures[j]);
-                            skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
-                            break;
-                        }
-                    }
-                    if (!skip)
-                    {
-                        texture.filePath = materialMap.texture->filename.data;
-                        texture.valid = true;
-                        texture.id = LoadTexture(materialMap.texture->filename.data);
-                        textures.push_back(texture);
-                        loadedTextures.push_back(texture);
-                    }
-                }
-            }
-            break;
-        }
+        return nullptr;
     }
 
-    return textures;
-}
-
-unsigned int FbxImporterExperimental::LoadTexture(const char* path)
-{
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-
-    int width, height, nrComponents;
-    unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
-    if (data)
+    std::string path = materialMap.texture->filename.data;
+    auto tex = AssetManager::GetInstance().LoadTexture(path, path);
+    if (tex)
     {
-        GLenum format;
-        if (nrComponents == 1)
-            format = GL_RED;
-        else if (nrComponents == 3)
-            format = GL_RGB;
-        else if (nrComponents == 4)
-            format = GL_RGBA;
-
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
+        tex->SetType(type);
     }
-    else
-    {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
-        stbi_image_free(data);
-    }
-
-    return textureID;
+    return tex;
 }

@@ -4,11 +4,12 @@
 
 void EngineDemo::CreateBaseFloor(ECS& ecs)
 {
-    auto floorMesh = PrimitivesHelper::CreatePlane();
+    auto floorModel = PrimitivesHelper::CreatePlane();
+    AssetManager::GetInstance().RegisterModel("primitive::floor", floorModel);
     auto floor = ecs.CreateEntity();
     floor.AddComponent<TransformComponent>();
     floor.AddComponent<PhysicsComponent>();
-    floor.AddComponent<MeshComponent>(floorMesh);
+    floor.AddComponent<MeshComponent>("primitive::floor");
     TransformComponent& floorTrans = floor.GetComponent<TransformComponent>();
     floorTrans.Scale = Vector3(20, 1, 20);
 }
@@ -31,7 +32,7 @@ void EngineDemo::PhysicsCubeDemo(ECS& ecs, ModelImporter& modelImporter)
                     (z - 1) * spacing 
                 );
 
-                GameAssets::CreateObstacle(ecs, modelImporter, pos);
+                GameAssets::CreateObstacle(ecs, pos);
             }
         }
     }

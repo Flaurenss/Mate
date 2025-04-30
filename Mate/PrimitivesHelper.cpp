@@ -1,6 +1,6 @@
 #include "PrimitivesHelper.h"
 
-Model* PrimitivesHelper::CreatePlane()
+std::shared_ptr<Model> PrimitivesHelper::CreatePlane()
 {
     std::vector<Vertex> vertices = {
         // Position                 // Normal            // TexCoord
@@ -15,8 +15,8 @@ Model* PrimitivesHelper::CreatePlane()
         2, 3, 0   // Second triangle
     };
 
-    std::vector<Texture> textures; // Empty since textures are not required
+    std::vector<std::shared_ptr<Texture>> textures; // Empty since textures are not required
     /*textures.push_back();*/
     std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(vertices, indices, textures);
-    return new Model({ mesh });
+    return std::make_shared<Model>(std::vector<std::shared_ptr<Mesh>>{ mesh });
 }

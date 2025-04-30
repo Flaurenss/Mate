@@ -3,7 +3,7 @@
 
 #include "Input.h"
 
-#include "ModelImporter.h"
+#include "AssetManager.h"
 #include "MeshComponent.h"
 #include "TransformComponent.h"
 #include "EnableComponent.h"
