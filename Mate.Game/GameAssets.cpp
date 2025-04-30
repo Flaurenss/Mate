@@ -11,25 +11,22 @@ Entity GameAssets::CreatePlayer(ECS& ecs, ModelImporter& modelImporter, Vector3 
     return player;
 }
 
-void GameAssets::CreateReward(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos)
+Entity GameAssets::CreateReward(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos, Vector3 baseRot, Vector3 baseScale)
 {
     auto coinModelPath = "./Assets/Environment/Misc/coin.glb";
     auto coinMeshes = modelImporter.Load(coinModelPath);
     Entity coin = ecs.CreateEntity();
-    coin.AddComponent<EnableComponent>().Enabled = false;
-    auto& coinTrans = coin.AddComponent<TransformComponent>(basePos);
+    auto& coinTrans = coin.AddComponent<TransformComponent>(basePos, baseRot, baseScale);
     coin.AddComponent<MeshComponent>(coinMeshes);
+    return coin;
 }
 
-Entity GameAssets::CreateObstacle(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos)
+Entity GameAssets::CreateObstacle(ECS& ecs, ModelImporter& modelImporter, Vector3 basePos, Vector3 baseRot, Vector3 baseScale)
 {
     auto boxModelPath = "./Assets/Environment/Misc/crate-color.glb";
     auto boxMeshes = modelImporter.Load(boxModelPath);
     Entity box = ecs.CreateEntity();
-    auto& boxTrans = box.AddComponent<TransformComponent>(basePos, Vector3(0), Vector3(1));
+    auto& boxTrans = box.AddComponent<TransformComponent>(basePos, baseRot, baseScale);
     box.AddComponent<MeshComponent>(boxMeshes);
-    auto& phy = box.AddComponent<PhysicsComponent>(MotionType::KINEMATIC);
-    phy.SetIsSensor(true);
-
     return box;
 }

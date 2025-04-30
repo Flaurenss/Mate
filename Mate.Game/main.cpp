@@ -8,6 +8,7 @@
 #include <random>
 #include "EngineDemo.h"
 #include "GameAssets.h"
+#include "EndlessRunner.h"
 
 float yaw = 45.0f;
 float pitch = 0;
@@ -40,6 +41,8 @@ void ProcessPlayerInputRails(Entity player, PlayerRailState& state, float player
 void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& transformCamera, float deltaTime);
 void ManagePlayerInput(Entity& entity, float deltaTime);
 
+void GameLoop(ECS& ecs, Engine* engine);
+
 int main()
 {
     auto engine = std::make_unique<Engine>();
@@ -49,40 +52,40 @@ int main()
     TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     
+    GameLoop(ecs, engine.get());
+
+    //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
+}
+
+void GameLoop(ECS& ecs, Engine* engine)
+{
     bool runGame = false;
     int points = 0;
-    //EngineDemo::CreateBaseFloor(ecs);
-    //EngineDemo::PhysicsCubeDemo(ecs, modelImporter);
-    //Entity obstacleEntity = GameAssets::CreateObstacle(ecs, modelImporter, Vector3(0, 0.5f, 0));
     Entity playerEntity = GameAssets::CreatePlayer(ecs, modelImporter, Vector3::Up * 0.2f);
 
     playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&](Entity otherEntity)
-    {
-        auto& otherPhysicsComponent = otherEntity.GetComponent<PhysicsComponent>();
-        auto tag = otherPhysicsComponent.GetTag();
-        if (tag == REWARD_TAG)
         {
-            otherEntity.GetComponent<EnableComponent>().Enabled = false;
-            points++;
-        }
-        else if (tag == OBSTACLE_TAG)
-        {
-            runGame = false;
-            // TODO: put it in a PAUSE GAME method
-            engine->SetSimulationTo(runGame);
-        }
-    };
-    auto environmentAssets = CreateEnvironment(ecs);
+            auto& otherPhysicsComponent = otherEntity.GetComponent<PhysicsComponent>();
+            auto tag = otherPhysicsComponent.GetTag();
+            if (tag == REWARD_TAG)
+            {
+                otherEntity.GetComponent<EnableComponent>().Enabled = false;
+                points++;
+            }
+            else if (tag == OBSTACLE_TAG)
+            {
+                runGame = false;
+                // TODO: put it in a PAUSE GAME method
+                engine->SetSimulationTo(runGame);
+            }
+        };
 
-    float rotationSpeedDegrees = 90.0f;
-    float movementSpeedUnits = 0.1f;
+    auto environmentAssets = CreateEnvironment(ecs);
     auto& playerTransform = playerEntity.GetComponent<TransformComponent>();
     Vector3 originalPos = playerTransform.Position;
     PlayerRailState railState;
     railState.targetX = playerTransform.Position.x;
-    railState.currentRail = 0;
-
-    float accumulator = 0.0f;
+    float accumulator = 0;
     while (engine->IsRunning())
     {
         float deltaTime = engine->DeltaTime;
@@ -91,36 +94,27 @@ int main()
             runGame = !runGame;
             engine->SetSimulationTo(runGame);
         }
-        if (runGame)
-        {
-            //ManagePlayerInput(playerEntity, deltaTime);
-            //transCube.Translate(Vector3(deltaTime, 0, 0));
-            
-            //ManagePlayerInputRails(playerEntity, railState, originalPos.x, deltaTime);
-            //ManageMovableMisc(environmentAssets, deltaTime);
-
-            //auto& phy = obstacleEntity.GetComponent<PhysicsComponent>();
-            //auto& trans = obstacleEntity.GetComponent<TransformComponent>();
-            //phy.MoveKinematic(trans.Position + Vector3::Right * deltaTime);
-        }
 
         accumulator += deltaTime;
-        ProcessPlayerInputRails(playerEntity, railState, originalPos.x);
+        if (runGame)
+        {
+            ProcessPlayerInputRails(playerEntity, railState, originalPos.x);
+        }
         while (accumulator >= fixedDeltaTime)
         {
-	        if (runGame)
-	        {
+            if (runGame)
+            {
                 ManagePlayerInputRails(playerEntity, railState, fixedDeltaTime);
                 ManageMovableMisc(environmentAssets, fixedDeltaTime);
-		        engine->PhysicsUpdate(fixedDeltaTime);
-	        }
-	        accumulator -= fixedDeltaTime;
+                engine->PhysicsUpdate(fixedDeltaTime);
+            }
+            accumulator -= fixedDeltaTime;
         }
 
-        ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
         engine->Update();
     }
 }
+
 
 Entity CreateCamera(ECS& ecs)
 {
@@ -155,7 +149,6 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     road.AddComponent<MeshComponent>(roadMeshes);
-    //road.AddComponent<PhysicsComponent>();
     Part floorPart{ road, roadPos, roadTrans, EnvironmentType::Floor };
     
     std::vector<Part> rewards;
@@ -181,37 +174,26 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
 
 Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
 {
-    auto coinModelPath = "./Assets/Environment/Misc/coin.glb";
-    auto coinMeshes = modelImporter.Load(coinModelPath);
-    Vector3 coinOffset(xOffset, 0.2f, zOffset);
-    Vector3 coinPos = roadPos + coinOffset;
-    Entity coin = ecs.CreateEntity();
-    coin.AddComponent<EnableComponent>().Enabled = false;
-    coin.AddComponent<MeshComponent>(coinMeshes);
-    auto& coinTrans = coin.AddComponent<TransformComponent>(coinPos, Vector3(0, -90, 0), Vector3::One);
-    auto& phy = coin.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
+    Vector3 coinPos = roadPos + Vector3::Up * 0.2f;
+    auto reward = GameAssets::CreateReward(ecs, modelImporter, coinPos);
+    reward.AddComponent<EnableComponent>().Enabled = false;
+    auto& phy = reward.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phy.SetIsSensor(true);
     phy.SetTag(REWARD_TAG);
-    Part coinPart{ coin, coinPos, coinTrans, EnvironmentType::Reward };
-    return coinPart;
+    Part rewardPart{ reward, coinPos, reward.GetComponent<TransformComponent>(), EnvironmentType::Reward };
+    return rewardPart;
 }
 
 Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
 {
-    auto boxModelPath = "./Assets/Environment/Misc/crate-color.glb";
-    auto boxMeshes = modelImporter.Load(boxModelPath);
-    // Limits for item placement -1.5f ----- -4 ----- 1.5f
-    Vector3 boxOffset(xOffset, 0, zOffset);
-    Vector3 boxPos = roadPos + boxOffset;
-    Entity box = ecs.CreateEntity();
-    auto& phyComponent = box.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
+    Vector3 boxPos = roadPos + Vector3::Up * 0.2f;
+    auto obstacle = GameAssets::CreateObstacle(ecs, modelImporter, boxPos);
+    obstacle.AddComponent<EnableComponent>().Enabled = false;
+    auto& phyComponent = obstacle.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phyComponent.SetIsSensor(true);
     phyComponent.SetTag(OBSTACLE_TAG);
-    box.AddComponent<EnableComponent>().Enabled = false;
-    box.AddComponent<MeshComponent>(boxMeshes);
-    auto& boxTrans = box.AddComponent<TransformComponent>(boxPos);
-    Part boxPart{ box, boxPos, boxTrans, EnvironmentType::Obstacle };
-    return boxPart;
+    Part obstaclePart{ obstacle, boxPos, obstacle.GetComponent<TransformComponent>(), EnvironmentType::Obstacle };
+    return obstaclePart;
 }
 
 void ManageMovableMisc(std::deque<EnvironmentPart>& environmentPartsQueue, float deltaTime)
@@ -362,6 +344,8 @@ void RedoPart(EnvironmentPart& part, bool init)
         if (i < newObstacleOffsets.size())
         {
             Vector3 newPos = basePos + newObstacleOffsets[i];
+            newPos.y = 0.2f;
+            //newPos *= Vector3::Up * 0.2f;
             if (init)
             {
                 part.obstacles[i].transformComponent.SetPosition(newPos);
