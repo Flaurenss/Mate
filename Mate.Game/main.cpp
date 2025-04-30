@@ -3,7 +3,6 @@
 
 #include <iostream>
 // TODO: add pch with Mate.h
-#include <Mate.h>
 #include "EnvironmentAssets.h"
 #include <deque>
 #include <random>
@@ -24,9 +23,7 @@ const std::string OBSTACLE_TAG = "BOX";
 
 static ModelImporter modelImporter = ModelImporter();
 
-void CreateFloor(ECS& ecs);
 Entity CreateCamera(ECS& ecs);
-TransformComponent& CreatePlayer(ECS& ecs);
 
 std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs);
 EnvironmentPart CreateMovableMisc(ECS& registry, int i);
@@ -50,7 +47,6 @@ int main()
     
     auto camera = CreateCamera(ecs);
     TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
-    
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     
     bool runGame = false;
@@ -126,17 +122,6 @@ int main()
     }
 }
 
-void CreateFloor(ECS& ecs)
-{
-    auto floorMesh = PrimitivesHelper::CreatePlane();
-    auto floor = ecs.CreateEntity();
-    floor.AddComponent<TransformComponent>();
-    floor.AddComponent<PhysicsComponent>();
-    floor.AddComponent<MeshComponent>(floorMesh);
-    TransformComponent& floorTrans = floor.GetComponent<TransformComponent>();
-    floorTrans.Scale = Vector3(5, 1, 5);
-}
-
 Entity CreateCamera(ECS& ecs)
 {
     auto camera = ecs.CreateEntity();
@@ -146,28 +131,6 @@ Entity CreateCamera(ECS& ecs)
     TransformComponent& trans = camera.GetComponent<TransformComponent>();
     trans.LookAt(Vector3(0, 0.65f, 0), trans.GetUp());
     return camera;
-}
-
-TransformComponent& CreatePlayer(ECS& ecs)
-{
-    CreateFloor(ecs);
-
-    auto boxModelPath = "./Assets/Environment/Misc/crate-color.glb";
-    auto boxMeshes = modelImporter.Load(boxModelPath);
-    Entity box = ecs.CreateEntity();
-    auto& boxTrans = box.AddComponent<TransformComponent>(Vector3(1, 3, 0));
-    //boxTrans.DoScale(2);
-    box.AddComponent<MeshComponent>(boxMeshes);
-    box.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
-    //return boxTrans;
-    auto playerModel = "./Assets/Player/character.glb";
-    auto modelMeshes = modelImporter.Load(playerModel);
-    auto player = ecs.CreateEntity();
-    player.AddComponent<TransformComponent>(Vector3(0, 1.0f, 0), Vector3(0, -180, 0), Vector3(1));
-    player.AddComponent<MeshComponent>(modelMeshes);
-    player.AddComponent<PhysicsComponent>(MotionType::DYNAMIC);
-    TransformComponent& playerTransform = player.GetComponent<TransformComponent>();
-    return playerTransform;
 }
 
 std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs)

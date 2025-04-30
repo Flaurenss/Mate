@@ -1,4 +1,11 @@
 #include "EndlessRunner.h"
+#include "GameAssets.h"
+
+EndlessRunner::EndlessRunner(ECS& ecs) :
+	ecs(ecs),
+	modelImporter(ModelImporter()),
+	player(GameAssets::CreatePlayer(ecs, modelImporter, Vector3::Up * 0.2f))
+{ }
 
 void EndlessRunner::ProcessPlayerInput()
 {
