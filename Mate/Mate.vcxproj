@@ -151,6 +151,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AnimationClip.cpp" />
+    <ClCompile Include="Skeleton.cpp" />
+    <ClCompile Include="SkeletonBuilder.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BPLayerInterfaceImpl.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
@@ -199,6 +201,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationClip.h" />
+    <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="SkeletonBuilder.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="BPLayerInterfaceImpl.h" />
     <ClInclude Include="CameraComponent.h" />

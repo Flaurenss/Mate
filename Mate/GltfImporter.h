@@ -4,6 +4,8 @@
 #include "cgltf.h"
 #include <Matrix.h>
 #include "Texture.h"
+#include "Skeleton.h"
+#include "SkeletonBuilder.h"
 
 class GltfImporter : public IModelImporter
 {
@@ -13,9 +15,10 @@ public:
 	virtual std::shared_ptr<Model> Load(const std::string& path);
 
 private:
+	std::string basePath;
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	std::vector<std::shared_ptr<AnimationClip>> animationClips;
-	std::string basePath;
+	std::unique_ptr<Skeleton> skeleton;
 
 	void ProcessNode(cgltf_node* node, Matrix4 matrix);
 	void ProcessMesh(cgltf_mesh* mesh, Matrix4 matrix);
@@ -30,4 +33,7 @@ private:
 
 	void ProcessAnimations(cgltf_data* data);
 	std::shared_ptr<AnimationClip> BuildAnimationClip(const cgltf_animation* anim);
+
+	void ProcessSkins(cgltf_data* data);
+	RawSkeletonJoint ExtractJointHierarchy(cgltf_node* node);
 };

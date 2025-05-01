@@ -41,8 +41,9 @@ std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
         //}
     }
 
+    ProcessSkins(data);
     ProcessAnimations(data);
-
+    
     cgltf_free(data);
     return std::make_shared<Model>(meshes, animationClips);
 }
@@ -356,4 +357,66 @@ std::shared_ptr<AnimationClip> GltfImporter::BuildAnimationClip(const cgltf_anim
 
     std::string animName = anim->name ? anim->name : "Unnamed";
     return AnimationClip::BuildFromRawTracks(animName, rawTracks, duration);
+}
+
+void GltfImporter::ProcessSkins(cgltf_data* data)
+{
+    Logger::War("Skin reading is not supported. The scene graph will be considered as Skeleton.");
+
+    std::vector<RawSkeletonJoint> roots;
+
+    for (int i = 0; i < data->scene->nodes_count; i++)
+    {
+        RawSkeletonJoint joint = ExtractJointHierarchy(data->scene->nodes[i]);
+        roots.push_back(joint);
+    }
+
+    skeleton = SkeletonBuilder::BuildFromRaw(roots);
+}
+
+RawSkeletonJoint GltfImporter::ExtractJointHierarchy(cgltf_node* node)
+{
+    RawSkeletonJoint joint;
+    joint.name = node->name ? node->name : "NO_NAME";
+
+    Matrix4 local;
+
+    if (node->has_matrix)
+    {
+        local = Matrix4(node->matrix);
+    }
+    else
+    {
+        if (node->has_translation)
+        {
+            local.translate(Vector3(
+                node->translation[0],
+                node->translation[1],
+                node->translation[2]));
+        }
+        if (node->has_rotation)
+        {
+            local = local * Matrix4::ToMatrix(
+                node->rotation[0],
+                node->rotation[1],
+                node->rotation[2],
+                node->rotation[3]);
+        }
+        if (node->has_scale)
+        {
+            local.scale(Vector3(
+                node->scale[0],
+                node->scale[1],
+                node->scale[2]));
+        }
+    }
+
+    joint.localTransform = local;
+
+    for (int i = 0; i < node->children_count; i++)
+    {
+        joint.children.push_back(ExtractJointHierarchy(node->children[i]));
+    }
+
+    return joint;
 }
