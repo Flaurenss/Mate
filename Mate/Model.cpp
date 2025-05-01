@@ -9,18 +9,10 @@ Model::Model(std::vector<std::shared_ptr<Mesh>> newMeshes)
 	ComputeExtends();
 }
 
-Model::Model(std::vector<std::shared_ptr<Mesh>> newMeshes, std::vector<std::shared_ptr<AnimationClip>> newAnimations)
+Model::Model(std::vector<std::shared_ptr<Mesh>> newMeshes, AnimationModel animationModel)
 {
     meshes = newMeshes;
-    animations = newAnimations;
-    ComputeExtends();
-}
-
-Model::Model(std::vector<std::shared_ptr<Mesh>> newMeshes, std::vector<std::shared_ptr<AnimationClip>> newAnimations, std::shared_ptr<Skeleton> newSkeleton)
-{
-    meshes = newMeshes;
-    animations = newAnimations;
-    skeleton = newSkeleton;
+    animationModel = animationModel;
     ComputeExtends();
 }
 
@@ -34,7 +26,7 @@ Vector3 Model::GetExtents()
     return aabb;
 }
 
-std::vector<std::shared_ptr<Mesh>> Model::GetMeshes()
+std::vector<std::shared_ptr<Mesh>>& Model::GetMeshes()
 {
     return meshes;
 }
@@ -66,10 +58,10 @@ void Model::ComputeExtends()
 
     aabb = max - min;
 
-    // Este es el centro del modelo en el espacio local original
+    // Center of the model in local space
     Vector3 center = (min + max) / 2.0f;
 
-    // Desplazar todos los vértices para centrar el modelo
+    // We move all vertices relative to that center
     for (auto& mesh : meshes)
     {
         for (auto& vertex : mesh->vertices)
