@@ -81,7 +81,7 @@
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)out\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)..\dependencies\includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\dependencies\lib\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\dependencies\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
