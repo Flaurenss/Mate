@@ -16,6 +16,14 @@ Model::Model(std::vector<std::shared_ptr<Mesh>> newMeshes, std::vector<std::shar
     ComputeExtends();
 }
 
+Model::Model(std::vector<std::shared_ptr<Mesh>> newMeshes, std::vector<std::shared_ptr<AnimationClip>> newAnimations, std::shared_ptr<Skeleton> newSkeleton)
+{
+    meshes = newMeshes;
+    animations = newAnimations;
+    skeleton = newSkeleton;
+    ComputeExtends();
+}
+
 Model::~Model()
 {
     meshes.clear();

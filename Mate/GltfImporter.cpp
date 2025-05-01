@@ -45,7 +45,7 @@ std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
     ProcessAnimations(data);
     
     cgltf_free(data);
-    return std::make_shared<Model>(meshes, animationClips);
+    return std::make_shared<Model>(meshes, animationClips, skeleton);
 }
 
 void GltfImporter::ProcessNode(cgltf_node* node, Matrix4 parent)
