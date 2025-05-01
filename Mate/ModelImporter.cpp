@@ -31,7 +31,7 @@ bool ModelImporter::EndsWith(const std::string& value, const std::string& ending
     return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-std::vector<std::shared_ptr<Mesh>> ModelImporter::Load(const std::string& modelFilePath) const
+std::shared_ptr<Model> ModelImporter::Load(const std::string& modelFilePath) const
 {
     auto importer = SelectImporter(modelFilePath);
     return importer->Load(modelFilePath);

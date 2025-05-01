@@ -26,13 +26,12 @@ std::shared_ptr<Model> AssetManager::LoadModel(const std::string& id, const std:
         return it->second;
     }
 
-    std::vector<std::shared_ptr<Mesh>> meshes = modelImporter.Load(path);
-    if (meshes.empty())
+    std::shared_ptr<Model> model = modelImporter.Load(path);
+    if (!model)
     {
         return nullptr;
     }
 
-    std::shared_ptr<Model> model = std::make_shared<Model>(meshes);
     models[id] = model;
     return model;
 }

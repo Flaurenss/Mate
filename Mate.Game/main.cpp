@@ -78,7 +78,7 @@ void GameLoop(ECS& ecs, Engine* engine)
             }
         };
 
-    auto environmentAssets = CreateEnvironment(ecs);
+    //auto environmentAssets = CreateEnvironment(ecs);
     auto& playerTransform = playerEntity.GetComponent<TransformComponent>();
     Vector3 originalPos = playerTransform.Position;
     PlayerRailState railState;
@@ -103,7 +103,7 @@ void GameLoop(ECS& ecs, Engine* engine)
             if (runGame)
             {
                 ManagePlayerInputRails(playerEntity, railState, fixedDeltaTime);
-                ManageMovableMisc(environmentAssets, fixedDeltaTime);
+                //ManageMovableMisc(environmentAssets, fixedDeltaTime);
                 engine->PhysicsUpdate(fixedDeltaTime);
             }
             accumulator -= fixedDeltaTime;

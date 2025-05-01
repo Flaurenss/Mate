@@ -11,10 +11,10 @@
 #include "BPLayerInterfaceImpl.h"
 #include "ObjectVsBPLayerFilterImpl.h"
 #include "ObjectLayerPairFilterImpl.h"
+#include "PhysicsComponent.h"
 
 #include <thread>
 #include <cassert>
-#include "PhysicsComponent.h"
 
 JPH_SUPPRESS_WARNINGS
 

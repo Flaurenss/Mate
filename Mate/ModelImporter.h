@@ -12,7 +12,7 @@ public:
 	ModelImporter();
 	~ModelImporter() = default;
 
-	std::vector<std::shared_ptr<Mesh>> Load(const std::string& modelFilePath) const;
+	std::shared_ptr<Model> Load(const std::string& modelFilePath) const;
 private:
 	std::unique_ptr<GltfImporter> gltfImporter;
 	//std::unique_ptr<FbxImporterExperimental> fbxImporter;

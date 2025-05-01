@@ -2,7 +2,7 @@
 #include "stb_image.h"
 #include "AssetManager.h"
 
-std::vector<std::shared_ptr<Mesh>> FbxImporterExperimental::Load(const std::string& path)
+std::shared_ptr<Model> FbxImporterExperimental::Load(const std::string& path)
 {
     meshes.clear();
     ufbx_load_opts opts = { };
@@ -16,7 +16,7 @@ std::vector<std::shared_ptr<Mesh>> FbxImporterExperimental::Load(const std::stri
     if (!scene)
     {
         std::cerr << "Failed to load scene: " << error.description.data;
-        return meshes;
+        return nullptr;
     }
 
     for (ufbx_node* node : scene->nodes)
@@ -28,7 +28,7 @@ std::vector<std::shared_ptr<Mesh>> FbxImporterExperimental::Load(const std::stri
 
     ufbx_free_scene(scene);
 
-    return meshes;
+    return std::make_shared<Model>(meshes);
 }
 
 void FbxImporterExperimental::ProcessNode(ufbx_node* node, const ufbx_scene* scene)

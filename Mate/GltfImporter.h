@@ -10,10 +10,11 @@ class GltfImporter : public IModelImporter
 public:
 	GltfImporter() = default;
 	~GltfImporter() = default;
-	virtual std::vector<std::shared_ptr<Mesh>> Load(const std::string& path);
+	virtual std::shared_ptr<Model> Load(const std::string& path);
 
 private:
 	std::vector<std::shared_ptr<Mesh>> meshes;
+	std::vector<std::shared_ptr<AnimationClip>> animationClips;
 	std::string basePath;
 
 	void ProcessNode(cgltf_node* node, Matrix4 matrix);
@@ -26,4 +27,7 @@ private:
 
 	std::shared_ptr<Texture> LoadMaterialTextures(cgltf_texture* texture, TextureType type);
 	unsigned int LoadTexture(const char* path);
+
+	void ProcessAnimations(cgltf_data* data);
+	std::shared_ptr<AnimationClip> BuildAnimationClip(const cgltf_animation* anim);
 };

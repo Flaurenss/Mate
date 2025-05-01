@@ -10,8 +10,7 @@ public:
     FbxImporterExperimental() = default;
     ~FbxImporterExperimental() = default;
 
-	virtual std::vector<std::shared_ptr<Mesh>> Load(const std::string& path);
-
+	virtual std::shared_ptr<Model> Load(const std::string& path);
 
 private:
     std::vector<std::shared_ptr<Mesh>> meshes;

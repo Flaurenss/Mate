@@ -4,8 +4,9 @@
 #include "stb_image.h"
 #include <filesystem>
 #include "AssetManager.h"
+#include "Logger.h"
 
-std::vector<std::shared_ptr<Mesh>> GltfImporter::Load(const std::string& path)
+std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
 {
     meshes.clear();
     cgltf_options options = {};
@@ -16,8 +17,8 @@ std::vector<std::shared_ptr<Mesh>> GltfImporter::Load(const std::string& path)
     if (cgltf_parse_file(&options, path.c_str(), &data) != cgltf_result_success
         || cgltf_load_buffers(&options, data, path.c_str()) != cgltf_result_success)
     {
-        std::cerr << "Failed to load glTF file: " << path << std::endl;
-        return meshes;
+        Logger::Err("Failed to load glTF file: " + path);
+        return nullptr;
     }
 
     cgltf_validate(data);
@@ -40,8 +41,10 @@ std::vector<std::shared_ptr<Mesh>> GltfImporter::Load(const std::string& path)
         //}
     }
 
+    ProcessAnimations(data);
+
     cgltf_free(data);
-    return meshes;
+    return std::make_shared<Model>(meshes, animationClips);
 }
 
 void GltfImporter::ProcessNode(cgltf_node* node, Matrix4 parent)
@@ -277,4 +280,80 @@ unsigned int GltfImporter::LoadTexture(const char* path)
     }
 
     return textureID;
+}
+
+void GltfImporter::ProcessAnimations(cgltf_data* data)
+{
+    animationClips.clear();
+    for (auto i = 0; i < data->animations_count; ++i)
+    {
+        const cgltf_animation* anim = &data->animations[i];
+        auto clip = BuildAnimationClip(anim);
+        if (clip)
+        {
+            animationClips.push_back(clip);
+        }
+    }
+}
+
+std::shared_ptr<AnimationClip> GltfImporter::BuildAnimationClip(const cgltf_animation* anim)
+{
+    std::vector<RawAnimationClip> rawTracks;
+    float duration = 0.0f;
+
+    // Iterate each channel which contain specification of animation type (scaling, rotation...)
+    for (auto c = 0; c < anim->channels_count; ++c)
+    {
+        const cgltf_animation_channel& channel = anim->channels[c];
+        const cgltf_animation_sampler* sampler = channel.sampler;
+        const cgltf_node* node = channel.target_node;
+        if (!node || !node->name || !sampler || !sampler->input || !sampler->output)
+        {
+            continue;
+        }
+
+        // Check if raw clip already inserted
+        std::string nodeName = node->name;
+        auto it = std::find_if(rawTracks.begin(),
+            rawTracks.end(),
+            [&](const RawAnimationClip& raw)
+            {
+                return raw.name == nodeName;
+            });
+
+        if (it == rawTracks.end())
+        {
+            rawTracks.push_back({ nodeName });
+            it = rawTracks.end() - 1;
+        }
+
+        for (auto k = 0; k < sampler->input->count; ++k)
+        {
+            float time;
+            cgltf_accessor_read_float(sampler->input, k, &time, 1);
+            duration = std::max(duration, time);
+
+            if (channel.target_path == cgltf_animation_path_type_translation)
+            {
+                float translation[3];
+                cgltf_accessor_read_float(sampler->output, k, translation, 3);
+                it->translations.emplace_back(time, Vector3(translation[0], translation[1], translation[2]));
+            }
+            else if (channel.target_path == cgltf_animation_path_type_rotation)
+            {
+                float roation[4]; // As quaternion
+                cgltf_accessor_read_float(sampler->output, k, roation, 4);
+                it->rotations.emplace_back(time, Vector4(roation[0], roation[1], roation[2], roation[3]));
+            }
+            else if (channel.target_path == cgltf_animation_path_type_scale)
+            {
+                float scale[3];
+                cgltf_accessor_read_float(sampler->output, k, scale, 3);
+                it->scales.emplace_back(time, Vector3(scale[0], scale[1], scale[2]));
+            }
+        }
+    }
+
+    std::string animName = anim->name ? anim->name : "Unnamed";
+    return AnimationClip::BuildFromRawTracks(animName, rawTracks, duration);
 }
