@@ -13,7 +13,6 @@
 - [ ] Fix graphics memory management with ECS.
 - [ ] Implement parent-children concept.
 - [ ] Implement UI for debug.
-- [ ] Separate Import model behaviour from model concept.
 - [ ] Add Texture independent concept so it can be added freely to any entity.
 - [ ] Investigate and implement Job thread engine.
 - [ ] Pack dependencies as nuget.
@@ -24,6 +23,7 @@
 ## DONE
 - [x] Refactor Render system
 - [x] Implement collision physics engine.
+- [x] Separate Import model behaviour from model concept.
 - [x] Separate Draw from Model object.
 - [x] Implement main procedural game movement.
 - [x] Clean camera component.
