@@ -1,7 +1,6 @@
 # TODO List
 
 ## TODO
-- [ ] Implement [animations](https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_007_Animations.md).
 - [ ] Add more collections to Model concept as: animations, textures...
 - [ ] Implement text rendering.
 - [ ] Implement basic lighting.
@@ -20,6 +19,7 @@
 - [ ] Pack dependencies as nuget.
 
 ## In progress
+- [ ] Implement [animations](https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_007_Animations.md).
 
 ## DONE
 - [x] Refactor Render system
