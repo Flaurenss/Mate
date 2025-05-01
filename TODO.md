@@ -20,9 +20,9 @@
 - [ ] Pack dependencies as nuget.
 
 ## In progress
-- [ ] Refactor Render system
 
 ## DONE
+- [x] Refactor Render system
 - [x] Implement collision physics engine.
 - [x] Separate Draw from Model object.
 - [x] Implement main procedural game movement.
