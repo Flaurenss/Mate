@@ -18,7 +18,7 @@ private:
 	std::string basePath;
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	std::vector<std::shared_ptr<AnimationClip>> animationClips;
-	std::unique_ptr<Skeleton> skeleton;
+	std::shared_ptr<Skeleton> skeleton;
 
 	void ProcessNode(cgltf_node* node, Matrix4 matrix);
 	void ProcessMesh(cgltf_mesh* mesh, Matrix4 matrix);

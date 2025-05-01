@@ -1,7 +1,7 @@
 #include "SkeletonBuilder.h"
 #include "Logger.h"
 
-std::unique_ptr<Skeleton> SkeletonBuilder::BuildFromRaw(const std::vector<RawSkeletonJoint>& rawRoots)
+std::shared_ptr<Skeleton> SkeletonBuilder::BuildFromRaw(const std::vector<RawSkeletonJoint>& rawRoots)
 {
     ozz::animation::offline::RawSkeleton rawSkeleton;
     rawSkeleton.roots.resize(rawRoots.size());
@@ -29,7 +29,7 @@ std::unique_ptr<Skeleton> SkeletonBuilder::BuildFromRaw(const std::vector<RawSke
         return nullptr;
     }
 
-    return std::make_unique<Skeleton>(std::move(ozzSkeleton));
+    return std::make_shared<Skeleton>(std::move(ozzSkeleton));
 }
 
 bool SkeletonBuilder::ConvertToOzzJoint(const RawSkeletonJoint& source, ozz::animation::offline::RawSkeleton::Joint& target)

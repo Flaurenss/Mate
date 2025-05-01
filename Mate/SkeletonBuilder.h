@@ -17,7 +17,7 @@ class SkeletonBuilder
 {
 public:
     SkeletonBuilder() = default;
-    static std::unique_ptr<Skeleton> BuildFromRaw(const std::vector<RawSkeletonJoint>& rawRoots);
+    static std::shared_ptr<Skeleton> BuildFromRaw(const std::vector<RawSkeletonJoint>& rawRoots);
 
 private:
     static bool ConvertToOzzJoint(const RawSkeletonJoint& source, ozz::animation::offline::RawSkeleton::Joint& target);
