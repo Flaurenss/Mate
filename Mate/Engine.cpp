@@ -11,6 +11,7 @@
 #include "Input.h"
 #include "PhysicsSystem.h"
 #include "DebugDraw.h"
+#include "AnimationSystem.h"
 
 int Engine::width = 1920;
 int Engine::height = 1080;
@@ -43,6 +44,7 @@ void Engine::Initialize()
 	DebugDraw::Init();
 	Shader shader("./Assets/vertexShader.shader", "./Assets/fragmentShader.shader");
 	registry->AddSystem<PhysicsSystem>();
+	registry->AddSystem<AnimationSystem>();
 	registry->AddSystem<RenderSystem>(shader);
 	registry->AddSystem<CameraSystem>(shader);
 }
@@ -149,6 +151,7 @@ void Engine::RenderUpdate()
 	auto& cameraSystem = registry->GetSystem<CameraSystem>();
 	cameraSystem.SetResolution(width, height);
 	cameraSystem.Update();
+	registry->GetSystem<AnimationSystem>().Update(DeltaTime);
 	registry->GetSystem<RenderSystem>().Update();
 
 	// Swap buffers, front for already rendered colors an the back one in order to avoid artifacts.

@@ -44,7 +44,7 @@ void DebugDraw::Init()
         0, 0, 0,  1, 0, 0,  // X
         0, 0, 0,  0, 1, 0,  // Y
         0, 0, 0,  0, 0, -1, // Z
-        0, 0, 0,  0, -1, 0  // -Y
+        //0, 0, 0,  0, -1, 0  // -Y
     };
 
     glGenVertexArrays(1, &axesVAO);
@@ -94,6 +94,34 @@ void DebugDraw::DrawWorldAxes(Shader& shader)
 
     shader.SetVec4("defaultColor", Vector4(0, 1, 0, 1));
     glDrawArrays(GL_LINES, 6, 2);  // -Y
+
+    glBindVertexArray(0);
+}
+
+void DebugDraw::DrawTransform(Shader& shader, Matrix4& model)
+{
+    shader.Use();
+    shader.SetBool("valid", false);
+
+    Matrix4 scaled = model;
+    scaled.scale(0.01f);
+
+    glBindVertexArray(axesVAO);
+
+    // X axis - Red
+    shader.SetVec4("defaultColor", Vector4(1, 0, 0, 1));
+    shader.SetMat4("model", model);
+    glDrawArrays(GL_LINES, 0, 2);
+
+    // Y axis - Green
+    shader.SetVec4("defaultColor", Vector4(0, 1, 0, 1));
+    shader.SetMat4("model", model);
+    glDrawArrays(GL_LINES, 2, 2);
+
+    // Z axis - Blue
+    shader.SetVec4("defaultColor", Vector4(0, 0, 1, 1));
+    shader.SetMat4("model", model);
+    glDrawArrays(GL_LINES, 4, 2);
 
     glBindVertexArray(0);
 }

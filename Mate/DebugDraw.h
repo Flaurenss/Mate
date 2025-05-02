@@ -9,6 +9,7 @@ public:
     static void Init();
     static void DrawAABB(const Vector3& halfExtents, Matrix4& model, Shader& shader);
     static void DrawWorldAxes(Shader& shader);
+    static void DrawTransform(Shader& shader, Matrix4& model);
     static void Shutdown();
 
 private:
@@ -17,4 +18,3 @@ private:
                         axesVAO,
                         axesVBO;
 };
-

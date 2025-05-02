@@ -85,6 +85,12 @@
     <Filter Include="Source Files\Core\Physics">
       <UniqueIdentifier>{4b4be5fb-6fd7-4d25-b5e4-0f339076da01}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Animations">
+      <UniqueIdentifier>{1270e3b9-2dc7-4368-ab95-20c05f071e7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Animations">
+      <UniqueIdentifier>{c5d48f28-9e8c-438e-829d-ebea9c75e540}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GltfImporter.cpp">
@@ -199,13 +205,19 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AnimationClip.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core\Animations</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonBuilder.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core\Animations</Filter>
     </ClCompile>
     <ClCompile Include="Skeleton.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -346,14 +358,20 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationClip.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SkeletonBuilder.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core\Animations</Filter>
     </ClInclude>
     <ClInclude Include="Skeleton.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationClip.h">
+      <Filter>Header Files\Core\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationSystem.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

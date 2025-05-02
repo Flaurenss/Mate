@@ -1,4 +1,5 @@
 #include "GameAssets.h"
+#include <AnimationComponent.h>
 
 Entity GameAssets::CreatePlayer(ECS& ecs, Vector3 basePos)
 {
@@ -8,6 +9,7 @@ Entity GameAssets::CreatePlayer(ECS& ecs, Vector3 basePos)
     player.AddComponent<TransformComponent>(basePos, Vector3(0, -180, 0), Vector3(0.5f));
     player.AddComponent<MeshComponent>("player");
     player.AddComponent<PhysicsComponent>(MotionType::KINEMATIC);
+    player.AddComponent<AnimationComponent>();
     return player;
 }
 

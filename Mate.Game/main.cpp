@@ -45,20 +45,19 @@ int main()
 {
     auto engine = std::make_unique<Engine>();
     ECS& ecs = engine->GetRegistry();
-    
-    auto camera = CreateCamera(ecs);
-    TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
-    CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
-    
-    GameLoop(ecs, engine.get());
 
-    //ManageFreeCamera(cameraComponent, cameraTransform, deltaTime);
+    GameLoop(ecs, engine.get());
 }
 
 void GameLoop(ECS& ecs, Engine* engine)
 {
     bool runGame = false;
     int points = 0;
+
+    auto camera = CreateCamera(ecs);
+    TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
+    CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
+
     Entity playerEntity = GameAssets::CreatePlayer(ecs, Vector3::Up * 0.2f);
 
     playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&](Entity otherEntity)
@@ -108,6 +107,8 @@ void GameLoop(ECS& ecs, Engine* engine)
             }
             accumulator -= fixedDeltaTime;
         }
+
+        ManageFreeCamera(cameraComponent, cameraTransform, engine->DeltaTime);
 
         engine->Update();
     }

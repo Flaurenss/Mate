@@ -6,16 +6,26 @@
 AnimationClip::AnimationClip(const std::string& name, std::shared_ptr<ozz::animation::Animation> animation) :
     name(name), animation(animation) {}
 
-std::shared_ptr<AnimationClip> AnimationClip::BuildFromRawTracks(std::string name, std::vector<RawAnimationClip> tracks, float duration)
+std::shared_ptr<AnimationClip> AnimationClip::BuildFromRawTracks(
+    std::string name,
+    std::vector<RawAnimationClip> tracks,
+    float duration,
+    const std::unordered_map<std::string, int>& jointNameToIndex)
 {
     ozz::animation::offline::RawAnimation raw;
     raw.duration = duration;
-    raw.tracks.resize(tracks.size());
+    raw.tracks.resize(jointNameToIndex.size());
 
-    for (auto i = 0; i < tracks.size(); i++)
+    for (const auto& track : tracks)
     {
-        const RawAnimationClip& src = tracks[i];
-        auto& dst = raw.tracks[i];
+        const RawAnimationClip& src = track;
+
+        auto it = jointNameToIndex.find(track.name);
+        if (it == jointNameToIndex.end())
+            continue;
+
+        int jointIndex = it->second;
+        auto& dst = raw.tracks[jointIndex];
 
         for (const auto& [time, position] : src.translations)
         {
@@ -56,4 +66,9 @@ const std::string& AnimationClip::GetName() const
 std::shared_ptr<ozz::animation::Animation> AnimationClip::GetAnimation() const
 {
     return animation;
+}
+
+float AnimationClip::GetDuration()
+{
+    return animation->duration();
 }

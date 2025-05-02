@@ -4,6 +4,7 @@
 #include "MeshComponent.h"
 #include "AssetManager.h"
 #include "DebugDraw.h"
+#include "AnimationComponent.h"
 
 RenderSystem::RenderSystem(Shader& sh) : shader(sh)
 {
@@ -34,7 +35,25 @@ void RenderSystem::Update()
 		for (const auto& mesh : model->GetMeshes())
 		{
 			shader.Use();
-			shader.SetMat4("model", modelTransform);
+			Matrix4 finalModelTransform = modelTransform;
+			if (entity.HasComponent<AnimationComponent>())
+			{
+				auto& animComp = entity.GetComponent<AnimationComponent>();
+				auto& jointMap = animComp.GetCache();
+
+				auto it = jointMap.find(mesh->attachedJointName);
+				if (it != jointMap.end())
+				{
+					finalModelTransform = finalModelTransform * it->second;
+				}
+
+				//for (const auto& [jointName, jointMatrix] : jointMap)
+				//{
+				//	DebugDraw::DrawTransform(shader, it->second);
+				//}
+			}
+
+			shader.SetMat4("model", finalModelTransform);
 			
 			BindTexture(mesh.get());
 			DrawMesh(mesh.get());
@@ -45,7 +64,7 @@ void RenderSystem::Update()
 		const Vector3& extent = meshComponent.GetExtents();
 		DebugDraw::DrawAABB((extent/2), modelTransform, shader);
 		// Draw world axis
-		DebugDraw::DrawWorldAxes(shader);
+		//DebugDraw::DrawWorldAxes(shader);
 	}
 }
 

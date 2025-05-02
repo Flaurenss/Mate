@@ -9,6 +9,9 @@ public:
 
     bool IsValid() const;
     const ozz::animation::Skeleton* GetOzzSkeleton() const;
+
+    int GetNumJoints();
+    int GetNumSOAJoints();
 private:
     std::shared_ptr<ozz::animation::Skeleton> skeleton;
 };

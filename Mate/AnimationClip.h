@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 #include "ozz/animation/runtime/animation.h"
 #include "ozz/animation/offline/raw_animation.h"
@@ -22,11 +23,14 @@ public:
 
     static std::shared_ptr<AnimationClip> BuildFromRawTracks(
         std::string name,
-        std::vector<RawAnimationClip>,
-        float duration);
+        std::vector<RawAnimationClip> tracks,
+        float duration,
+        const std::unordered_map<std::string, int>& jointNameToIndex);
 
     const std::string& GetName() const;
     std::shared_ptr<ozz::animation::Animation> GetAnimation() const;
+
+    float GetDuration();
 
 private:
     std::string name;

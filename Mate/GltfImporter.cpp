@@ -8,6 +8,7 @@
 
 std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
 {
+    jointNameToIndex.clear();
     meshes.clear();
     cgltf_options options = {};
     cgltf_data* data = NULL;
@@ -43,9 +44,14 @@ std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
 
     ProcessSkins(data);
     ProcessAnimations(data);
-    
+    AnimationModel animationModel;
+    animationModel.animations = animationClips;
+    animationModel.skeleton = skeleton;
+    animationModel.joinintNameToIndex = jointNameToIndex;
+
     cgltf_free(data);
-    return std::make_shared<Model>(meshes);
+
+    return std::make_shared<Model>(meshes, animationModel);
 }
 
 void GltfImporter::ProcessNode(cgltf_node* node, Matrix4 parent)
@@ -92,6 +98,7 @@ void GltfImporter::ProcessMesh(cgltf_mesh* mesh, Matrix4 matrix)
     for (int i = 0; i < mesh->primitives_count; i++)
     {
         auto primitiveMesh = ProcessPrimitive(mesh->primitives[i], matrix);
+        primitiveMesh->attachedJointName = mesh->name;
         meshes.push_back(primitiveMesh);
     }
 }
@@ -193,6 +200,7 @@ std::shared_ptr<Mesh> GltfImporter::ProcessPrimitive(cgltf_primitive& primitive,
 
         //textures.push_back(texture);
     }
+
     return std::make_shared<Mesh>(vertices, indices, textures);
 }
 
@@ -356,7 +364,7 @@ std::shared_ptr<AnimationClip> GltfImporter::BuildAnimationClip(const cgltf_anim
     }
 
     std::string animName = anim->name ? anim->name : "Unnamed";
-    return AnimationClip::BuildFromRawTracks(animName, rawTracks, duration);
+    return AnimationClip::BuildFromRawTracks(animName, rawTracks, duration, jointNameToIndex);
 }
 
 void GltfImporter::ProcessSkins(cgltf_data* data)
@@ -371,7 +379,9 @@ void GltfImporter::ProcessSkins(cgltf_data* data)
         roots.push_back(joint);
     }
 
-    skeleton = SkeletonBuilder::BuildFromRaw(roots);
+    auto result = SkeletonBuilder::BuildFromRaw(roots);
+    skeleton = result.skeleton;
+    jointNameToIndex = result.jointNameToIndex;
 }
 
 RawSkeletonJoint GltfImporter::ExtractJointHierarchy(cgltf_node* node)
@@ -410,9 +420,7 @@ RawSkeletonJoint GltfImporter::ExtractJointHierarchy(cgltf_node* node)
                 node->scale[2]));
         }
     }
-
-    joint.localTransform = local;
-
+    joint.transformation = local;
     for (int i = 0; i < node->children_count; i++)
     {
         joint.children.push_back(ExtractJointHierarchy(node->children[i]));

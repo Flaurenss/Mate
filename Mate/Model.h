@@ -7,8 +7,12 @@
 
 struct AnimationModel
 {
+public:
     std::vector<std::shared_ptr<AnimationClip>> animations;
     std::shared_ptr<Skeleton> skeleton;
+    std::unordered_map<std::string, int> joinintNameToIndex;
+
+    Skeleton* GetSkeleton();
 };
 
 class Model
@@ -21,12 +25,12 @@ public:
     Vector3 GetExtents();
     std::vector<std::shared_ptr<Mesh>>& GetMeshes();
 
+    bool HasAnimationModel();
+    AnimationModel& GetAnimationModel();
+
 private:
     Vector3 aabb;
     std::vector<std::shared_ptr<Mesh>> meshes;
-    // TODO: create Animator structure to store below pointers:
-    //std::vector<std::shared_ptr<AnimationClip>> animations;
-    //std::shared_ptr<Skeleton> skeleton;
     std::optional<AnimationModel> animationModel;
 
     void ComputeExtends();

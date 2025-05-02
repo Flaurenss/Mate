@@ -9,10 +9,10 @@ Model::Model(std::vector<std::shared_ptr<Mesh>> newMeshes)
 	ComputeExtends();
 }
 
-Model::Model(std::vector<std::shared_ptr<Mesh>> newMeshes, AnimationModel animationModel)
+Model::Model(std::vector<std::shared_ptr<Mesh>> newMeshes, AnimationModel newAnimationModel)
 {
     meshes = newMeshes;
-    animationModel = animationModel;
+    animationModel = newAnimationModel;
     ComputeExtends();
 }
 
@@ -29,6 +29,16 @@ Vector3 Model::GetExtents()
 std::vector<std::shared_ptr<Mesh>>& Model::GetMeshes()
 {
     return meshes;
+}
+
+bool Model::HasAnimationModel()
+{
+    return animationModel ? true : false;
+}
+
+AnimationModel& Model::GetAnimationModel()
+{
+    return animationModel.value();
 }
 
 void Model::ComputeExtends()
@@ -70,4 +80,9 @@ void Model::ComputeExtends()
         }
         mesh->SetupMesh();
     }
+}
+
+Skeleton* AnimationModel::GetSkeleton()
+{
+    return skeleton.get();
 }
