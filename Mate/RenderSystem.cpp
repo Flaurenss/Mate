@@ -32,6 +32,9 @@ void RenderSystem::Update()
 		TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
 		Matrix4 modelTransform = transformComponent.GetTransform();
 		
+		Matrix4 center;
+		center.translate(-meshComponent.GetCenter());
+		modelTransform = modelTransform * center;
 		for (const auto& mesh : model->GetMeshes())
 		{
 			shader.Use();
@@ -44,15 +47,13 @@ void RenderSystem::Update()
 				auto it = jointMap.find(mesh->attachedJointName);
 				if (it != jointMap.end())
 				{
+
+					//finalModelTransform = finalModelTransform * jointMap[mesh->attachedJointName];
 					finalModelTransform = finalModelTransform * it->second;
 				}
-
-				//for (const auto& [jointName, jointMatrix] : jointMap)
-				//{
-				//	DebugDraw::DrawTransform(shader, it->second);
-				//}
 			}
 
+			finalModelTransform = finalModelTransform /** center*/;
 			shader.SetMat4("model", finalModelTransform);
 			
 			BindTexture(mesh.get());
@@ -62,7 +63,8 @@ void RenderSystem::Update()
 		// ========= DEBUG =========
 		// Draw bounding box
 		const Vector3& extent = meshComponent.GetExtents();
-		DebugDraw::DrawAABB((extent/2), modelTransform, shader);
+		auto test = modelTransform * center;
+		DebugDraw::DrawAABB(extent/2, modelTransform, shader);
 		// Draw world axis
 		//DebugDraw::DrawWorldAxes(shader);
 	}

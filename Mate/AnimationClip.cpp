@@ -1,7 +1,8 @@
 #include "AnimationClip.h"
 #include "Logger.h"
 
-#include "ozz/base/memory/allocator.h" 
+#include "ozz/base/memory/allocator.h"
+#include "OzzLoader.h"
 
 AnimationClip::AnimationClip(const std::string& name, std::shared_ptr<ozz::animation::Animation> animation) :
     name(name), animation(animation) {}
@@ -22,7 +23,9 @@ std::shared_ptr<AnimationClip> AnimationClip::BuildFromRawTracks(
 
         auto it = jointNameToIndex.find(track.name);
         if (it == jointNameToIndex.end())
+        {
             continue;
+        }
 
         int jointIndex = it->second;
         auto& dst = raw.tracks[jointIndex];
@@ -48,13 +51,14 @@ std::shared_ptr<AnimationClip> AnimationClip::BuildFromRawTracks(
     }
 
     ozz::animation::offline::AnimationBuilder builder;
-    auto runtimeUnique = builder(raw);
+    auto runtimeUnique = OzzLoader::LoadAnimation("./Assets/Player/" + name + ".ozz");
+    //auto runtimeUnique = builder(raw);
     ozz::animation::Animation* rawPtr = runtimeUnique.get();
     
     auto deleter = runtimeUnique.get_deleter();
     auto shared = std::shared_ptr<ozz::animation::Animation>(rawPtr, deleter);
     runtimeUnique.release();
-    
+
     return std::make_shared<AnimationClip>(name, shared);
 }
 

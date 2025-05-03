@@ -9,6 +9,7 @@
 #include "EnableComponent.h"
 #include "CameraComponent.h"
 #include "PhysicsComponent.h"
+#include "AnimationComponent.h"
 #include "MathUtils.h"
 #include "Logger.h"
 

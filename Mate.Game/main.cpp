@@ -58,7 +58,7 @@ void GameLoop(ECS& ecs, Engine* engine)
     TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
 
-    Entity playerEntity = GameAssets::CreatePlayer(ecs, Vector3::Up * 0.2f);
+    Entity playerEntity = GameAssets::CreatePlayer(ecs, Vector3::Up * 0.2f, Vector3(0, -180, 0), Vector3(0.5f));
 
     playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&](Entity otherEntity)
         {
@@ -76,8 +76,9 @@ void GameLoop(ECS& ecs, Engine* engine)
                 engine->SetSimulationTo(runGame);
             }
         };
+    auto& animator = playerEntity.GetComponent<AnimationComponent>();
 
-    //auto environmentAssets = CreateEnvironment(ecs);
+    auto environmentAssets = CreateEnvironment(ecs);
     auto& playerTransform = playerEntity.GetComponent<TransformComponent>();
     Vector3 originalPos = playerTransform.Position;
     PlayerRailState railState;
@@ -92,6 +93,7 @@ void GameLoop(ECS& ecs, Engine* engine)
             engine->SetSimulationTo(runGame);
         }
 
+        animator.CurrentAnimationIndex = runGame ? 2 : 1;
         accumulator += deltaTime;
         if (runGame)
         {
@@ -102,7 +104,7 @@ void GameLoop(ECS& ecs, Engine* engine)
             if (runGame)
             {
                 ManagePlayerInputRails(playerEntity, railState, fixedDeltaTime);
-                //ManageMovableMisc(environmentAssets, fixedDeltaTime);
+                ManageMovableMisc(environmentAssets, fixedDeltaTime);
                 engine->PhysicsUpdate(fixedDeltaTime);
             }
             accumulator -= fixedDeltaTime;

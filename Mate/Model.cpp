@@ -21,9 +21,14 @@ Model::~Model()
     meshes.clear();
 }
 
-Vector3 Model::GetExtents()
+Vector3 Model::GetExtents() const
 {
     return aabb;
+}
+
+Vector3 Model::GetCenter() const
+{
+    return center;
 }
 
 std::vector<std::shared_ptr<Mesh>>& Model::GetMeshes()
@@ -54,7 +59,7 @@ void Model::ComputeExtends()
 
     for (const auto& mesh : meshes)
     {
-        for (const Vertex& vertex : mesh->vertices)
+        for (const Vertex vertex : mesh->vertices)
         {
             min.x = std::min(min.x, vertex.Position.x);
             min.y = std::min(min.y, vertex.Position.y);
@@ -67,16 +72,16 @@ void Model::ComputeExtends()
     }
 
     aabb = max - min;
-
+    center = (min + max) / 2.0f;
+    //aabb = Vector3(aabb.x, center.y, aabb.z);
     // Center of the model in local space
-    Vector3 center = (min + max) / 2.0f;
 
     // We move all vertices relative to that center
     for (auto& mesh : meshes)
     {
         for (auto& vertex : mesh->vertices)
         {
-            vertex.Position -= center;
+            //vertex.Position -= center;
         }
         mesh->SetupMesh();
     }

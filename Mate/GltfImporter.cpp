@@ -1,5 +1,6 @@
 #define CGLTF_IMPLEMENTATION
 #define _CRT_SECURE_NO_DEPRECATE
+
 #include "GltfImporter.h"
 #include "stb_image.h"
 #include <filesystem>
@@ -8,8 +9,11 @@
 
 std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
 {
-    jointNameToIndex.clear();
     meshes.clear();
+    jointNameToIndex.clear();
+    baseJointTransforms.clear();
+    inverseBindTransforms.clear();
+
     cgltf_options options = {};
     cgltf_data* data = NULL;
     std::filesystem::path base = std::filesystem::path(path).parent_path();
@@ -48,6 +52,8 @@ std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
     animationModel.animations = animationClips;
     animationModel.skeleton = skeleton;
     animationModel.joinintNameToIndex = jointNameToIndex;
+    animationModel.baseJointTransforms = baseJointTransforms;
+    animationModel.inverseBindTransforms = inverseBindTransforms;
 
     cgltf_free(data);
 
@@ -82,9 +88,18 @@ void GltfImporter::ProcessNode(cgltf_node* node, Matrix4 parent)
         }
     }
 
+    std::string nodeName = node->name ? node->name : "";
+
     if (node->mesh)
     {
-        ProcessMesh(node->mesh, parent);
+        for (int i = 0; i < node->mesh->primitives_count; i++)
+        {
+            auto primitiveMesh = ProcessPrimitive(node->mesh->primitives[i], parent);
+            primitiveMesh->attachedJointName = nodeName;
+            meshes.push_back(primitiveMesh);
+        }
+
+        //ProcessMesh(node->mesh, parent);
     }
 
     for (size_t chIndex = 0; chIndex < node->children_count; chIndex++)
@@ -212,8 +227,9 @@ Vector3 GltfImporter::ProcessPosition(cgltf_accessor* accesor, size_t index, Mat
         std::cerr << "Error tor read Vertex Position " << index << std::endl;
     }
 
-    Vector4 worldPos = matrix * Vector4(pos[0], pos[1], pos[2], 1.0f);
-    return Vector3(worldPos.x, worldPos.y, worldPos.z);
+    //Vector4 worldPos = matrix * Vector4(pos[0], pos[1], pos[2], 1.0f);
+    //return Vector3(worldPos.x, worldPos.y, worldPos.z);
+    return Vector3(pos[0], pos[1], pos[2]);
 }
 
 Vector3 GltfImporter::ProcessNormal(cgltf_accessor* accesor, size_t index, Matrix4 matrix)
@@ -223,8 +239,9 @@ Vector3 GltfImporter::ProcessNormal(cgltf_accessor* accesor, size_t index, Matri
     {
         std::cerr << "Error tor read Vertex Normal" << index << std::endl;
     }
-    Vector4 worldNorm = matrix * Vector4(norm[0], norm[1], norm[2], 0.0f);
-    return Vector3(worldNorm.x, worldNorm.y, worldNorm.z).normalize();
+    //Vector4 worldNorm = matrix * Vector4(norm[0], norm[1], norm[2], 0.0f);
+    //return Vector3(worldNorm.x, worldNorm.y, worldNorm.z).normalize();
+    return Vector3(norm[0], norm[1], norm[2]).normalize();
 }
 
 Vector2 GltfImporter::ProcessTextureCoordinate(cgltf_accessor* accesor, size_t index)
@@ -316,13 +333,13 @@ std::shared_ptr<AnimationClip> GltfImporter::BuildAnimationClip(const cgltf_anim
         const cgltf_animation_channel& channel = anim->channels[c];
         const cgltf_animation_sampler* sampler = channel.sampler;
         const cgltf_node* node = channel.target_node;
-        if (!node || !node->name || !sampler || !sampler->input || !sampler->output)
+        if (!node || !sampler || !sampler->input || !sampler->output)
         {
             continue;
         }
 
         // Check if raw clip already inserted
-        std::string nodeName = node->name;
+        std::string nodeName = node->name ? node->name : "Unnamed_Node";
         auto it = std::find_if(rawTracks.begin(),
             rawTracks.end(),
             [&](const RawAnimationClip& raw)
@@ -363,67 +380,91 @@ std::shared_ptr<AnimationClip> GltfImporter::BuildAnimationClip(const cgltf_anim
         }
     }
 
-    std::string animName = anim->name ? anim->name : "Unnamed";
+    std::string animName = anim->name ? anim->name : "Unnamed_Animation";
     return AnimationClip::BuildFromRawTracks(animName, rawTracks, duration, jointNameToIndex);
 }
 
 void GltfImporter::ProcessSkins(cgltf_data* data)
 {
-    Logger::War("Skin reading is not supported. The scene graph will be considered as Skeleton.");
+    if (data->skins_count > 0)
+    {
+    }
+    else
+    {
+        Logger::War("Skin reading is not supported. The entire scene graph will be considered as Skeleton.");
+    }
 
     std::vector<RawSkeletonJoint> roots;
 
     for (int i = 0; i < data->scene->nodes_count; i++)
     {
-        RawSkeletonJoint joint = ExtractJointHierarchy(data->scene->nodes[i]);
+        RawSkeletonJoint joint = ExtractJointHierarchy(data->scene->nodes[i], Matrix4());
+        //ApplySkeletonCorrections(joint);
         roots.push_back(joint);
     }
 
     auto result = SkeletonBuilder::BuildFromRaw(roots);
     skeleton = result.skeleton;
     jointNameToIndex = result.jointNameToIndex;
+
+    for (const auto& [name, matrix] : baseJointTransforms)
+    {
+        inverseBindTransforms[name] = matrix.inverse();
+    }
 }
 
-RawSkeletonJoint GltfImporter::ExtractJointHierarchy(cgltf_node* node)
+RawSkeletonJoint GltfImporter::ExtractJointHierarchy(cgltf_node* node, const Matrix4& parentGlobal)
 {
     RawSkeletonJoint joint;
     joint.name = node->name ? node->name : "NO_NAME";
+    Logger::Log("Node:" + joint.name);
+
+    Matrix4 translation;
+    if (node->has_translation)
+    {
+        translation.translate(Vector3(
+            node->translation[0],
+            node->translation[1],
+            node->translation[2]));
+    }
+
+    Matrix4 rotation;
+    if (node->has_rotation)
+    {
+        rotation = Matrix4::ToMatrix(
+            node->rotation[0],
+            node->rotation[1],
+            node->rotation[2],
+            node->rotation[3]);
+    }
+
+    Matrix4 scale;
+    if (node->has_scale)
+    {
+        scale.scale(Vector3(
+            node->scale[0],
+            node->scale[1],
+            node->scale[2]));
+    }
 
     Matrix4 local;
-
     if (node->has_matrix)
     {
         local = Matrix4(node->matrix);
     }
     else
     {
-        if (node->has_translation)
-        {
-            local.translate(Vector3(
-                node->translation[0],
-                node->translation[1],
-                node->translation[2]));
-        }
-        if (node->has_rotation)
-        {
-            local = local * Matrix4::ToMatrix(
-                node->rotation[0],
-                node->rotation[1],
-                node->rotation[2],
-                node->rotation[3]);
-        }
-        if (node->has_scale)
-        {
-            local.scale(Vector3(
-                node->scale[0],
-                node->scale[1],
-                node->scale[2]));
-        }
+        local = translation * rotation * scale;
     }
+
+    Matrix4 globalTransform = parentGlobal * local;
+
     joint.transformation = local;
+    //joint.transformation = globalTransform;
+    baseJointTransforms[joint.name] = globalTransform;
     for (int i = 0; i < node->children_count; i++)
     {
-        joint.children.push_back(ExtractJointHierarchy(node->children[i]));
+        joint.children.push_back(ExtractJointHierarchy(node->children[i], globalTransform));
     }
 
     return joint;

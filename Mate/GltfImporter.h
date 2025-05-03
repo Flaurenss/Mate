@@ -20,6 +20,8 @@ private:
 	std::vector<std::shared_ptr<AnimationClip>> animationClips;
 	std::shared_ptr<Skeleton> skeleton;
 	std::unordered_map<std::string, int> jointNameToIndex;
+	std::unordered_map<std::string, Matrix4> baseJointTransforms;
+	std::unordered_map<std::string, Matrix4> inverseBindTransforms;
 
 	void ProcessNode(cgltf_node* node, Matrix4 matrix);
 	void ProcessMesh(cgltf_mesh* mesh, Matrix4 matrix);
@@ -36,5 +38,5 @@ private:
 	std::shared_ptr<AnimationClip> BuildAnimationClip(const cgltf_animation* anim);
 
 	void ProcessSkins(cgltf_data* data);
-	RawSkeletonJoint ExtractJointHierarchy(cgltf_node* node);
+	RawSkeletonJoint ExtractJointHierarchy(cgltf_node* node, const Matrix4& parentGlobal);
 };

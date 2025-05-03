@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <ozz/animation/runtime/skeleton.h>
+#include <ozz/base/maths/simd_math.h>
+#include <vector>
 
 class Skeleton
 {
@@ -15,4 +17,3 @@ public:
 private:
     std::shared_ptr<ozz::animation::Skeleton> skeleton;
 };
-

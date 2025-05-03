@@ -71,6 +71,7 @@ public:
 
 	static Matrix4 lookAt(const Vector3 position, const Vector3 target, const Vector3 up);
 	static Matrix4 ToMatrix(const float x, const float y, const float z, const float w);
+	Matrix4 inverse() const;
 
 	// Operators
 	float& operator[](int index);

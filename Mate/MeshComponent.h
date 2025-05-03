@@ -9,6 +9,7 @@ public:
 	const std::string& GetModelId() const;
 
 	Vector3 GetExtents() const;
+	Vector3 GetCenter() const;
 
 private:
 	std::string modelId;

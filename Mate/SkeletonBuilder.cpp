@@ -2,9 +2,11 @@
 #include "Logger.h"
 #include "ozz/base/maths/simd_math.h"
 #include <functional>
+#include "OzzLoader.h"
 
 SkeletonBuildResult SkeletonBuilder::BuildFromRaw(const std::vector<RawSkeletonJoint>& rawRoots)
 {
+    //auto ptr = OzzLoader::LoadSkeleton("./Assets/Player/skeleton.ozz");
     ozz::animation::offline::RawSkeleton rawSkeleton;
     rawSkeleton.roots.resize(rawRoots.size());
     std::unordered_map<std::string, int> jointNameToIndex;
