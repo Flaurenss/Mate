@@ -227,9 +227,9 @@ Vector3 GltfImporter::ProcessPosition(cgltf_accessor* accesor, size_t index, Mat
         std::cerr << "Error tor read Vertex Position " << index << std::endl;
     }
 
-    //Vector4 worldPos = matrix * Vector4(pos[0], pos[1], pos[2], 1.0f);
-    //return Vector3(worldPos.x, worldPos.y, worldPos.z);
-    return Vector3(pos[0], pos[1], pos[2]);
+    Vector4 worldPos = matrix * Vector4(pos[0], pos[1], pos[2], 1.0f);
+    return Vector3(worldPos.x, worldPos.y, worldPos.z);
+    //return Vector3(pos[0], pos[1], pos[2]);
 }
 
 Vector3 GltfImporter::ProcessNormal(cgltf_accessor* accesor, size_t index, Matrix4 matrix)
@@ -239,9 +239,9 @@ Vector3 GltfImporter::ProcessNormal(cgltf_accessor* accesor, size_t index, Matri
     {
         std::cerr << "Error tor read Vertex Normal" << index << std::endl;
     }
-    //Vector4 worldNorm = matrix * Vector4(norm[0], norm[1], norm[2], 0.0f);
-    //return Vector3(worldNorm.x, worldNorm.y, worldNorm.z).normalize();
-    return Vector3(norm[0], norm[1], norm[2]).normalize();
+    Vector4 worldNorm = matrix * Vector4(norm[0], norm[1], norm[2], 0.0f);
+    return Vector3(worldNorm.x, worldNorm.y, worldNorm.z).normalize();
+    //return Vector3(norm[0], norm[1], norm[2]).normalize();
 }
 
 Vector2 GltfImporter::ProcessTextureCoordinate(cgltf_accessor* accesor, size_t index)

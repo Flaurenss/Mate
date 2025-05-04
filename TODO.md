@@ -1,18 +1,19 @@
 # TODO List
 
 ## TODO
-- [ ] Add more collections to Model concept as: animations, textures...
+
+- [ ] Implement parent-children concept.
 - [ ] Implement text rendering.
 - [ ] Implement basic lighting.
 - [ ] Add cubemaps.
+- [ ] Implement UI for debug.
+- [ ] Add more collections to Model concept as: animations, textures...
 - [ ] Refactor Game project
 - [ ] Add event system (input at least).
 - [ ] Refactor ECS implementation to follow a more Data Oriented Design including destroy entities and related data.
 - [ ] Implement scripting.
 - [ ] Add quaternions to be used in physics simulation.
 - [ ] Fix graphics memory management with ECS.
-- [ ] Implement parent-children concept.
-- [ ] Implement UI for debug.
 - [ ] Add Texture independent concept so it can be added freely to any entity.
 - [ ] Investigate and implement Job thread engine.
 - [ ] Pack dependencies as nuget.

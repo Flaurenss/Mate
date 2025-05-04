@@ -61,7 +61,6 @@ AnimationSystem::AnimationSystem()
 
 void AnimationSystem::Update(float deltaTime)
 {
-    //return;
 	for (Entity& entity : GetEntities())
 	{
 		if (entity.HasComponent<EnableComponent>() &&
@@ -190,7 +189,7 @@ void AnimationSystem::Update(float deltaTime)
             auto it = inverseBind.find(jointName);
             if (it != inverseBind.end())
             {
-                jointMap[jointName] = animatedMatrix /** animModel.inverseBindTransforms[jointName]*/;
+                jointMap[jointName] = animatedMatrix * animModel.inverseBindTransforms[jointName];
             }
             else
             {
