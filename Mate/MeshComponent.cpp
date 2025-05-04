@@ -20,3 +20,9 @@ Vector3 MeshComponent::GetCenter() const
     auto model = AssetManager::GetInstance().GetModel(modelId);
     return model ? model->GetCenter() : Vector3::Zero;
 }
+
+Vector3 MeshComponent::GetMin() const
+{
+    auto model = AssetManager::GetInstance().GetModel(modelId);
+    return model? model->Min : Vector3::Zero;
+}

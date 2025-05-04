@@ -10,6 +10,7 @@ public:
 
 	Vector3 GetExtents() const;
 	Vector3 GetCenter() const;
+	Vector3 GetMin() const;
 
 private:
 	std::string modelId;

@@ -59,7 +59,7 @@ void Model::ComputeExtends()
 
     for (const auto& mesh : meshes)
     {
-        for (const Vertex vertex : mesh->vertices)
+        for (auto& vertex : mesh->vertices)
         {
             min.x = std::min(min.x, vertex.Position.x);
             min.y = std::min(min.y, vertex.Position.y);
@@ -72,10 +72,9 @@ void Model::ComputeExtends()
     }
 
     aabb = max - min;
-    center = (min + max) / 2.0f;
-    //aabb = Vector3(aabb.x, center.y, aabb.z);
     // Center of the model in local space
-
+    center = (min + max) / 2.0f;
+    Min = min;
     // We move all vertices relative to that center
     for (auto& mesh : meshes)
     {
@@ -85,6 +84,7 @@ void Model::ComputeExtends()
         }
         mesh->SetupMesh();
     }
+    std::cout << "Model Extents: " << aabb.y << ", Center.y: " << center.y << std::endl;
 }
 
 Skeleton* AnimationModel::GetSkeleton()

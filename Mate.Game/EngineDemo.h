@@ -6,5 +6,5 @@ class EngineDemo
 {
 public:
 	static void CreateBaseFloor(ECS& ecs);
-	static void PhysicsCubeDemo(ECS& ecs, ModelImporter& modelImporter);
+	static void PhysicsCubeDemo(ECS& ecs);
 };

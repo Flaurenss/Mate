@@ -20,6 +20,7 @@ public:
 class Model
 {
 public:
+    Vector3 Min;
     Model(std::vector<std::shared_ptr<Mesh>> newMeshes);
     Model(std::vector<std::shared_ptr<Mesh>> newMeshes, AnimationModel animationModel);
     ~Model();

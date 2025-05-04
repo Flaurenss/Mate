@@ -92,15 +92,19 @@ void PhysicsSystem::RegisterBody(Entity& entity)
 	auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
 	auto& transform = entity.GetComponent<TransformComponent>();
 	Vector3 extents = Vector3::One;
+	Vector3 center = Vector3::Zero;
+	Vector3 min = Vector3::Zero;
 	if (entity.HasComponent<MeshComponent>())
 	{
 		extents = entity.GetComponent<MeshComponent>().GetExtents();
+		center = entity.GetComponent<MeshComponent>().GetCenter();
+		min = entity.GetComponent<MeshComponent>().GetMin();
 	}
-	auto halfExtents = (extents * transform.Scale) / 2;
+	auto halfExtents = (extents / 2 ) * transform.Scale;
 	halfExtents.x = std::max(halfExtents.x, 0.05f);
 	halfExtents.y = std::max(halfExtents.y, 0.05f);
 	halfExtents.z = std::max(halfExtents.z, 0.05f);
-
+	
 	phyEngine->RegisterBody(
 		entity.GetId(),
 		halfExtents,

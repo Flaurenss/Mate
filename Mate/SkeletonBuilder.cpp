@@ -6,7 +6,7 @@
 
 SkeletonBuildResult SkeletonBuilder::BuildFromRaw(const std::vector<RawSkeletonJoint>& rawRoots)
 {
-    //auto ptr = OzzLoader::LoadSkeleton("./Assets/Player/skeleton.ozz");
+    auto ptr = OzzLoader::LoadSkeleton("./Assets/Player/skeleton.ozz");
     ozz::animation::offline::RawSkeleton rawSkeleton;
     rawSkeleton.roots.resize(rawRoots.size());
     std::unordered_map<std::string, int> jointNameToIndex;
@@ -34,7 +34,7 @@ SkeletonBuildResult SkeletonBuilder::BuildFromRaw(const std::vector<RawSkeletonJ
         return { nullptr, {} };
     }
 
-    return { std::make_shared<Skeleton>(std::move(ozzSkeleton)), jointNameToIndex };
+    return { std::make_shared<Skeleton>(std::move(ptr)), jointNameToIndex };
 }
 
 bool SkeletonBuilder::ConvertToOzzJoint(const RawSkeletonJoint& source, ozz::animation::offline::RawSkeleton::Joint& target, std::unordered_map<std::string, int>& jointNameToIndex,
