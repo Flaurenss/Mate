@@ -171,6 +171,11 @@
     <ClInclude Include="EnvironmentAssets.h" />
     <ClInclude Include="GameAssets.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mate\Mate.vcxproj">
+      <Project>{87d6bfc4-75e7-45cf-84fa-852979e2ccf4}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

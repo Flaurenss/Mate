@@ -252,6 +252,11 @@
   <ItemGroup>
     <CopyFileToFolders Include="Resources\container.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mate.Math\Mate.Math.vcxproj">
+      <Project>{1f8d6c21-6208-4e8e-843a-ed06a5274540}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
