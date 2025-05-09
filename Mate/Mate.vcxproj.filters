@@ -222,6 +222,9 @@
     <ClCompile Include="OzzLoader.cpp">
       <Filter>Source Files\Core\Animations</Filter>
     </ClCompile>
+    <ClCompile Include="ExternalOzzProcessor.cpp">
+      <Filter>Source Files\Core\Animations</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
@@ -377,6 +380,9 @@
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="OzzLoader.h">
+      <Filter>Header Files\Core\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternalOzzProcessor.h">
       <Filter>Header Files\Core\Animations</Filter>
     </ClInclude>
   </ItemGroup>
