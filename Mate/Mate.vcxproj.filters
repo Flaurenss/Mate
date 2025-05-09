@@ -220,7 +220,7 @@
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="OzzLoader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core\Animations</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -377,7 +377,7 @@
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="OzzLoader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core\Animations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

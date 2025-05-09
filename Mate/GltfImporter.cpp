@@ -46,6 +46,7 @@ std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
         //}
     }
 
+    ProcessAnimationData(data);
     ProcessSkins(data);
     ProcessAnimations(data);
     AnimationModel animationModel;
@@ -306,6 +307,14 @@ unsigned int GltfImporter::LoadTexture(const char* path)
     }
 
     return textureID;
+}
+
+void GltfImporter::ProcessAnimationData(cgltf_data* data)
+{
+    if (data->animations_count > 0)
+    {
+        Logger::Log(data->animations_count + "Animations found, proceeding to import them all with model skeleton.");
+    }
 }
 
 void GltfImporter::ProcessAnimations(cgltf_data* data)
