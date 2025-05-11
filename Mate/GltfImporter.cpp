@@ -39,12 +39,7 @@ std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
     }
     else
     {
-        std::cerr << "No SCENE defined in : " << path << std::endl;
-        //for (int nodeIndex = 0; nodeIndex < data->nodes_count; nodeIndex++)
-        //{
-        //    Matrix4 matrixIdentity;
-        //    ProcessNode(&data->nodes[nodeIndex], matrixIdentity);
-        //}
+        Logger::Err("No SCENE defined in : " + path);
     }
 
     ProcessAnimationData(path, data);
@@ -100,23 +95,11 @@ void GltfImporter::ProcessNode(cgltf_node* node, Matrix4 parent)
             primitiveMesh->attachedJointName = nodeName;
             meshes.push_back(primitiveMesh);
         }
-
-        //ProcessMesh(node->mesh, parent);
     }
 
     for (size_t chIndex = 0; chIndex < node->children_count; chIndex++)
     {
         ProcessNode(node->children[chIndex], parent);
-    }
-}
-
-void GltfImporter::ProcessMesh(cgltf_mesh* mesh, Matrix4 matrix)
-{
-    for (int i = 0; i < mesh->primitives_count; i++)
-    {
-        auto primitiveMesh = ProcessPrimitive(mesh->primitives[i], matrix);
-        primitiveMesh->attachedJointName = mesh->name;
-        meshes.push_back(primitiveMesh);
     }
 }
 
@@ -312,10 +295,16 @@ unsigned int GltfImporter::LoadTexture(const char* path)
 
 void GltfImporter::ProcessAnimationData(const std::string& modelPath, cgltf_data* data)
 {
-    if (data->animations_count > 0)
+    std::vector<std::string> animationNames;
+    for (auto i = 0; i < data->animations_count; i++)
     {
-        Logger::Log(std::to_string(data->animations_count) + " animations found, proceeding to import them all with model skeleton.");
-        ExternalOzzProcessor::ProcessGltfModel(modelPath);
+        const cgltf_animation* anim = &data->animations[i];
+        animationNames.push_back(anim->name);
+    }
+
+    if(ExternalOzzProcessor::ProcessAnimations(modelPath, animationNames))
+    {
+        auto m = true;
     }
 }
 

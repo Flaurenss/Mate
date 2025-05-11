@@ -24,7 +24,6 @@ private:
 	std::unordered_map<std::string, Matrix4> inverseBindTransforms;
 
 	void ProcessNode(cgltf_node* node, Matrix4 matrix);
-	void ProcessMesh(cgltf_mesh* mesh, Matrix4 matrix);
 	std::shared_ptr<Mesh> ProcessPrimitive(cgltf_primitive& primitive, Matrix4 matrix);
 
 	Vector3 ProcessPosition(cgltf_accessor* accesor, size_t index, Matrix4 matrix);
