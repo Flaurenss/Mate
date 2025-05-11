@@ -3,12 +3,7 @@
 #include <sstream>
 #include <iostream>
 #include "Logger.h"
-
-const std::string ExternalOzzProcessor::DefaultProcessorTool = ".\\Tools\\animations\\gltf2ozz.exe";
-const std::string ExternalOzzProcessor::AnimationPattern = "_anim_";
-const std::string ExternalOzzProcessor::SkeletonPattern = "_skeleton";
-const std::string ExternalOzzProcessor::OzzExtension = ".ozz";
-const std::string ExternalOzzProcessor::PathSpeparator = "/";
+#include "AnimationHelper.h"
 
 bool ExternalOzzProcessor::ProcessAnimations(std::string modelPath, std::vector<std::string> animationNames)
 {
@@ -16,7 +11,7 @@ bool ExternalOzzProcessor::ProcessAnimations(std::string modelPath, std::vector<
 	std::string folder = modelFsPath.parent_path().string();
 	std::string fileName = modelFsPath.stem().string();
 
-	std::filesystem::path skeletonPath = folder + PathSpeparator + fileName + SkeletonPattern + OzzExtension;
+	std::filesystem::path skeletonPath = GetSkeletonPath(modelFsPath);
 	bool skeletonExists = std::filesystem::exists(skeletonPath);
 
 	if (!skeletonExists)
@@ -30,7 +25,7 @@ bool ExternalOzzProcessor::ProcessAnimations(std::string modelPath, std::vector<
 	bool allAnimationsExist = true;
 	for (const std::string& animName : animationNames)
 	{
-		std::filesystem::path animPath = folder + PathSpeparator + fileName + AnimationPattern + animName + OzzExtension;
+		std::filesystem::path animPath = GetAnimationPath(modelFsPath, animName);
 		if (!std::filesystem::exists(animPath))
 		{
 			allAnimationsExist = false;
@@ -61,14 +56,15 @@ void ExternalOzzProcessor::ProcessGltfModel(std::string modelPath)
 std::string ExternalOzzProcessor::GenerateArguments(std::string modelPath)
 {
 	std::filesystem::path modelFsPath = modelPath;
-	std::string folder = modelFsPath.parent_path().string();
-	auto fileName = modelFsPath.stem();
+
+	auto skeletonPath = GetSkeletonPath(modelFsPath);
+	auto animationsPath = GetGenericAnimationsPath(modelFsPath);
 
 	std::ostringstream args;
 	args << DefaultProcessorTool << " --file=\"" << modelPath << "\" "
 		<< "--config=\"{"
-		<< "\\\"skeleton\\\":{\\\"filename\\\":\\\"" << folder << PathSpeparator << fileName << SkeletonPattern << ".ozz\\\"},"
-		<< "\\\"animations\\\":[{\\\"filename\\\":\\\"" << folder << __std_fs_set_current_path << fileName << AnimationPattern <<"*.ozz\\\"}]"
+		<< "\\\"skeleton\\\":{\\\"filename\\\":\\\"" << skeletonPath << "\\\"},"
+		<< "\\\"animations\\\":[{\\\"filename\\\":\\\"" << animationsPath <<"\\\"}]"
 		<< "}\"";
 	return args.str();
 }

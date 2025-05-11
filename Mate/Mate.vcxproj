@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClCompile Include="AnimationClip.cpp" />
     <ClCompile Include="AnimationComponent.cpp" />
+    <ClCompile Include="AnimationHelper.h" />
     <ClCompile Include="AnimationSystem.cpp" />
     <ClCompile Include="ExternalOzzProcessor.cpp" />
     <ClCompile Include="OzzLoader.cpp" />

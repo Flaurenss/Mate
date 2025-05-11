@@ -15,12 +15,6 @@ public:
 	static bool ProcessAnimations(std::string modelPath, std::vector<std::string> animationNames);
 
 private:
-	static const std::string DefaultProcessorTool;
-	static const std::string AnimationPattern;
-	static const std::string SkeletonPattern;
-	static const std::string OzzExtension;
-	static const std::string PathSpeparator;
-
 	static void ProcessGltfModel(std::string modelPath);
 	static std::string GenerateArguments(std::string modelPath);
 };

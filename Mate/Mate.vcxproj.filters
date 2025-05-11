@@ -225,6 +225,9 @@
     <ClCompile Include="ExternalOzzProcessor.cpp">
       <Filter>Source Files\Core\Animations</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationHelper.h">
+      <Filter>Header Files\Core\Animations</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
