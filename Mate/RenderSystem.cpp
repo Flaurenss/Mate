@@ -16,64 +16,47 @@ void RenderSystem::Update()
 {
 	for (Entity& entity : GetEntities())
 	{
-		if (entity.HasComponent<EnableComponent>() &&
-			!entity.GetComponent<EnableComponent>().Enabled)
-		{
-			continue;
-		}
-
+		bool isEnabled = entity.HasComponent<EnableComponent>() &&
+			entity.GetComponent<EnableComponent>().Enabled;
 		MeshComponent& meshComponent = entity.GetComponent<MeshComponent>();
 		auto model = AssetManager::GetInstance().GetModel(meshComponent.GetModelId());
-		if (!model)
-			continue;
-
-		TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
-		Matrix4 baseTransform = transformComponent.GetTransform();
-
-		const bool isAnimated = entity.HasComponent<AnimationComponent>();
-
-		Matrix4 center;
-		center.translate(-meshComponent.GetCenter());
-
-		for (const auto& mesh : model->GetMeshes())
+		if (isEnabled || model)
 		{
-			shader.Use();
-			Matrix4 finalModelTransform = baseTransform * center;
 
-			if (isAnimated)
+			TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
+			Matrix4 baseTransform = transformComponent.GetTransform();
+
+			const bool isAnimated = entity.HasComponent<AnimationComponent>();
+
+			Matrix4 center;
+			center.translate(-meshComponent.GetCenter());
+
+			for (const auto& mesh : model->GetMeshes())
 			{
-				auto& animComp = entity.GetComponent<AnimationComponent>();
-				auto& jointMap = animComp.GetCache();
-				auto it = jointMap.find(mesh->attachedJointName);
-				if (it != jointMap.end())
+				shader.Use();
+				Matrix4 finalModelTransform = baseTransform * center;
+
+				if (isAnimated)
 				{
-					finalModelTransform = finalModelTransform * it->second;
+					auto& animComp = entity.GetComponent<AnimationComponent>();
+					auto& jointMap = animComp.GetCache();
+					auto it = jointMap.find(mesh->attachedJointName);
+					if (it != jointMap.end())
+					{
+						finalModelTransform = finalModelTransform * it->second;
+					}
 				}
+
+				shader.SetMat4("model", finalModelTransform);
+				BindTexture(mesh.get());
+				DrawMesh(mesh.get());
 			}
 
-			shader.SetMat4("model", finalModelTransform);
-			BindTexture(mesh.get());
-			DrawMesh(mesh.get());
+			// ========= DEBUG =========
+			Matrix4 transform = transformComponent.GetTransform();
+			DebugDraw::DrawAABB(meshComponent.GetExtents() / 2.0f, transform, shader);
+			DebugDraw::DrawWorldAxes(shader);
 		}
-
-		// ========= DEBUG =========
-		if (true) // Solo para modelos estáticos
-		{
-			const Vector3& extent = meshComponent.GetExtents();
-			const Vector3& center = meshComponent.GetCenter();
-			const Vector3& min = meshComponent.GetMin();
-			Vector3 halfExtents = extent / 2.0f;
-
-			Matrix4 t;
-			auto m = t.translate(min + halfExtents);
-			Matrix4 aabbTransform = transformComponent.GetTransform() * m;
-			Matrix4 test = transformComponent.GetTransform();
-			//Matrix4 debugCollider = Matrix4::Translate(transform.Position + Vector3(0.0f, halfExtents.y, 0.0f));
-			DebugDraw::DrawAABB(halfExtents, test, shader);
-		}
-
-		// Opcional:
-		DebugDraw::DrawWorldAxes(shader);
 	}
 }
 

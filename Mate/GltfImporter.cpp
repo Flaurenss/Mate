@@ -306,7 +306,8 @@ void GltfImporter::ProcessAnimationData(const std::string& modelPath, cgltf_data
     {
         if(ExternalOzzProcessor::ProcessAnimations(modelPath, animationNames))
         {
-            auto m = true;
+            //ProcessSkeleton(modelPath);
+            //ProcessAnimations(animationNames);
         }
     }
 }

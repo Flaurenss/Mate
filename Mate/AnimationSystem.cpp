@@ -185,7 +185,6 @@ void AnimationSystem::Update(float deltaTime)
         for (const auto& [jointName, index] : animModel.joinintNameToIndex)
         {
             auto animatedMatrix = ConvertFromOzzMatrix(state.models[index]);
-            //jointMap[jointName] = animatedMatrix;
             auto it = inverseBind.find(jointName);
             if (it != inverseBind.end())
             {
