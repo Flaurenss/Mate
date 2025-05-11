@@ -169,8 +169,7 @@ std::shared_ptr<Mesh> GltfImporter::ProcessPrimitive(cgltf_primitive& primitive,
     }
     else
     {
-        //throw std::runtime_error("Error: Primitive contains no indices.");
-        std::cout << "INFO: Primitive without index. Generating sequencial indices..." << std::endl;
+        Logger::War("INFO: Primitive without index. Generating sequencial indices...");
         indices.resize(vertexCount);
         for (size_t i = 0; i < vertexCount; ++i)
         {
@@ -190,16 +189,6 @@ std::shared_ptr<Mesh> GltfImporter::ProcessPrimitive(cgltf_primitive& primitive,
         }
         textures.push_back(diffuse);
     }
-    else
-    {
-        // Use default texture
-        //Texture texture;
-        //texture.id = 0;
-        //texture.valid = false;
-        //texture.defaultColor = DefaultColor;
-
-        //textures.push_back(texture);
-    }
 
     return std::make_shared<Mesh>(vertices, indices, textures);
 }
@@ -214,7 +203,6 @@ Vector3 GltfImporter::ProcessPosition(cgltf_accessor* accesor, size_t index, Mat
 
     Vector4 worldPos = matrix * Vector4(pos[0], pos[1], pos[2], 1.0f);
     return Vector3(worldPos.x, worldPos.y, worldPos.z);
-    //return Vector3(pos[0], pos[1], pos[2]);
 }
 
 Vector3 GltfImporter::ProcessNormal(cgltf_accessor* accesor, size_t index, Matrix4 matrix)
@@ -226,7 +214,6 @@ Vector3 GltfImporter::ProcessNormal(cgltf_accessor* accesor, size_t index, Matri
     }
     Vector4 worldNorm = matrix * Vector4(norm[0], norm[1], norm[2], 0.0f);
     return Vector3(worldNorm.x, worldNorm.y, worldNorm.z).normalize();
-    //return Vector3(norm[0], norm[1], norm[2]).normalize();
 }
 
 Vector2 GltfImporter::ProcessTextureCoordinate(cgltf_accessor* accesor, size_t index)
@@ -235,7 +222,6 @@ Vector2 GltfImporter::ProcessTextureCoordinate(cgltf_accessor* accesor, size_t i
     if (!cgltf_accessor_read_float(accesor, index, uv, 2)) {
         std::cerr << "Error to read Vertex Texture Coordinate" << index << std::endl;
     }
-    // currentVertex.TexureCoordinate.y = 1.0f - currentVertex.TexureCoordinate.y;
     return Vector2(uv[0], uv[1]);
 }
 

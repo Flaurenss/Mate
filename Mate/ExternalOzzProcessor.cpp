@@ -7,11 +7,7 @@
 
 bool ExternalOzzProcessor::ProcessAnimations(std::string modelPath, std::vector<std::string> animationNames)
 {
-	std::filesystem::path modelFsPath = modelPath;
-	std::string folder = modelFsPath.parent_path().string();
-	std::string fileName = modelFsPath.stem().string();
-
-	std::filesystem::path skeletonPath = GetSkeletonPath(modelFsPath);
+	std::filesystem::path skeletonPath = GetSkeletonPath(modelPath);
 	bool skeletonExists = std::filesystem::exists(skeletonPath);
 
 	if (!skeletonExists)
@@ -25,7 +21,7 @@ bool ExternalOzzProcessor::ProcessAnimations(std::string modelPath, std::vector<
 	bool allAnimationsExist = true;
 	for (const std::string& animName : animationNames)
 	{
-		std::filesystem::path animPath = GetAnimationPath(modelFsPath, animName);
+		std::filesystem::path animPath = GetAnimationPath(modelPath, animName);
 		if (!std::filesystem::exists(animPath))
 		{
 			allAnimationsExist = false;
@@ -55,10 +51,8 @@ void ExternalOzzProcessor::ProcessGltfModel(std::string modelPath)
 
 std::string ExternalOzzProcessor::GenerateArguments(std::string modelPath)
 {
-	std::filesystem::path modelFsPath = modelPath;
-
-	auto skeletonPath = GetSkeletonPath(modelFsPath);
-	auto animationsPath = GetGenericAnimationsPath(modelFsPath);
+	auto skeletonPath = GetSkeletonPath(modelPath);
+	auto animationsPath = GetGenericAnimationsPath(modelPath);
 
 	std::ostringstream args;
 	args << DefaultProcessorTool << " --file=\"" << modelPath << "\" "

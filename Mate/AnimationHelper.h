@@ -8,27 +8,31 @@ const std::string SkeletonPattern = "_skeleton";
 const std::string OzzExtension = ".ozz";
 const std::string DefaultSeparatorPath = "/";
 
-inline std::filesystem::path GetSkeletonPath(std::filesystem::path modelFsPath)
+inline std::filesystem::path GetSkeletonPath(std::string modelPath)
 {
+	std::filesystem::path modelFsPath = modelPath;
 	std::string folder = modelFsPath.parent_path().string();
 	std::string fileName = modelFsPath.stem().string();
 
 	return folder + DefaultSeparatorPath + fileName + SkeletonPattern + OzzExtension;
 }
 
-inline std::filesystem::path GetAnimationPath(std::filesystem::path modelFsPath, std::string animName)
+inline std::filesystem::path GetAnimationPath(std::string modelPath, std::string animName)
 {
+	std::filesystem::path modelFsPath = modelPath;
 	std::string folder = modelFsPath.parent_path().string();
 	std::string fileName = modelFsPath.stem().string();
 
 	return folder + DefaultSeparatorPath + fileName + AnimationPattern + animName + OzzExtension;
 }
 
-inline std::filesystem::path GetGenericAnimationsPath(std::filesystem::path modelFsPath)
+inline std::filesystem::path GetGenericAnimationsPath(std::string modelPath)
 {
+	std::filesystem::path modelFsPath = modelPath;
 	std::string folder = modelFsPath.parent_path().string();
-	auto fileName = modelFsPath.stem();
-	return folder + DefaultSeparatorPath + fileName.string() + AnimationPattern + "*.ozz";
+	std::string fileName = modelFsPath.stem().string();
+
+	return folder + DefaultSeparatorPath + fileName + AnimationPattern + "*.ozz";
 }
 
 inline std::string GetAnimationConventionName(std::string modelName, std::string animationName)
