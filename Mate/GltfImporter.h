@@ -33,7 +33,11 @@ private:
 	std::shared_ptr<Texture> LoadMaterialTextures(cgltf_texture* texture, TextureType type);
 	unsigned int LoadTexture(const char* path);
 
-	void ProcessAnimationData(const std::string& modelPath, cgltf_data* data);
+	void ProcessAnimationData(const std::string& modelPath, cgltf_data* data, AnimationModel& outAnimationModel);
+	AnimationModel CreateAnimationModel(std::string modelPath, std::vector<std::string> animationNames);
+	void ProcessSkeletonFile(std::string modelPath, AnimationModel& animationModel);
+	void ProcessAnimationFiles(std::string modelPath, std::vector<std::string> animationNames, AnimationModel& animationModel);
+
 	void ProcessAnimations(cgltf_data* data);
 	std::shared_ptr<AnimationClip> BuildAnimationClip(const cgltf_animation* anim);
 	void ProcessSkins(cgltf_data* data);

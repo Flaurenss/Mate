@@ -8,7 +8,7 @@
 inline ozz::math::Float4x4 ToMatrix(const ozz::math::Transform& transform) {
     auto trans = transform.translation;
     auto rot = transform.rotation;
-    const ozz::math::Float3& t = ozz::math::Float3(trans.x, trans.y, trans.z);;
+    const ozz::math::Float3& t = ozz::math::Float3(trans.x, trans.y, trans.z);
     const ozz::math::Quaternion& r = ozz::math::Quaternion(rot);
     const ozz::math::Float3& s = transform.scale;
 
@@ -72,7 +72,7 @@ void AnimationSystem::Update(float deltaTime)
         auto& animComp = entity.GetComponent<AnimationComponent>();
         auto& meshComp = entity.GetComponent<MeshComponent>();
 
-        // 1. Obtener el modelo
+        // 1. Get the model
         auto model = AssetManager::GetInstance().GetModel(meshComp.GetModelId());
         if (!model || !model->HasAnimationModel())
         {
@@ -91,7 +91,7 @@ void AnimationSystem::Update(float deltaTime)
             continue;
         }
 
-        // Si no existe aún el estado, inicializar
+        // Init if state does not exists:
         auto& state = animationStates[entity.GetId()];
         if (state.locals.empty()) {
             state.context.Resize(skeleton->GetNumJoints());
@@ -99,12 +99,12 @@ void AnimationSystem::Update(float deltaTime)
             state.models.resize(skeleton->GetNumJoints());
         }
 
-        // Actualizar tiempo de reproducción
+        // Update playback time
         animComp.PlaybackTime += deltaTime;
         float duration = clip->GetDuration();
         float timeRatio = fmod(animComp.PlaybackTime, duration) / duration;
 
-        // Samplear animación
+        // Animation sampling
         ozz::animation::SamplingJob samplingJob;
         samplingJob.animation = clip->GetAnimation().get();
         samplingJob.context = &state.context;
@@ -131,58 +131,76 @@ void AnimationSystem::Update(float deltaTime)
             continue;
         }
 
-        std::vector<ozz::math::Transform> restTransforms;
-        {
-            restTransforms.resize(ozzSkeleton->num_joints());
-            for (int i = 0; i < ozzSkeleton->num_soa_joints(); ++i) {
-                const auto& soa = ozzSkeleton->joint_rest_poses()[i];
+        //std::vector<ozz::math::Transform> restTransforms;
+        //{
+        //    restTransforms.resize(ozzSkeleton->num_joints());
+        //    for (int i = 0; i < ozzSkeleton->num_soa_joints(); ++i) {
+        //        const auto& soa = ozzSkeleton->joint_rest_poses()[i];
 
-                ozz::math::SimdFloat4 t[4], r[4], s[4];
-                ozz::math::Transpose3x4(&soa.translation.x, t);
-                ozz::math::Transpose4x4(&soa.rotation.x, r);
-                ozz::math::Transpose3x4(&soa.scale.x, s);
+        //        ozz::math::SimdFloat4 t[4], r[4], s[4];
+        //        ozz::math::Transpose3x4(&soa.translation.x, t);
+        //        ozz::math::Transpose4x4(&soa.rotation.x, r);
+        //        ozz::math::Transpose3x4(&soa.scale.x, s);
 
-                for (int j = 0; j < 4 && i * 4 + j < ozzSkeleton->num_joints(); ++j) {
-                    auto& dst = restTransforms[i * 4 + j];
-                    ozz::math::Store3PtrU(t[j], &dst.translation.x);
-                    ozz::math::StorePtrU(r[j], &dst.rotation.x);
-                    ozz::math::Store3PtrU(s[j], &dst.scale.x);
-                }
-            }
-        }
-        const auto parents = ozzSkeleton->joint_parents();
-        std::vector<Matrix4> globalRest;
-        globalRest.resize(ozzSkeleton->num_joints());
+        //        for (int j = 0; j < 4 && i * 4 + j < ozzSkeleton->num_joints(); ++j) {
+        //            auto& dst = restTransforms[i * 4 + j];
+        //            ozz::math::Store3PtrU(t[j], &dst.translation.x);
+        //            ozz::math::StorePtrU(r[j], &dst.rotation.x);
+        //            ozz::math::Store3PtrU(s[j], &dst.scale.x);
+        //        }
+        //    }
+        //}
+        //const auto parents = ozzSkeleton->joint_parents();
+        //std::vector<Matrix4> globalRest;
+        //globalRest.resize(ozzSkeleton->num_joints());
 
 
-        std::vector<Matrix4> globalRestMatrices(ozzSkeleton->num_joints());
+        //std::vector<Matrix4> globalRestMatrices(ozzSkeleton->num_joints());
 
-        for (int i = 0; i < ozzSkeleton->num_joints(); ++i)
-        {
-            // Convertir transform local a matriz
-            ozz::math::Float4x4 localMatrix = ToMatrix(restTransforms[i]);
+        //for (int i = 0; i < ozzSkeleton->num_joints(); ++i)
+        //{
+        //    // Convertir transform local a matriz
+        //    ozz::math::Float4x4 localMatrix = ToMatrix(restTransforms[i]);
 
-            // Si no tiene padre, es raíz
-            if (parents[i] == -1)
-            {
-                globalRestMatrices[i] = ConvertFromOzzMatrix(localMatrix);
-            }
-            else
-            {
-                globalRestMatrices[i] = globalRestMatrices[parents[i]] * ConvertFromOzzMatrix(localMatrix);
-            }
-        }
-        for (const auto& [jointName, index] : animModel.joinintNameToIndex)
-        {
-            animModel.inverseBindTransforms[jointName] = globalRestMatrices[index].inverse();
-        }
+        //    // Si no tiene padre, es raíz
+        //    if (parents[i] == -1)
+        //    {
+        //        globalRestMatrices[i] = ConvertFromOzzMatrix(localMatrix);
+        //    }
+        //    else
+        //    {
+        //        globalRestMatrices[i] = globalRestMatrices[parents[i]] * ConvertFromOzzMatrix(localMatrix);
+        //    }
+        //}
+        //for (const auto& [jointName, index] : animModel.joinintNameToIndex)
+        //{
+        //    animModel.inverseBindTransforms[jointName] = globalRestMatrices[index].inverse();
+        //}
 
         // Store new computed model matrices
         animComp.ClearCache();
         auto& jointMap = animComp.GetCache();
         auto& inverseBind = animModel.inverseBindTransforms;
-        auto& base = animModel.baseJointTransforms;
-        for (const auto& [jointName, index] : animModel.joinintNameToIndex)
+        //auto& base = animModel.baseJointTransforms;
+        
+        auto names = ozzSkeleton->joint_names();
+        for (int i = 0; i < ozzSkeleton->num_joints(); i++)
+        {
+            auto animatedMatrix = ConvertFromOzzMatrix(state.models[i]);
+            auto name = names[i];
+            auto it = animModel.inverseBindTransforms.find(name);
+            if (it != inverseBind.end())
+            {
+                jointMap[name] = animatedMatrix * animModel.inverseBindTransforms[name];
+            }
+            else
+            {
+                jointMap[name] = animatedMatrix;
+            }
+        }
+        
+        
+       /* for (const auto& [jointName, index] : animModel.joinintNameToIndex)
         {
             auto animatedMatrix = ConvertFromOzzMatrix(state.models[index]);
             auto it = inverseBind.find(jointName);
@@ -194,7 +212,7 @@ void AnimationSystem::Update(float deltaTime)
             {
                 jointMap[jointName] = animatedMatrix;
             }
-        }
+        }*/
 	}
 }
 

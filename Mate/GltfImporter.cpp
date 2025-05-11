@@ -7,6 +7,8 @@
 #include "AssetManager.h"
 #include "Logger.h"
 #include "ExternalOzzProcessor.h"
+#include "AnimationHelper.h"
+#include "AnimationBuilder.h"
 
 std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
 {
@@ -42,15 +44,13 @@ std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
         Logger::Err("No SCENE defined in : " + path);
     }
 
-    ProcessAnimationData(path, data);
-    //ProcessSkins(data);
-    //ProcessAnimations(data);
     AnimationModel animationModel;
-    animationModel.animations = animationClips;
-    animationModel.skeleton = skeleton;
-    animationModel.joinintNameToIndex = jointNameToIndex;
-    animationModel.baseJointTransforms = baseJointTransforms;
-    animationModel.inverseBindTransforms = inverseBindTransforms;
+    ProcessAnimationData(path, data, animationModel);
+    //animationModel.animations = animationClips;
+    //animationModel.skeleton = skeleton;
+    //animationModel.joinintNameToIndex = jointNameToIndex;
+    //animationModel.baseJointTransforms = baseJointTransforms;
+    //animationModel.inverseBindTransforms = inverseBindTransforms;
 
     cgltf_free(data);
 
@@ -279,7 +279,7 @@ unsigned int GltfImporter::LoadTexture(const char* path)
     return textureID;
 }
 
-void GltfImporter::ProcessAnimationData(const std::string& modelPath, cgltf_data* data)
+void GltfImporter::ProcessAnimationData(const std::string& modelPath, cgltf_data* data, AnimationModel& outAnimationModel)
 {
     std::vector<std::string> animationNames;
     for (auto i = 0; i < data->animations_count; i++)
@@ -292,9 +292,35 @@ void GltfImporter::ProcessAnimationData(const std::string& modelPath, cgltf_data
     {
         if(ExternalOzzProcessor::ProcessAnimations(modelPath, animationNames))
         {
-            //ProcessSkeleton(modelPath);
-            //ProcessAnimations(animationNames);
+            outAnimationModel = CreateAnimationModel(modelPath, animationNames);
         }
+        else
+        {
+            Logger::Err("Error trying to generate model animation files for: " + modelPath);
+        }
+    }
+}
+
+AnimationModel GltfImporter::CreateAnimationModel(std::string modelPath, std::vector<std::string> animationNames)
+{
+    AnimationModel animationModel;
+    ProcessSkeletonFile(modelPath, animationModel);
+    ProcessAnimationFiles(modelPath, animationNames, animationModel);
+    return animationModel;
+}
+
+void GltfImporter::ProcessSkeletonFile(std::string modelPath, AnimationModel& animationModel)
+{
+    auto skeletonPath = GetSkeletonPath(modelPath);
+    SkeletonBuilder::BuildFromFile(skeletonPath.string(), animationModel);
+}
+
+void GltfImporter::ProcessAnimationFiles(std::string modelPath, std::vector<std::string> animationNames, AnimationModel& animationModel)
+{
+    for (auto& name : animationNames)
+    {
+        auto animationName = GetAnimationPath(modelPath, name);
+        AnimationBuilder::BuildFromFile(animationName, animationModel);
     }
 }
 
@@ -376,13 +402,7 @@ std::shared_ptr<AnimationClip> GltfImporter::BuildAnimationClip(const cgltf_anim
 
 void GltfImporter::ProcessSkins(cgltf_data* data)
 {
-    if (data->skins_count > 0)
-    {
-    }
-    else
-    {
-        Logger::War("Skin reading is not supported. The entire scene graph will be considered as Skeleton.");
-    }
+    Logger::War("Skin reading is not supported. The entire scene graph will be considered as Skeleton.");
 
     std::vector<RawSkeletonJoint> roots;
 

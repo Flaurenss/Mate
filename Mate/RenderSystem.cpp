@@ -16,11 +16,12 @@ void RenderSystem::Update()
 {
 	for (Entity& entity : GetEntities())
 	{
-		bool isEnabled = entity.HasComponent<EnableComponent>() &&
-			entity.GetComponent<EnableComponent>().Enabled;
+		bool isInvisible = entity.HasComponent<EnableComponent>() &&
+			!entity.GetComponent<EnableComponent>().Enabled;
 		MeshComponent& meshComponent = entity.GetComponent<MeshComponent>();
 		auto model = AssetManager::GetInstance().GetModel(meshComponent.GetModelId());
-		if (isEnabled || model)
+		
+		if (model && !isInvisible)
 		{
 
 			TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
