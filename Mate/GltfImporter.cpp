@@ -48,8 +48,8 @@ std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
     }
 
     ProcessAnimationData(path, data);
-    ProcessSkins(data);
-    ProcessAnimations(data);
+    //ProcessSkins(data);
+    //ProcessAnimations(data);
     AnimationModel animationModel;
     animationModel.animations = animationClips;
     animationModel.skeleton = skeleton;
@@ -314,7 +314,7 @@ void GltfImporter::ProcessAnimationData(const std::string& modelPath, cgltf_data
 {
     if (data->animations_count > 0)
     {
-        Logger::Log(data->animations_count + "Animations found, proceeding to import them all with model skeleton.");
+        Logger::Log(std::to_string(data->animations_count) + " animations found, proceeding to import them all with model skeleton.");
         ExternalOzzProcessor::ProcessGltfModel(modelPath);
     }
 }

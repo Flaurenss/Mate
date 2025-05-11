@@ -6,7 +6,7 @@ class ExternalOzzProcessor
 public:
 	static void ProcessGltfModel(std::string modelPath);
 private:
-	const std::string DefaultProcessorTool = "../dependencies/tools/animations/gltf2ozz.exe";
+	static const std::string DefaultProcessorTool;
 
 	static std::string GenerateArguments(std::string modelPath);
 };
