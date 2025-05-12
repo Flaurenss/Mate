@@ -3,7 +3,6 @@
 #include "AnimationComponent.h"
 #include "EnableComponent.h"
 #include "AssetManager.h"
-#include "ozz/base/maths/transform.h"
 
 AnimationSystem::AnimationSystem()
 {

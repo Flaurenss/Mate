@@ -1,5 +1,5 @@
 #include "PhysicsData.h"
-#include <cassert>
+#include "Logger.h"
 
 PhysicsData::PhysicsData(JPH::BodyID bodyId, Entity entity)
 	: BodyId(bodyId), entity(entity)
@@ -18,6 +18,7 @@ PhysicsComponent& PhysicsData::GetPhysicsComponent()
 	}
 	else
 	{
-		assert(false && "PhysicsData::GetPhysicsComponent: Entity does not contain a PhysicsComponent.");
+		Logger::Err("Entity does not contain a PhysicsComponent.");
+		//assert(false && "PhysicsData::GetPhysicsComponent: Entity does not contain a PhysicsComponent.");
 	}
 }
