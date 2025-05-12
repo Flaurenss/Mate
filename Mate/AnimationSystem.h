@@ -9,8 +9,8 @@
 #include "ozz/base/maths/soa_transform.h"
 #include "ozz/base/maths/vec_float.h"
 #include "ozz/options/options.h"
-#include "ozz/base/maths/simd_math.h"
 #include "Matrix.h"
+#include "Skeleton.h"
 
 struct AnimationState {
 	ozz::animation::SamplingJob::Context context;
@@ -27,6 +27,7 @@ public:
 private:
 	std::unordered_map<int, AnimationState> animationStates;
 
+	AnimationState& InitAnimationState(int entityId, Skeleton* skeleton);
 	Matrix4 ConvertFromOzzMatrix(const ozz::math::Float4x4& ozzMatrix);
 };
 

@@ -110,7 +110,7 @@ void GameLoop(ECS& ecs, Engine* engine)
             accumulator -= fixedDeltaTime;
         }
 
-        ManageFreeCamera(cameraComponent, cameraTransform, engine->DeltaTime);
+        //ManageFreeCamera(cameraComponent, cameraTransform, engine->DeltaTime);
 
         engine->Update();
     }
