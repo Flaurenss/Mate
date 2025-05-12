@@ -19,6 +19,5 @@ PhysicsComponent& PhysicsData::GetPhysicsComponent()
 	else
 	{
 		Logger::Err("Entity does not contain a PhysicsComponent.");
-		//assert(false && "PhysicsData::GetPhysicsComponent: Entity does not contain a PhysicsComponent.");
 	}
 }

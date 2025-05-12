@@ -6,6 +6,7 @@
 
 struct PhysicsData
 {
+public:
 	JPH::BodyID BodyId;
 
 	PhysicsData(JPH::BodyID bodyId, Entity entity);
