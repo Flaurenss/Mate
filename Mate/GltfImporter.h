@@ -12,6 +12,11 @@ class GltfImporter : public IModelImporter
 public:
 	GltfImporter() = default;
 	~GltfImporter() = default;
+	/// <summary>
+	/// Load 3D Model based on path.
+	/// </summary>
+	/// <param name="path">The 3D Model path.</param>
+	/// <returns>The Model ptr.</returns>
 	virtual std::shared_ptr<Model> Load(const std::string& path);
 
 private:
@@ -37,9 +42,4 @@ private:
 	AnimationModel CreateAnimationModel(std::string modelPath, std::vector<std::string> animationNames);
 	void ProcessSkeletonFile(std::string modelPath, AnimationModel& animationModel);
 	void ProcessAnimationFiles(std::string modelPath, std::vector<std::string> animationNames, AnimationModel& animationModel);
-
-	void ProcessAnimations(cgltf_data* data);
-	std::shared_ptr<AnimationClip> BuildAnimationClip(const cgltf_animation* anim);
-	void ProcessSkins(cgltf_data* data);
-	RawSkeletonJoint ExtractJointHierarchy(cgltf_node* node, const Matrix4& parentGlobal);
 };
