@@ -1,5 +1,20 @@
 #include "AnimationComponent.h"
 
+float AnimationComponent::GetPlaybackTime()
+{
+	return playbackTime;
+}
+
+void AnimationComponent::ResetPlaybackTime()
+{
+	playbackTime = 0.0f;
+}
+
+void AnimationComponent::IncreasePlaybackTime(float delta)
+{
+	playbackTime += delta;
+}
+
 void AnimationComponent::ClearCache()
 {
 	jointTransforms.clear();

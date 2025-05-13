@@ -46,11 +46,6 @@ std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
 
     AnimationModel animationModel;
     ProcessAnimationData(path, data, animationModel);
-    //animationModel.animations = animationClips;
-    //animationModel.skeleton = skeleton;
-    //animationModel.joinintNameToIndex = jointNameToIndex;
-    //animationModel.baseJointTransforms = baseJointTransforms;
-    //animationModel.inverseBindTransforms = inverseBindTransforms;
 
     cgltf_free(data);
 

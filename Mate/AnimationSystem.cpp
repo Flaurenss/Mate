@@ -47,9 +47,9 @@ void AnimationSystem::Update(float deltaTime)
         auto& state = InitAnimationState(entity.GetId(), skeleton);
 
         // Update playback time
-        animComp.PlaybackTime += deltaTime;
+        animComp.IncreasePlaybackTime(deltaTime);
         float duration = clip->GetDuration();
-        float timeRatio = fmod(animComp.PlaybackTime, duration) / duration;
+        float timeRatio = fmod(animComp.GetPlaybackTime(), duration) / duration;
 
         // Animation sampling
         ozz::animation::SamplingJob samplingJob;
