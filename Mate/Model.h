@@ -10,8 +10,6 @@ struct AnimationModel
 public:
     std::vector<std::shared_ptr<AnimationClip>> animations;
     std::shared_ptr<Skeleton> skeleton;
-    std::unordered_map<std::string, int> joinintNameToIndex;
-    std::unordered_map<std::string, Matrix4> baseJointTransforms;
     std::unordered_map<std::string, Matrix4> inverseBindTransforms;
 
     Skeleton* GetSkeleton();
