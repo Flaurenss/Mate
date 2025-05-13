@@ -32,7 +32,6 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 			auto& transform = entity.GetComponent<TransformComponent>();
 			if (physicsComponent.IsDirty())
 			{
-				//ProcessKinematicEntity(entity.GetId(), physicsComponent);
 				if (physicsComponent.BodyMotionType == KINEMATIC)
 				{
 					phyEngine->MoveKinematic(
@@ -47,9 +46,6 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 						entity.GetId(),
 						transform.Position,
 						transform.EulerAngles);
-					//phyEngine->SetPosition(
-					//	entity.GetId(),
-					//	transform.Position);
 				}
 				physicsComponent.Reset();
 			}
@@ -58,7 +54,7 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 
 	phyEngine->Update(fixedDeltaTime);
 
-	for (auto collisionData : phyEngine->GetCollisions())
+	for (auto& collisionData : phyEngine->GetCollisions())
 	{
 		CallOnCollisionData(collisionData.EntityIdA, collisionData.EntityIdB);
 		CallOnCollisionData(collisionData.EntityIdB, collisionData.EntityIdA);
@@ -74,7 +70,7 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 			continue;
 		}
 
-		auto phyComponent = entity.GetComponent<PhysicsComponent>();
+		auto& phyComponent = entity.GetComponent<PhysicsComponent>();
 		if (phyComponent.BodyMotionType != STATIC)
 		{
 			auto& transformComponent = entity.GetComponent<TransformComponent>();

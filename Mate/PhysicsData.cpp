@@ -2,8 +2,13 @@
 #include "Logger.h"
 
 PhysicsData::PhysicsData(JPH::BodyID bodyId, Entity entity)
-	: BodyId(bodyId), entity(entity)
+	: bodyId(bodyId), entity(entity)
 { }
+
+JPH::BodyID PhysicsData::GetBodyId()
+{
+	return bodyId;
+}
 
 Entity PhysicsData::GetEntity()
 {

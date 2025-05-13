@@ -178,7 +178,7 @@ bool PhysicsEngine::TryGetBodyId(int entityId, JPH::BodyID& body)
 	{
 		return false;
 	}
-	body = it->second.BodyId;
+	body = it->second.GetBodyId();
 	return true;
 }
 
