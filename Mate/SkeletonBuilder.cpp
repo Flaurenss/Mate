@@ -67,6 +67,7 @@ std::unordered_map<std::string, Matrix4> SkeletonBuilder::GetInverseRestMatrices
 
 Matrix4 SkeletonBuilder::ToMatrix(const ozz::math::Transform& transform)
 {
+    // Formula from https://songho.ca/opengl/gl_quaternion.html
     const ozz::math::Float3& t = transform.translation;
     const ozz::math::Quaternion& q = transform.rotation;
     const ozz::math::Float3& s = transform.scale;
