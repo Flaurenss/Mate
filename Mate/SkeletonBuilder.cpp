@@ -1,9 +1,10 @@
 #include "SkeletonBuilder.h"
 #include "Logger.h"
+#include "OzzLoader.h"
+
+#include <functional>
 #include "ozz/base/maths/simd_math.h"
 #include "ozz/base/maths/soa_transform.h"
-#include <functional>
-#include "OzzLoader.h"
 
 void SkeletonBuilder::BuildFromFile(const std::string& filePath, AnimationModel& animationModel)
 {
@@ -15,116 +16,81 @@ void SkeletonBuilder::BuildFromFile(const std::string& filePath, AnimationModel&
 
 std::unordered_map<std::string, Matrix4> SkeletonBuilder::GetInverseRestMatrices(std::shared_ptr<Skeleton> skeleton)
 {
-    std::unordered_map<std::string, Matrix4> map;
+    std::unordered_map<std::string, Matrix4> inverseMatrices;
+
     const ozz::animation::Skeleton* ozzSkeleton = skeleton->GetOzzSkeleton();
-    const auto parents = ozzSkeleton->joint_parents();
+    const int numJoints = ozzSkeleton->num_joints();
+    const int numSoaJoints = ozzSkeleton->num_soa_joints();
 
-    std::vector<ozz::math::Transform> restTransforms;
+    // Convert SoaTransform to AoS transforms
+    std::vector<ozz::math::Transform> restTransforms(numJoints);
+    for (int i = 0; i < numSoaJoints; i++)
     {
-        restTransforms.resize(ozzSkeleton->num_joints());
-        for (int i = 0; i < ozzSkeleton->num_soa_joints(); i++) {
-            const auto& soa = ozzSkeleton->joint_rest_poses()[i];
+        const ozz::math::SoaTransform& soa = ozzSkeleton->joint_rest_poses()[i];
 
-            ozz::math::SimdFloat4 t[4], r[4], s[4];
-            ozz::math::Transpose3x4(&soa.translation.x, t);
-            ozz::math::Transpose4x4(&soa.rotation.x, r);
-            ozz::math::Transpose3x4(&soa.scale.x, s);
+        ozz::math::SimdFloat4 t[4], r[4], s[4];
+        ozz::math::Transpose3x4(&soa.translation.x, t);
+        ozz::math::Transpose4x4(&soa.rotation.x, r);
+        ozz::math::Transpose3x4(&soa.scale.x, s);
 
-            for (int j = 0; j < 4 && i * 4 + j < ozzSkeleton->num_joints(); ++j) {
-                auto& dst = restTransforms[i * 4 + j];
-                ozz::math::Store3PtrU(t[j], &dst.translation.x);
-                ozz::math::StorePtrU(r[j], &dst.rotation.x);
-                ozz::math::Store3PtrU(s[j], &dst.scale.x);
-            }
+        for (int j = 0; j < 4 && i * 4 + j < numJoints; ++j) {
+            auto& dst = restTransforms[i * 4 + j];
+            ozz::math::Store3PtrU(t[j], &dst.translation.x);
+            ozz::math::StorePtrU(r[j], &dst.rotation.x);
+            ozz::math::Store3PtrU(s[j], &dst.scale.x);
         }
     }
-    std::vector<Matrix4> globalRestMatrices(ozzSkeleton->num_joints());
-    for (int i = 0; i < ozzSkeleton->num_joints(); i++)
-    {
-        ozz::math::Float4x4 localMatrix = ToMatrix(restTransforms[i]);
 
-        // If no parent then it is root:
-        if (parents[i] == -1)
-        {
-            globalRestMatrices[i] = ConvertFromOzzMatrix(localMatrix);
+    // Store global matrices
+    std::vector<Matrix4> globalMatrices(numJoints);
+    auto parents = ozzSkeleton->joint_parents();
+    for (int i = 0; i < numJoints; i++) {
+        Matrix4 localMatrix = ToMatrix(restTransforms[i]);
+
+        if (parents[i] == -1) {
+            globalMatrices[i] = localMatrix;
         }
-        else
-        {
-            globalRestMatrices[i] = globalRestMatrices[parents[i]] * ConvertFromOzzMatrix(localMatrix);
+        else {
+            globalMatrices[i] = globalMatrices[parents[i]] * localMatrix;
         }
     }
-    
-    std::unordered_map<std::string, int> joinintNameToIndex;
+
+    // Map node names to inverse
     auto names = ozzSkeleton->joint_names();
-
-    for (int i = 0; i < ozzSkeleton->num_joints(); i++) {
-        joinintNameToIndex[names[i]] = i;
-    }
-
-    for (const auto& [jointName, index] : joinintNameToIndex)
+    for (int i = 0; i < numJoints; i++)
     {
-        map[jointName] = globalRestMatrices[index].inverse();
+        inverseMatrices[names[i]] = globalMatrices[i].inverse();
     }
 
-    return map;
+    return inverseMatrices;
 }
 
-ozz::math::Float4x4 SkeletonBuilder::ToMatrix(const ozz::math::Transform& transform) {
-    auto trans = transform.translation;
-    auto rot = transform.rotation;
-    const ozz::math::Float3& t = ozz::math::Float3(trans.x, trans.y, trans.z);
-    const ozz::math::Quaternion& r = ozz::math::Quaternion(rot);
+Matrix4 SkeletonBuilder::ToMatrix(const ozz::math::Transform& transform)
+{
+    const ozz::math::Float3& t = transform.translation;
+    const ozz::math::Quaternion& q = transform.rotation;
     const ozz::math::Float3& s = transform.scale;
 
-    // Convert quaternion to rotation matrix
-    const float x = r.x, y = r.y, z = r.z, w = r.w;
+    const float x = q.x, y = q.y, z = q.z, w = q.w;
     const float x2 = x + x, y2 = y + y, z2 = z + z;
 
     const float xx = x * x2;
     const float xy = x * y2;
     const float xz = x * z2;
-
     const float yy = y * y2;
     const float yz = y * z2;
     const float zz = z * z2;
-
     const float wx = w * x2;
     const float wy = w * y2;
     const float wz = w * z2;
 
-    ozz::math::Float4x4 m;
-    m.cols[0] = ozz::math::simd_float4::Load(
-        (1.0f - (yy + zz)) * s.x,
-        (xy + wz) * s.x,
-        (xz - wy) * s.x,
-        0.0f
-    );
-    m.cols[1] = ozz::math::simd_float4::Load(
-        (xy - wz) * s.y,
-        (1.0f - (xx + zz)) * s.y,
-        (yz + wx) * s.y,
-        0.0f
-    );
-    m.cols[2] = ozz::math::simd_float4::Load(
-        (xz + wy) * s.z,
-        (yz - wx) * s.z,
-        (1.0f - (xx + yy)) * s.z,
-        0.0f
-    );
-    m.cols[3] = ozz::math::simd_float4::Load(
-        t.x, t.y, t.z, 1.0f
-    );
-    return m;
-}
+    // Column-major order (OpenGL-style)
+    float m[16] = {
+        (1.0f - (yy + zz)) * s.x, (xy + wz) * s.x,        (xz - wy) * s.x,        0.0f,
+        (xy - wz) * s.y,        (1.0f - (xx + zz)) * s.y, (yz + wx) * s.y,        0.0f,
+        (xz + wy) * s.z,        (yz - wx) * s.z,        (1.0f - (xx + yy)) * s.z, 0.0f,
+        t.x,                    t.y,                    t.z,                    1.0f
+    };
 
-Matrix4 SkeletonBuilder::ConvertFromOzzMatrix(const ozz::math::Float4x4& ozzMatrix)
-{
-    float temp[16];
-
-    for (int col = 0; col < 4; col++)
-    {
-        ozz::math::StorePtrU(ozzMatrix.cols[col], temp + col * 4);
-    }
-    auto result = Matrix4(temp);
-    return result;
+    return Matrix4(m);
 }

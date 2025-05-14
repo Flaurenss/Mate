@@ -31,6 +31,5 @@ public:
 
 private:
     static std::unordered_map<std::string, Matrix4> GetInverseRestMatrices(std::shared_ptr<Skeleton> skeleton);
-    static ozz::math::Float4x4 ToMatrix(const ozz::math::Transform& transform);
-    static Matrix4 ConvertFromOzzMatrix(const ozz::math::Float4x4& ozzMatrix);
+    static Matrix4 ToMatrix(const ozz::math::Transform& transform);
 };
