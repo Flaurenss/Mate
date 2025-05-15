@@ -15,37 +15,26 @@ RenderSystem::RenderSystem(Shader& sh) : shader(sh)
 void RenderSystem::Update()
 {
 	for (Entity& entity : GetEntities())
-	{
-		bool isInvisible = entity.HasComponent<EnableComponent>() &&
-			!entity.GetComponent<EnableComponent>().Enabled;
-		MeshComponent& meshComponent = entity.GetComponent<MeshComponent>();
-		auto model = AssetManager::GetInstance().GetModel(meshComponent.GetModelId());
-		
-		if (model && !isInvisible)
+	{	
+		if (IsValidEntity(entity))
 		{
-
-			TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
-			Matrix4 baseTransform = transformComponent.GetTransform();
-
-			const bool isAnimated = entity.HasComponent<AnimationComponent>();
-
+			MeshComponent& meshComponent = entity.GetComponent<MeshComponent>();
 			Matrix4 center;
 			center.translate(-meshComponent.GetCenter());
+			TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
+			Matrix4 baseTransform = transformComponent.GetTransform();
+			const bool isAnimated = entity.HasComponent<AnimationComponent>();
 
+			auto model = AssetManager::GetInstance().GetModel(meshComponent.GetModelId());
 			for (const auto& mesh : model->GetMeshes())
 			{
 				shader.Use();
+				// Put model in the center based in its own bounding box (vertices based)
 				Matrix4 finalModelTransform = baseTransform * center;
 
 				if (isAnimated)
 				{
-					auto& animComp = entity.GetComponent<AnimationComponent>();
-					auto& jointMap = animComp.GetCache();
-					auto it = jointMap.find(mesh->attachedJointName);
-					if (it != jointMap.end())
-					{
-						finalModelTransform = finalModelTransform * it->second;
-					}
+					ProcessAnimation(entity, mesh->attachedJointName, finalModelTransform);
 				}
 
 				shader.SetMat4("model", finalModelTransform);
@@ -54,10 +43,32 @@ void RenderSystem::Update()
 			}
 
 			// ========= DEBUG =========
+			// TODO: Add option to enable render
 			Matrix4 transform = transformComponent.GetTransform();
 			DebugDraw::DrawAABB(meshComponent.GetExtents() / 2.0f, transform, shader);
 			DebugDraw::DrawWorldAxes(shader);
 		}
+	}
+}
+
+bool RenderSystem::IsValidEntity(Entity& entity)
+{
+	bool isInvisible = entity.HasComponent<EnableComponent>() &&
+		!entity.GetComponent<EnableComponent>().Enabled;
+	MeshComponent& meshComponent = entity.GetComponent<MeshComponent>();
+	auto model = AssetManager::GetInstance().GetModel(meshComponent.GetModelId());
+
+	return model && !isInvisible;
+}
+
+void RenderSystem::ProcessAnimation(Entity& entity, const std::string& jointName, Matrix4& transform)
+{
+	auto& animComp = entity.GetComponent<AnimationComponent>();
+	auto& jointMap = animComp.GetCache();
+	auto iterator = jointMap.find(jointName);
+	if (iterator != jointMap.end())
+	{
+		transform = transform * iterator->second;
 	}
 }
 

@@ -12,6 +12,9 @@ public:
 private:
 	Shader shader;
 
+	bool IsValidEntity(Entity& entity);
+	void ProcessAnimation(Entity& entity, const std::string& jointName, Matrix4& transform);
+
 	void BindTexture(Mesh* mesh);
 	void DrawMesh(Mesh* mesh);
 };

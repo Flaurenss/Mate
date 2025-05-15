@@ -40,23 +40,8 @@
     <Filter Include="Source Files\Core\ECS">
       <UniqueIdentifier>{438c01ba-68d7-4896-890d-ca583e299d4b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Core\ECS\Entities">
-      <UniqueIdentifier>{79420be9-4438-4a04-8d91-f86b0cbc97a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Core\ECS\Components">
-      <UniqueIdentifier>{ac3b5715-6981-402e-9fec-a6ccd857cc73}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Core\ECS">
       <UniqueIdentifier>{de35974b-e989-487f-9ac8-82355c8c467d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Core\ECS\Entities">
-      <UniqueIdentifier>{544ca7c7-dd8c-4bb1-9998-f5769c03d29b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Core\ECS\Components">
-      <UniqueIdentifier>{31cf2ca2-b576-45b0-b7c3-2fbb41a03a02}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Core\ECS\Systems">
-      <UniqueIdentifier>{98159833-5b01-4f7d-9a88-8e4c53c605e6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Core\Logger">
       <UniqueIdentifier>{e31ec5fb-838c-4b2e-8d4a-747f1620f899}</UniqueIdentifier>
@@ -126,9 +111,6 @@
     <ClCompile Include="ECS.cpp">
       <Filter>Source Files\Core\ECS</Filter>
     </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>Source Files\Core\ECS\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -137,9 +119,6 @@
     </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Source Files\Core\Logger</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source Files\Core\ECS\Entities</Filter>
     </ClCompile>
     <ClCompile Include="MeshComponent.cpp">
       <Filter>Source Files\Components</Filter>
@@ -231,6 +210,12 @@
     <ClCompile Include="AnimationBuilder.cpp">
       <Filter>Source Files\Core\Animations</Filter>
     </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Source Files\Core\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Source Files\Core\ECS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
@@ -238,9 +223,6 @@
     </None>
     <None Include="rendering_main_objects.md">
       <Filter>docs</Filter>
-    </None>
-    <None Include="Entity.inl">
-      <Filter>Header Files\Core\ECS\Entities</Filter>
     </None>
     <None Include="ECS.inl">
       <Filter>Header Files\Core\ECS</Filter>
@@ -250,6 +232,9 @@
     </None>
     <None Include="Assets\vertexShader.shader">
       <Filter>Assets</Filter>
+    </None>
+    <None Include="Entity.inl">
+      <Filter>Header Files\Core\ECS</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -280,9 +265,6 @@
     <ClInclude Include="IRenderable.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Header Files\Core\ECS\Components</Filter>
-    </ClInclude>
     <ClInclude Include="ECS.h">
       <Filter>Header Files\Core\ECS</Filter>
     </ClInclude>
@@ -294,9 +276,6 @@
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Header Files\Core\Logger</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files\Core\ECS\Entities</Filter>
     </ClInclude>
     <ClInclude Include="MeshComponent.h">
       <Filter>Header Files\Components</Filter>
@@ -393,6 +372,12 @@
     </ClInclude>
     <ClInclude Include="AnimationBuilder.h">
       <Filter>Header Files\Core\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Header Files\Core\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Header Files\Core\ECS</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
