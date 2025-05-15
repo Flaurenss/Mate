@@ -12,6 +12,11 @@ RenderSystem::RenderSystem(Shader& sh) : shader(sh)
 	RequireComponent<MeshComponent>();
 }
 
+void RenderSystem::SetDebugMode(bool status)
+{
+	debugMode = status;
+}
+
 void RenderSystem::Update()
 {
 	for (Entity& entity : GetEntities())
@@ -44,9 +49,12 @@ void RenderSystem::Update()
 
 			// ========= DEBUG =========
 			// TODO: Add option to enable render
-			Matrix4 transform = transformComponent.GetTransform();
-			DebugDraw::DrawAABB(meshComponent.GetExtents() / 2.0f, transform, shader);
-			DebugDraw::DrawWorldAxes(shader);
+			if (debugMode)
+			{
+				//Matrix4 transform = transformComponent.GetTransform();
+				DebugDraw::DrawAABB(meshComponent.GetExtents() / 2.0f, baseTransform, shader);
+				DebugDraw::DrawWorldAxes(shader);
+			}
 		}
 	}
 }
