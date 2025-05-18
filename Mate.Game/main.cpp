@@ -85,7 +85,6 @@ void GameLoop(ECS& ecs, Engine* engine)
             {
                 coinComp.Play();
                 otherEntity.GetComponent<EnableComponent>().Enabled = false;
-                Logger::Log("Reward to player");
                 points++;
             }
             else if (tag == OBSTACLE_TAG)
