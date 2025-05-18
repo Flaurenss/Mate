@@ -36,7 +36,7 @@ std::shared_ptr<Model> AssetManager::LoadModel(const std::string& id, const std:
     return model;
 }
 
-std::shared_ptr<Model> AssetManager::GetModel(const std::string& id)
+std::shared_ptr<Model> AssetManager::GetModel(const std::string& id) const
 {
     auto it = models.find(id);
     return (it != models.end()) ? it->second : nullptr;
@@ -84,10 +84,30 @@ std::shared_ptr<Texture> AssetManager::LoadTexture(const std::string& id, const 
     return texture;
 }
 
-std::shared_ptr<Texture> AssetManager::GetTexture(const std::string& id)
+std::shared_ptr<Texture> AssetManager::GetTexture(const std::string& id) const
 {
     auto it = textures.find(id);
     return (it != textures.end()) ? it->second : nullptr;
+}
+
+void AssetManager::LoadAudioClip(const std::string& id, const std::string& path)
+{
+    auto audioClip = AudioClip(id, path);
+    audioClips.emplace(id, AudioClip(id, path));
+}
+
+AudioClip AssetManager::GetAudioClip(const std::string& id) const
+{
+    auto it = audioClips.find(id);
+    if (it != audioClips.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        Logger::Err("Cannot load Clip " + id + " from Assets.");
+        throw std::runtime_error("AudioClip not found");
+    }
 }
 
 void AssetManager::Clear()

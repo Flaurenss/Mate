@@ -60,13 +60,32 @@ void GameLoop(ECS& ecs, Engine* engine)
     //EngineDemo::PhysicsCubeDemo(ecs);
     Entity playerEntity = GameAssets::CreatePlayer(ecs, Vector3::Up * 0.3f, Vector3(0, -180, 0), Vector3(0.5f));
 
+    AssetManager::GetInstance().LoadAudioClip("bg", "./Assets/Audio/bg.mp3");
+    AssetManager::GetInstance().LoadAudioClip("coin", "./Assets/Audio/coin.wav");
+    AssetManager::GetInstance().LoadAudioClip("hit", "./Assets/Audio/hit.wav");
+    
+    // Audio settings
+    auto bg = ecs.CreateEntity();
+    auto& bgComp = bg.AddComponent<AudioComponent>("bg", true, true);
+    bgComp.SetVolume(0.5f);
+    bgComp.SetIsUnique(true);
+    bgComp.SetIsLoop(true);
+
+    auto coinAudio = ecs.CreateEntity();
+    auto& coinComp = coinAudio.AddComponent<AudioComponent>("coin", false, false);
+
+    auto hitAudio = ecs.CreateEntity();
+    auto& hitComp = hitAudio.AddComponent<AudioComponent>("hit", false, false);
+
     playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&](Entity otherEntity)
         {
             auto& otherPhysicsComponent = otherEntity.GetComponent<PhysicsComponent>();
             auto tag = otherPhysicsComponent.GetTag();
             if (tag == REWARD_TAG)
             {
+                coinComp.Play();
                 otherEntity.GetComponent<EnableComponent>().Enabled = false;
+                Logger::Log("Reward to player");
                 points++;
             }
             else if (tag == OBSTACLE_TAG)
@@ -74,6 +93,7 @@ void GameLoop(ECS& ecs, Engine* engine)
                 runGame = false;
                 // TODO: put it in a PAUSE GAME method
                 engine->SetSimulationTo(runGame);
+                hitComp.Play();
             }
         };
     auto& animator = playerEntity.GetComponent<AnimationComponent>();
@@ -86,6 +106,11 @@ void GameLoop(ECS& ecs, Engine* engine)
     float accumulator = 0;
     while (engine->IsRunning())
     {
+        if (Input::GetKeyDown(KeyCode::Space))
+        {
+            hitComp.Play();
+        }
+
         float deltaTime = engine->DeltaTime;
         if (Input::GetKeyDown(KeyCode::P))
         {

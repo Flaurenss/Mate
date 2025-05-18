@@ -155,6 +155,10 @@
     <ClCompile Include="AnimationComponent.cpp" />
     <ClCompile Include="AnimationHelper.h" />
     <ClCompile Include="AnimationSystem.cpp" />
+    <ClCompile Include="AudioClip.cpp" />
+    <ClCompile Include="AudioComponent.cpp" />
+    <ClCompile Include="AudioEngine.cpp" />
+    <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="ExternalOzzProcessor.cpp" />
     <ClCompile Include="OzzLoader.cpp" />
     <ClCompile Include="Skeleton.cpp" />
@@ -210,6 +214,11 @@
     <ClInclude Include="AnimationClip.h" />
     <ClInclude Include="AnimationComponent.h" />
     <ClInclude Include="AnimationSystem.h" />
+    <ClInclude Include="AudioClip.h" />
+    <ClInclude Include="AudioComponent.h" />
+    <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="AudioSettings.h" />
+    <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="ExternalOzzProcessor.h" />
     <ClInclude Include="OzzLoader.h" />
     <ClInclude Include="Skeleton.h" />

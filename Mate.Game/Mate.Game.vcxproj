@@ -124,7 +124,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Mate.Math\bin\x64\Debug;$(SolutionDir)Mate\bin\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;Mate.Math.lib;Mate.lib;Jolt.lib;ozz_animation_d.lib;ozz_animation_offline_d.lib;ozz_base_d.lib;ozz_geometry_d.lib;ozz_options_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;Mate.Math.lib;Mate.lib;Jolt.lib;ozz_animation_d.lib;ozz_animation_offline_d.lib;ozz_base_d.lib;ozz_geometry_d.lib;ozz_options_d.lib;soloud_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>$(ProjectDir)copyDependencies.bat $(SolutionDir) $(Platform) $(Configuration)</Command>
@@ -148,7 +148,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Mate.Math\bin\x64\Release;$(SolutionDir)Mate\bin\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;Mate.Math.lib;Mate.lib;Jolt.lib;ozz_animation_offline_r.lib;ozz_animation_r.lib;ozz_base_r.lib;ozz_geometry_r.lib;ozz_options_r.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;Mate.Math.lib;Mate.lib;Jolt.lib;ozz_animation_offline_r.lib;ozz_animation_r.lib;ozz_base_r.lib;ozz_geometry_r.lib;ozz_options_r.lib;soloud_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>$(ProjectDir)copyDependencies.bat $(SolutionDir) $(Platform) $(Configuration)</Command>

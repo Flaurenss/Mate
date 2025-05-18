@@ -12,6 +12,7 @@
 #include "PhysicsSystem.h"
 #include "DebugDraw.h"
 #include "AnimationSystem.h"
+#include "AudioSystem.h"
 
 int Engine::width = 1920;
 int Engine::height = 1080;
@@ -47,6 +48,7 @@ void Engine::Initialize()
 	registry->AddSystem<AnimationSystem>();
 	registry->AddSystem<RenderSystem>(shader);
 	registry->AddSystem<CameraSystem>(shader);
+	registry->AddSystem<AudioSystem>();
 }
 
 void Engine::CoreInitialize()
@@ -153,6 +155,7 @@ void Engine::RenderUpdate()
 	cameraSystem.Update();
 	registry->GetSystem<AnimationSystem>().Update(DeltaTime);
 	registry->GetSystem<RenderSystem>().Update();
+	registry->GetSystem<AudioSystem>().Update();
 
 	// Swap buffers, front for already rendered colors an the back one in order to avoid artifacts.
 	glfwSwapBuffers(window);

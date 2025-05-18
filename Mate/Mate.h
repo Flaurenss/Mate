@@ -10,6 +10,7 @@
 #include "CameraComponent.h"
 #include "PhysicsComponent.h"
 #include "AnimationComponent.h"
+#include "AudioComponent.h"
 #include "MathUtils.h"
 #include "Logger.h"
 
