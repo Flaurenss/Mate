@@ -43,10 +43,11 @@ void Engine::Initialize()
 	CoreInitialize();
 	DebugDraw::Init();
 	Shader shader("./Assets/vertexShader.shader", "./Assets/fragmentShader.shader");
+	Shader skyboxShader("./Assets/vsSkybox.shader", "./Assets/fsSkybox.shader");
 	registry->AddSystem<PhysicsSystem>();
 	registry->AddSystem<AnimationSystem>();
 	registry->AddSystem<RenderSystem>(shader);
-	registry->AddSystem<CameraSystem>(shader);
+	registry->AddSystem<CameraSystem>(shader, skyboxShader);
 }
 
 void Engine::CoreInitialize()
@@ -147,7 +148,7 @@ void Engine::RenderUpdate()
 	isRunning = !glfwWindowShouldClose(window);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	
 	auto& cameraSystem = registry->GetSystem<CameraSystem>();
 	cameraSystem.SetResolution(width, height);
 	cameraSystem.Update();

@@ -199,7 +199,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\fragmentShader.shader" />
+    <None Include="Assets\fsSkybox.shader" />
     <None Include="Assets\vertexShader.shader" />
+    <None Include="Assets\vsSkybox.shader" />
     <None Include="docs.md" />
     <None Include="ECS.inl" />
     <None Include="Entity.inl" />

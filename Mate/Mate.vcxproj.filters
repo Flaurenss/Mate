@@ -236,6 +236,12 @@
     <None Include="Entity.inl">
       <Filter>Header Files\Core\ECS</Filter>
     </None>
+    <None Include="Assets\fsSkybox.shader">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\vsSkybox.shader">
+      <Filter>Assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FbxImporterExperimental.h">

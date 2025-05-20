@@ -59,7 +59,6 @@ void GameLoop(ECS& ecs, Engine* engine)
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     //EngineDemo::PhysicsCubeDemo(ecs);
     Entity playerEntity = GameAssets::CreatePlayer(ecs, Vector3::Up * 0.3f, Vector3(0, -180, 0), Vector3(0.5f));
-
     playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&](Entity otherEntity)
         {
             auto& otherPhysicsComponent = otherEntity.GetComponent<PhysicsComponent>();
@@ -110,7 +109,7 @@ void GameLoop(ECS& ecs, Engine* engine)
             accumulator -= fixedDeltaTime;
         }
 
-        //ManageFreeCamera(cameraComponent, cameraTransform, engine->DeltaTime);
+        ManageFreeCamera(cameraComponent, cameraTransform, engine->DeltaTime);
 
         engine->Update();
     }
