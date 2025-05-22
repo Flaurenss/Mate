@@ -22,12 +22,12 @@ const int START_OBSTACLES = 3;
 const std::string REWARD_TAG = "COIN";
 const std::string OBSTACLE_TAG = "BOX";
 
-Entity CreateCamera(ECS& ecs);
+Entity CreateCamera(Engine* ecs);
 
-std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs);
-EnvironmentPart CreateMovableMisc(ECS& registry, int i);
-Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs);
-Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs);
+std::deque<EnvironmentPart> CreateEnvironment(Engine* engine);
+EnvironmentPart CreateMovableMisc(Engine* engine, int i);
+Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, Engine* engine);
+Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, Engine* engine);
 
 void ManageMovableMisc(std::deque<EnvironmentPart>& assets, float deltaTime);
 void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos);
@@ -39,42 +39,41 @@ void ProcessPlayerInputRails(Entity player, PlayerRailState& state, float player
 void ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& transformCamera, float deltaTime);
 void ManagePlayerInput(Entity& entity, float deltaTime);
 
-void GameLoop(ECS& ecs, Engine* engine);
+void GameLoop(Engine* engine);
 
 int main()
 {
     auto engine = std::make_unique<Engine>();
-    ECS& ecs = engine->GetRegistry();
 
-    GameLoop(ecs, engine.get());
+    GameLoop(engine.get());
 }
 
-void GameLoop(ECS& ecs, Engine* engine)
+void GameLoop(Engine* engine)
 {
     bool runGame = false;
     int points = 0;
 
-    auto camera = CreateCamera(ecs);
+    auto camera = CreateCamera(engine);
     TransformComponent& cameraTransform = camera.GetComponent<TransformComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
     //EngineDemo::PhysicsCubeDemo(ecs);
-    Entity playerEntity = GameAssets::CreatePlayer(ecs, Vector3::Up * 0.3f, Vector3(0, -180, 0), Vector3(0.5f));
+    Entity playerEntity = GameAssets::CreatePlayer(engine, Vector3::Up * 0.3f, Vector3(0, -180, 0), Vector3(0.5f));
 
     AssetManager::GetInstance().LoadAudioClip("bg", "./Assets/Audio/bg.mp3");
     AssetManager::GetInstance().LoadAudioClip("coin", "./Assets/Audio/coin.wav");
     AssetManager::GetInstance().LoadAudioClip("hit", "./Assets/Audio/hit.wav");
     
     // Audio settings
-    auto bg = ecs.CreateEntity();
+    auto bg = engine->CreateEntity();
     auto& bgComp = bg.AddComponent<AudioComponent>("bg", true, true);
     bgComp.SetVolume(0.5f);
     bgComp.SetIsUnique(true);
     bgComp.SetIsLoop(true);
 
-    auto coinAudio = ecs.CreateEntity();
+    auto coinAudio = engine->CreateEntity();
     auto& coinComp = coinAudio.AddComponent<AudioComponent>("coin", false, false);
 
-    auto hitAudio = ecs.CreateEntity();
+    auto hitAudio = engine->CreateEntity();
     auto& hitComp = hitAudio.AddComponent<AudioComponent>("hit", false, false);
 
     playerEntity.GetComponent<PhysicsComponent>().OnCollide = [&](Entity otherEntity)
@@ -97,7 +96,7 @@ void GameLoop(ECS& ecs, Engine* engine)
         };
     auto& animator = playerEntity.GetComponent<AnimationComponent>();
 
-    auto environmentAssets = CreateEnvironment(ecs);
+    auto environmentAssets = CreateEnvironment(engine);
     auto& playerTransform = playerEntity.GetComponent<TransformComponent>();
     Vector3 originalPos = playerTransform.Position;
     PlayerRailState railState;
@@ -135,9 +134,9 @@ void GameLoop(ECS& ecs, Engine* engine)
     }
 }
 
-Entity CreateCamera(ECS& ecs)
+Entity CreateCamera(Engine* engine)
 {
-    auto camera = ecs.CreateEntity();
+    auto camera = engine->CreateEntity();
     camera.AddComponent<TransformComponent>(Vector3(0, 1.5f, 2.5f), Vector3(), Vector3(1));
     camera.AddComponent<CameraComponent>();
     CameraComponent& cameraComponent = camera.GetComponent<CameraComponent>();
@@ -146,12 +145,12 @@ Entity CreateCamera(ECS& ecs)
     return camera;
 }
 
-std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs)
+std::deque<EnvironmentPart> CreateEnvironment(Engine* engine)
 {
     std::deque<EnvironmentPart> environmentParts;
     for (auto i = 0; i < ROAD_LENGHT; i++)
     {
-        auto envPart = CreateMovableMisc(ecs, i);
+        auto envPart = CreateMovableMisc(engine, i);
         RedoPart(envPart, true);
         environmentParts.push_back(envPart);
     }
@@ -159,11 +158,11 @@ std::deque<EnvironmentPart> CreateEnvironment(ECS& ecs)
     return environmentParts;
 }
 
-EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
+EnvironmentPart CreateMovableMisc(Engine* engine, int i)
 {
     auto roadModelPath = "./Assets/Environment/Road/road-straight.glb";
     AssetManager::GetInstance().LoadModel("road", roadModelPath);
-    auto road = ecs.CreateEntity();
+    auto road = engine->CreateEntity();
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
@@ -176,13 +175,13 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
     {
         for (auto i = 0; i < START_OBSTACLES; i ++)
         {
-            auto boxPart = CreateBox(roadPos, 0, 0, ecs);
+            auto boxPart = CreateBox(roadPos, 0, 0, engine);
             obstacles.push_back(boxPart);
         }
 
         for (auto i = 0; i < START_COINS; i++)
         {
-            auto coinPart = CreateCoin(roadPos, 0, 0, ecs);
+            auto coinPart = CreateCoin(roadPos, 0, 0, engine);
             rewards.push_back(coinPart);
         }
     }
@@ -191,10 +190,10 @@ EnvironmentPart CreateMovableMisc(ECS& ecs, int i)
     return envPart;
 }
 
-Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
+Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, Engine* engine)
 {
     Vector3 coinPos = roadPos + Vector3::Up * 0.2f;
-    auto reward = GameAssets::CreateReward(ecs, coinPos);
+    auto reward = GameAssets::CreateReward(engine, coinPos);
     reward.AddComponent<EnableComponent>().Enabled = false;
     auto& phy = reward.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phy.SetIsSensor(true);
@@ -203,10 +202,10 @@ Part CreateCoin(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
     return rewardPart;
 }
 
-Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, ECS& ecs)
+Part CreateBox(Vector3 roadPos, float xOffset, float zOffset, Engine* engine)
 {
     Vector3 boxPos = roadPos + Vector3::Up * 0.2f;
-    auto obstacle = GameAssets::CreateObstacle(ecs, boxPos);
+    auto obstacle = GameAssets::CreateObstacle(engine, boxPos);
     obstacle.AddComponent<EnableComponent>().Enabled = false;
     auto& phyComponent = obstacle.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phyComponent.SetIsSensor(true);

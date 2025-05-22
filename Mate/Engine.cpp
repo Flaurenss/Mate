@@ -34,7 +34,6 @@ Engine::Engine(int w, int h) :
 
 Engine::~Engine()
 {
-	// TODO:...
 	delete window;
 	window = nullptr;
 }
@@ -130,6 +129,11 @@ void Engine::Update()
 void Engine::SetSimulationTo(bool status)
 {
 	runSimulation = status;
+}
+
+Entity Engine::CreateEntity()
+{
+	return registry->CreateEntity();
 }
 
 void Engine::ComputeDelta()

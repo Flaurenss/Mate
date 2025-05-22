@@ -5,7 +5,7 @@
 class EndlessRunner
 {
 public:
-	EndlessRunner(ECS& ecs);
+	EndlessRunner(Engine& engine);
 
 	void Update(float deltaTime);
 	void FixedUpdate();
@@ -19,7 +19,7 @@ public:
 	static constexpr float fixedDeltaTime = 1.0f / 60.0f;
 
 private:
-	ECS& ecs;
+	Engine* engine;
 
 	std::unique_ptr<Entity> player;
 	std::deque<EnvironmentPart> environmentParts;
@@ -41,7 +41,7 @@ private:
 	void Setup();
 	void CreateEnvironment();
 
-	EnvironmentPart CreateEnvironmentPart(ECS& ecs, int i);
+	EnvironmentPart CreateEnvironmentPart(int i);
 	void RedoEnvironmentPart(EnvironmentPart& part, bool init = false);
 	void ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos);
 

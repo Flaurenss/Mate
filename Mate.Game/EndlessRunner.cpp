@@ -3,8 +3,8 @@
 #include <random>
 
 
-EndlessRunner::EndlessRunner(ECS& ecs) :
-	ecs(ecs)
+EndlessRunner::EndlessRunner(Engine& engine) :
+	engine(engine)
 {
 	Setup();
 }
@@ -12,7 +12,7 @@ EndlessRunner::EndlessRunner(ECS& ecs) :
 void EndlessRunner::Setup()
 {
 	player = std::make_unique<Entity>(
-		GameAssets::CreatePlayer(ecs, Vector3::Up * 0.2f)
+		GameAssets::CreatePlayer(engine, Vector3::Up * 0.2f)
 	);
 
     playerStartPos = player.get()->GetComponent<TransformComponent>().Position;
@@ -41,17 +41,17 @@ void EndlessRunner::CreateEnvironment()
 {
     for (auto i = 0; i < ROAD_LENGHT; i++)
     {
-        auto envPart = CreateEnvironmentPart(ecs, i);
+        auto envPart = CreateEnvironmentPart(i);
         RedoEnvironmentPart(envPart, true);
         environmentParts.push_back(envPart);
     }
 }
 
-EnvironmentPart EndlessRunner::CreateEnvironmentPart(ECS& ecs, int i)
+EnvironmentPart EndlessRunner::CreateEnvironmentPart(int i)
 {
     auto roadModelPath = "./Assets/Environment/Road/road-straight.glb";
     AssetManager::GetInstance().LoadModel("road", roadModelPath);
-    auto road = ecs.CreateEntity();
+    auto road = engine->CreateEntity();
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
@@ -228,7 +228,7 @@ void EndlessRunner::ResetEnvironmentPart(EnvironmentPart& part, const Vector3& n
 
 Part EndlessRunner::CreateObstacle(Vector3 pos)
 {
-    auto obstacle = GameAssets::CreateObstacle(ecs, pos);
+    auto obstacle = GameAssets::CreateObstacle(engine, pos);
     obstacle.AddComponent<EnableComponent>().Enabled = false;
     auto& phyComponent = obstacle.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phyComponent.SetIsSensor(true);
@@ -239,7 +239,7 @@ Part EndlessRunner::CreateObstacle(Vector3 pos)
 
 Part EndlessRunner::CreateReward(Vector3 pos)
 {
-    auto reward = GameAssets::CreateReward(ecs, pos);
+    auto reward = GameAssets::CreateReward(engine, pos);
     reward.AddComponent<EnableComponent>().Enabled = false;
     auto& phy = reward.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phy.SetIsSensor(true);

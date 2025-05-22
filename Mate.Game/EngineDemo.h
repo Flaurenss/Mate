@@ -1,10 +1,10 @@
 #pragma once
-#include <ECS.h>
+#include <Engine.h>
 #include "ModelImporter.h"
 
 class EngineDemo
 {
 public:
-	static void CreateBaseFloor(ECS& ecs);
-	static void PhysicsCubeDemo(ECS& ecs);
+	static void CreateBaseFloor(Engine* engine);
+	static void PhysicsCubeDemo(Engine* engine);
 };
