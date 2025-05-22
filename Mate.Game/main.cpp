@@ -105,11 +105,6 @@ void GameLoop(ECS& ecs, Engine* engine)
     float accumulator = 0;
     while (engine->IsRunning())
     {
-        if (Input::GetKeyDown(KeyCode::Space))
-        {
-            hitComp.Play();
-        }
-
         float deltaTime = engine->DeltaTime;
         if (Input::GetKeyDown(KeyCode::P))
         {

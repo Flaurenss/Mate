@@ -28,7 +28,7 @@ private:
     AssetManager() = default;
     ~AssetManager() = default;
 
-    // Defined to dont allow the the object copy.
+    // Defined to dont allow the object copy.
     AssetManager(const AssetManager&) = delete;
     AssetManager& operator=(const AssetManager&) = delete;
 
