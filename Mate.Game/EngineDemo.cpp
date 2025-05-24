@@ -2,11 +2,11 @@
 #include <Mate.h>
 #include "GameAssets.h"
 
-void EngineDemo::CreateBaseFloor(ECS& ecs)
+void EngineDemo::CreateBaseFloor(Engine* engine)
 {
     auto floorModel = PrimitivesHelper::CreatePlane();
     AssetManager::GetInstance().RegisterModel("primitive::floor", floorModel);
-    auto floor = ecs.CreateEntity();
+    auto floor = engine->CreateEntity();
     floor.AddComponent<TransformComponent>();
     floor.AddComponent<PhysicsComponent>(MotionType::KINEMATIC);
     floor.AddComponent<MeshComponent>("primitive::floor");
@@ -14,9 +14,9 @@ void EngineDemo::CreateBaseFloor(ECS& ecs)
     floorTrans.Scale = Vector3(20, 1, 20);
 }
 
-void EngineDemo::PhysicsCubeDemo(ECS& ecs)
+void EngineDemo::PhysicsCubeDemo(Engine* engine)
 {
-    CreateBaseFloor(ecs);
+    CreateBaseFloor(engine);
 
     const float spacing = 1;
     const int cubeNumber = 2;
@@ -32,7 +32,7 @@ void EngineDemo::PhysicsCubeDemo(ECS& ecs)
                     (z - 1) * spacing 
                 );
 
-                auto box = GameAssets::CreateObstacle(ecs, pos);
+                auto box = GameAssets::CreateObstacle(engine, pos);
                 box.AddComponent<PhysicsComponent>();
             }
         }

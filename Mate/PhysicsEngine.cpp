@@ -16,7 +16,7 @@
 #include <thread>
 #include <cassert>
 
-JPH_SUPPRESS_WARNINGS
+//JPH_SUPPRESS_WARNINGS
 
 PhysicsEngine::PhysicsEngine()
 {

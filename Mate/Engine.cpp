@@ -12,6 +12,7 @@
 #include "PhysicsSystem.h"
 #include "DebugDraw.h"
 #include "AnimationSystem.h"
+#include "AudioSystem.h"
 
 int Engine::width = 1920;
 int Engine::height = 1080;
@@ -33,7 +34,6 @@ Engine::Engine(int w, int h) :
 
 Engine::~Engine()
 {
-	// TODO:...
 	delete window;
 	window = nullptr;
 }
@@ -47,6 +47,7 @@ void Engine::Initialize()
 	registry->AddSystem<PhysicsSystem>();
 	registry->AddSystem<AnimationSystem>();
 	registry->AddSystem<RenderSystem>(shader);
+	registry->AddSystem<AudioSystem>();
 	registry->AddSystem<CameraSystem>(shader, skyboxShader);
 }
 
@@ -131,6 +132,11 @@ void Engine::SetSimulationTo(bool status)
 	runSimulation = status;
 }
 
+Entity Engine::CreateEntity()
+{
+	return registry->CreateEntity();
+}
+
 void Engine::ComputeDelta()
 {
 	float currentFrame = static_cast<float>(glfwGetTime());
@@ -154,6 +160,7 @@ void Engine::RenderUpdate()
 	cameraSystem.Update();
 	registry->GetSystem<AnimationSystem>().Update(DeltaTime);
 	registry->GetSystem<RenderSystem>().Update();
+	registry->GetSystem<AudioSystem>().Update();
 
 	// Swap buffers, front for already rendered colors an the back one in order to avoid artifacts.
 	glfwSwapBuffers(window);

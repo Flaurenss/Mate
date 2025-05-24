@@ -76,6 +76,12 @@
     <Filter Include="Header Files\Core\Animations">
       <UniqueIdentifier>{c5d48f28-9e8c-438e-829d-ebea9c75e540}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Audio">
+      <UniqueIdentifier>{311a4419-51dd-424f-8d14-78677a50adcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Audio">
+      <UniqueIdentifier>{2ba59401-abc0-4c2e-872c-5dac426e9fa0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GltfImporter.cpp">
@@ -215,6 +221,18 @@
     </ClCompile>
     <ClCompile Include="Entity.cpp">
       <Filter>Source Files\Core\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioEngine.cpp">
+      <Filter>Source Files\Core\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioClip.cpp">
+      <Filter>Source Files\Core\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioComponent.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -384,6 +402,21 @@
     </ClInclude>
     <ClInclude Include="Entity.h">
       <Filter>Header Files\Core\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEngine.h">
+      <Filter>Header Files\Core\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioClip.h">
+      <Filter>Header Files\Core\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSettings.h">
+      <Filter>Header Files\Core\Audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

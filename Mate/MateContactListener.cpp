@@ -14,7 +14,7 @@ JPH::ValidateResult MateContactListener::OnContactValidate(const JPH::Body& inBo
 
 void MateContactListener::OnContactAdded(const JPH::Body& inBody1, const JPH::Body& inBody2, const JPH::ContactManifold& inManifold, JPH::ContactSettings& ioSettings)
 {
-	Logger::Log("A contact was added");
+	//Logger::Log("A contact was added");
 	physicsEngine->AddNewCollision(
 		static_cast<int>(inBody1.GetUserData()),
 		static_cast<int>(inBody2.GetUserData()));

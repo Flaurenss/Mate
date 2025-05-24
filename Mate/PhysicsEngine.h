@@ -71,4 +71,3 @@ private:
 
 	JPH::Quat EulerToQuat(Vector3 eulerAngles);
 };
-
