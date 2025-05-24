@@ -2,13 +2,13 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "GltfImporter.h"
-#include "stb_image.h"
 #include <filesystem>
 #include "AssetManager.h"
 #include "Logger.h"
 #include "ExternalOzzProcessor.h"
 #include "AnimationHelper.h"
 #include "AnimationBuilder.h"
+#include "Vendors/stb_image.h"
 
 std::shared_ptr<Model> GltfImporter::Load(const std::string& path)
 {

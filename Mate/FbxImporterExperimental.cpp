@@ -1,5 +1,4 @@
 #include "FbxImporterExperimental.h"
-#include "stb_image.h"
 #include "AssetManager.h"
 
 std::shared_ptr<Model> FbxImporterExperimental::Load(const std::string& path)

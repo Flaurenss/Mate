@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IModelImporter.h"
-#include "cgltf.h"
+#include "Vendors/cgltf.h"
 #include <Matrix.h>
 #include "Texture.h"
 #include "Skeleton.h"

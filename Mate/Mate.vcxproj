@@ -177,7 +177,6 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FbxImporterExperimental.cpp" />
-    <ClCompile Include="glad.c" />
     <ClCompile Include="GltfImporter.cpp" />
     <ClCompile Include="IModelImporter.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -199,10 +198,11 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
-    <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
-    <ClCompile Include="ufbx.c" />
+    <ClCompile Include="Vendors\glad.c" />
+    <ClCompile Include="Vendors\stb_image.cpp" />
+    <ClCompile Include="Vendors\ufbx.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\fragmentShader.shader" />
@@ -233,7 +233,6 @@
     <ClInclude Include="BPLayerInterfaceImpl.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CameraSystem.h" />
-    <ClInclude Include="cgltf.h" />
     <ClInclude Include="CollisionData.h" />
     <ClInclude Include="CommonPhysics.h" />
     <ClInclude Include="Component.h" />
@@ -265,13 +264,11 @@
     <ClInclude Include="PrimitivesHelper.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="Skybox.h" />
-    <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TransformComponent.h" />
-    <ClInclude Include="ufbx.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="Resources\container.jpg" />
+    <ClInclude Include="Vendors\cgltf.h" />
+    <ClInclude Include="Vendors\stb_image.h" />
+    <ClInclude Include="Vendors\ufbx.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mate.Math\Mate.Math.vcxproj">

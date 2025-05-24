@@ -3,9 +3,6 @@
 #include "CameraComponent.h"
 #include "Logger.h"
 
-#include <glad/glad.h>
-#include "stb_image.h"
-
 CameraSystem::CameraSystem()
 {
 	RequireComponent<TransformComponent>();

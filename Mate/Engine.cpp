@@ -3,7 +3,6 @@
 #include "Logger.h"
 #include "ECS.h"
 #include "TransformComponent.h"
-#include "stb_image.h"
 #include "RenderSystem.h"
 #include "CameraSystem.h"
 #include "Model.h"
@@ -15,6 +14,7 @@
 #include "AudioSystem.h"
 #include "AssetManager.h"
 #include "Skybox.h"
+#include "Vendors/stb_image.h"
 
 float Engine::DeltaTime = 0;
 

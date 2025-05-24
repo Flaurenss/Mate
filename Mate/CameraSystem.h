@@ -1,6 +1,5 @@
 #pragma once
 #include "ECS.h"
-#include "Shader.h"
 #include <optional>
 #include "RenderContext.h"
 

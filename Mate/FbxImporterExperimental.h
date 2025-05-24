@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
-#include "ufbx.h"
 #include "Mesh.h"
 #include "IModelImporter.h"
+#include "Vendors/ufbx.h"
 
 class FbxImporterExperimental : public IModelImporter
 {

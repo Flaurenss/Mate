@@ -1,7 +1,5 @@
 #include "Model.h"
-#include "ufbx.h"
 #include "GltfImporter.h"
-#include "stb_image.h"
 
 Model::Model(std::vector<std::shared_ptr<Mesh>> newMeshes)
 {

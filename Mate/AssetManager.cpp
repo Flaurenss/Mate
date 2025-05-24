@@ -1,8 +1,8 @@
 #include "AssetManager.h"
-#include "stb_image.h"
 #include <iostream>
 #include "Logger.h"
 #include <glad/glad.h>
+#include "Vendors/stb_image.h"
 
 AssetManager& AssetManager::GetInstance()
 {

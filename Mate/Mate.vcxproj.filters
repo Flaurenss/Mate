@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="docs">
       <UniqueIdentifier>{37fda2cd-3676-4d65-b448-be1928387290}</UniqueIdentifier>
     </Filter>
@@ -21,12 +17,6 @@
     </Filter>
     <Filter Include="Source Files\Importers">
       <UniqueIdentifier>{a0dadb8d-3d4c-40be-98ac-683d4cbf57b5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ThirdDependencies">
-      <UniqueIdentifier>{bdecdcf0-e27a-4ec2-88a6-bfed8f9a5ce5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ThirdDependencies">
-      <UniqueIdentifier>{a265b476-6e7a-43b8-be9b-925348d1ed8f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{1d23d9d0-f73f-4d60-88d1-b14a1d9b85cb}</UniqueIdentifier>
@@ -82,6 +72,12 @@
     <Filter Include="Header Files\Core\Audio">
       <UniqueIdentifier>{2ba59401-abc0-4c2e-872c-5dac426e9fa0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Vendors">
+      <UniqueIdentifier>{bdecdcf0-e27a-4ec2-88a6-bfed8f9a5ce5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Vendors">
+      <UniqueIdentifier>{a265b476-6e7a-43b8-be9b-925348d1ed8f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GltfImporter.cpp">
@@ -92,15 +88,6 @@
     </ClCompile>
     <ClCompile Include="FbxImporterExperimental.cpp">
       <Filter>Source Files\Importers</Filter>
-    </ClCompile>
-    <ClCompile Include="glad.c">
-      <Filter>Source Files\ThirdDependencies</Filter>
-    </ClCompile>
-    <ClCompile Include="stb_image.cpp">
-      <Filter>Source Files\ThirdDependencies</Filter>
-    </ClCompile>
-    <ClCompile Include="ufbx.c">
-      <Filter>Source Files\ThirdDependencies</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files\Core\Shaders</Filter>
@@ -243,6 +230,15 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Vendors\glad.c">
+      <Filter>Source Files\Vendors</Filter>
+    </ClCompile>
+    <ClCompile Include="Vendors\stb_image.cpp">
+      <Filter>Source Files\Vendors</Filter>
+    </ClCompile>
+    <ClCompile Include="Vendors\ufbx.c">
+      <Filter>Source Files\Vendors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
@@ -279,15 +275,6 @@
     </ClInclude>
     <ClInclude Include="IModelImporter.h">
       <Filter>Header Files\Importers</Filter>
-    </ClInclude>
-    <ClInclude Include="cgltf.h">
-      <Filter>Header Files\ThirdDependencies</Filter>
-    </ClInclude>
-    <ClInclude Include="ufbx.h">
-      <Filter>Header Files\ThirdDependencies</Filter>
-    </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>Header Files\ThirdDependencies</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Header Files\Core</Filter>
@@ -433,10 +420,14 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="Resources\container.jpg">
-      <Filter>Resource Files</Filter>
-    </CopyFileToFolders>
+    <ClInclude Include="Vendors\cgltf.h">
+      <Filter>Header Files\Vendors</Filter>
+    </ClInclude>
+    <ClInclude Include="Vendors\stb_image.h">
+      <Filter>Header Files\Vendors</Filter>
+    </ClInclude>
+    <ClInclude Include="Vendors\ufbx.h">
+      <Filter>Header Files\Vendors</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
