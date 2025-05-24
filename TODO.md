@@ -18,9 +18,9 @@
 - [ ] Pack dependencies as nuget.
 
 ## In progress
-- [ ] Add cubemaps.
 
 ## DONE
+- [x] Add cubemaps.
 - [x] Implement sound system;
 - [x] Implement [animations](https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_007_Animations.md).
 - [x] Refactor Render system
