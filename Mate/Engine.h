@@ -4,11 +4,12 @@
 #include <string>
 #include "ECS.h"
 #include "Vector.h"
+#include "RenderContext.h"
 
 class Engine
 {
 public:
-	Engine(int width = 1920, int height = 1080);
+	Engine(int width = 1920, int height = 1080, std::string title = "Mate.Engine");
 	~Engine();
 
 	/// <summary>
@@ -23,11 +24,8 @@ public:
 	bool IsRunning();
 	
 	/// <summary>
-	/// Updates the engine.
+	/// Updates the engine systems like ECS (systems), input and render.
 	/// </summary>
-	/// <remarks>
-	/// Updates engine systems like ECS (systems), input and render.
-	/// </remarks>
 	void Update();
 
 	/// <summary>
@@ -43,10 +41,20 @@ public:
 	void SetSimulationTo(bool status);
 
 	/// <summary>
-	/// Adds a new entity to the scene
+	/// Adds a new entity to the scene.
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>The entity.</returns>
 	Entity CreateEntity();
+
+	/// <summary>
+	/// Enable render debug mode.
+	/// Enables/Disables the debug mode.
+	/// This draws models bounding box (AABB) and the world center axis.
+	/// </summary>
+	/// <param name="mode">
+	/// The boolean status to set.
+	/// </param>
+	void SetRenderDebugMode(bool mode);
 
 private:
 	const float fixedDeltaTime = 1.0f / 60.0f;
@@ -54,10 +62,9 @@ private:
 	bool runSimulation;
 	bool isRunning;
 	std::string title;
-	static int width;
-	static int height;
-	
 	float lastFrame;
+
+	RenderContext renderContext;
 
 	void Initialize();
 	void CoreInitialize();

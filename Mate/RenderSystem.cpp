@@ -6,18 +6,13 @@
 #include "DebugDraw.h"
 #include "AnimationComponent.h"
 
-RenderSystem::RenderSystem(Shader& sh) : shader(sh)
+RenderSystem::RenderSystem(Shader& baseShader, Shader& skyboxShader) : baseShader(baseShader)
 {
 	RequireComponent<TransformComponent>();
 	RequireComponent<MeshComponent>();
 }
 
-void RenderSystem::SetDebugMode(bool status)
-{
-	debugMode = status;
-}
-
-void RenderSystem::Update()
+void RenderSystem::Update(RenderContext& renderContext)
 {
 	for (Entity& entity : GetEntities())
 	{	
@@ -33,7 +28,7 @@ void RenderSystem::Update()
 			auto model = AssetManager::GetInstance().GetModel(meshComponent.GetModelId());
 			for (const auto& mesh : model->GetMeshes())
 			{
-				shader.Use();
+				baseShader.Use();
 				// Put model in the center based in its own bounding box (vertices based)
 				Matrix4 finalModelTransform = baseTransform * center;
 
@@ -42,21 +37,24 @@ void RenderSystem::Update()
 					ProcessAnimation(entity, mesh->attachedJointName, finalModelTransform);
 				}
 
-				shader.SetMat4("model", finalModelTransform);
+				baseShader.SetMat4("view", renderContext.View);
+				baseShader.SetMat4("projection", renderContext.Projection);
+				baseShader.SetMat4("model", finalModelTransform);
 				BindTexture(mesh.get());
 				DrawMesh(mesh.get());
 			}
 
 			// ========= DEBUG =========
-			// TODO: Add option to enable render
-			if (debugMode)
+			if (renderContext.DebugMode)
 			{
 				//Matrix4 transform = transformComponent.GetTransform();
-				DebugDraw::DrawAABB(meshComponent.GetExtents() / 2.0f, baseTransform, shader);
-				DebugDraw::DrawWorldAxes(shader);
+				DebugDraw::DrawAABB(meshComponent.GetExtents() / 2.0f, baseTransform, baseShader);
+				DebugDraw::DrawWorldAxes(baseShader);
 			}
 		}
 	}
+
+	DrawSkybox();
 }
 
 bool RenderSystem::IsValidEntity(Entity& entity)
@@ -100,7 +98,7 @@ void RenderSystem::BindTexture(Mesh* mesh)
 		std::string uniformName = baseName + std::to_string(index);
 
 		// Set uniform to tell shader which texture unit to use
-		shader.SetInt(uniformName.c_str(), textureUnit);
+		baseShader.SetInt(uniformName.c_str(), textureUnit);
 
 		// Bind texture to that unit
 		texture->Bind(textureUnit);
@@ -110,11 +108,11 @@ void RenderSystem::BindTexture(Mesh* mesh)
 
 	if (validTexture)
 	{
-		shader.SetBool("valid", true);
+		baseShader.SetBool("valid", true);
 	}
 	else
 	{
-		shader.SetVec4("defaultColor", Texture::DefaultColor);
+		baseShader.SetVec4("defaultColor", Texture::DefaultColor);
 	}
 }
 
@@ -126,4 +124,9 @@ void RenderSystem::DrawMesh(Mesh* mesh)
 
 	// Reset
 	glActiveTexture(GL_TEXTURE0);
+}
+
+void RenderSystem::DrawSkybox()
+{
+
 }

@@ -9,16 +9,13 @@
 CameraSystem::CameraSystem(Shader& shader, Shader& skyboxShader) :
     shader(shader),
     skyboxShader(skyboxShader),
-    skyboxTextureId(0),
-    height(1080),
-    width(1920)
+    skyboxTextureId(0)
 {
 	RequireComponent<TransformComponent>();
 	RequireComponent<CameraComponent>();
 
     this->skyboxShader.Use();
     skyboxShader.SetInt("skybox", 0);
-
     glGenTextures(1, &skyboxTextureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTextureId);
 
@@ -91,8 +88,8 @@ CameraSystem::CameraSystem(Shader& shader, Shader& skyboxShader) :
         "./Assets/Skybox/left.jpg",
         "./Assets/Skybox/top.jpg",
         "./Assets/Skybox/bottom.jpg",
-        "./Assets/Skybox/back.jpg",
-        "./Assets/Skybox/front.jpg"
+        "./Assets/Skybox/front.jpg",
+        "./Assets/Skybox/back.jpg"
     };
     for (unsigned int i = 0; i < texturePaths.size(); i++)
     {
@@ -118,7 +115,7 @@ CameraSystem::CameraSystem(Shader& shader, Shader& skyboxShader) :
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
 
-void CameraSystem::Update()
+void CameraSystem::Update(RenderContext& renderContext)
 {
     for (Entity& entity : GetEntities())
     {
@@ -130,7 +127,7 @@ void CameraSystem::Update()
         Matrix4 projection;
         projection.perspective(
             cameraComponent.Fov,
-            static_cast<float>(width) / static_cast<float>(height),
+            static_cast<float>(renderContext.Width) / static_cast<float>(renderContext.Height),
             cameraComponent.Near,
             cameraComponent.Far
         );
@@ -142,8 +139,8 @@ void CameraSystem::Update()
 
         Matrix4 view = Matrix4::lookAt(position, position + forward, up);
 
-        shader.SetMat4("view", view);
-        shader.SetMat4("projection", projection);
+        renderContext.View = view;
+        renderContext.Projection = projection;
 
         // draw skybox as last
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
@@ -159,10 +156,4 @@ void CameraSystem::Update()
         glBindVertexArray(0);
         glDepthFunc(GL_LESS); // set depth function back to default
     }
-}
-
-void CameraSystem::SetResolution(int w, int h)
-{
-	width = w;
-	height = h;
 }

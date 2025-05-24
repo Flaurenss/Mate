@@ -161,6 +161,7 @@
     <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="ExternalOzzProcessor.cpp" />
     <ClCompile Include="OzzLoader.cpp" />
+    <ClCompile Include="RenderContext.h" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="SkeletonBuilder.cpp" />
     <ClCompile Include="AssetManager.cpp" />

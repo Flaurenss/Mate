@@ -14,18 +14,21 @@
 #include "AnimationSystem.h"
 #include "AudioSystem.h"
 
-int Engine::width = 1920;
-int Engine::height = 1080;
 float Engine::DeltaTime = 0;
 
-Engine::Engine(int w, int h) :
+Engine::Engine(int w, int h, std::string title) :
 	isRunning(false),
-	lastFrame(0)
+	lastFrame(0),
+	title(title)
 {
-	width = w;
-	height = h;
+	renderContext = RenderContext
+	{
+		Matrix4(),
+		Matrix4(),
+		w,
+		h
+	};
 
-	title = "Engine";
 	registry = std::make_unique<ECS>();
 	Logger::Log("Engine created with name " + title);
 
@@ -46,7 +49,7 @@ void Engine::Initialize()
 	Shader skyboxShader("./Assets/vsSkybox.shader", "./Assets/fsSkybox.shader");
 	registry->AddSystem<PhysicsSystem>();
 	registry->AddSystem<AnimationSystem>();
-	registry->AddSystem<RenderSystem>(shader);
+	registry->AddSystem<RenderSystem>(shader, skyboxShader);
 	registry->AddSystem<AudioSystem>();
 	registry->AddSystem<CameraSystem>(shader, skyboxShader);
 }
@@ -60,7 +63,7 @@ void Engine::CoreInitialize()
 	// Btw Intermediate/Core profile, we set the last one:
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
+	window = glfwCreateWindow(renderContext.Width, renderContext.Height, title.c_str(), NULL, NULL);
 
 	Input::Init(window);
 
@@ -89,6 +92,8 @@ void Engine::CoreInitialize()
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	// Set engine isntance to window
+	glfwSetWindowUserPointer(window, this);
 	// Set rendering viewport callback
 	glfwSetFramebufferSizeCallback(window, Framebuffer_size_callback);
 
@@ -103,10 +108,11 @@ void Engine::CoreInitialize()
 
 void Engine::Framebuffer_size_callback(GLFWwindow* window, int w, int h)
 {
-	width = w;
-	height = h;
 	Logger::Log(std::to_string(w) + "x" + std::to_string(h));
-	glViewport(0, 0, width, height);
+	Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
+	engine->renderContext.Width = w;
+	engine->renderContext.Height = h;
+	glViewport(0, 0, w, h);
 }
 
 bool Engine::IsRunning()
@@ -137,6 +143,11 @@ Entity Engine::CreateEntity()
 	return registry->CreateEntity();
 }
 
+void Engine::SetRenderDebugMode(bool mode)
+{
+	renderContext.DebugMode = mode;
+}
+
 void Engine::ComputeDelta()
 {
 	float currentFrame = static_cast<float>(glfwGetTime());
@@ -155,11 +166,9 @@ void Engine::RenderUpdate()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	auto& cameraSystem = registry->GetSystem<CameraSystem>();
-	cameraSystem.SetResolution(width, height);
-	cameraSystem.Update();
+	registry->GetSystem<CameraSystem>().Update(renderContext);
 	registry->GetSystem<AnimationSystem>().Update(DeltaTime);
-	registry->GetSystem<RenderSystem>().Update();
+	registry->GetSystem<RenderSystem>().Update(renderContext);
 	registry->GetSystem<AudioSystem>().Update();
 
 	// Swap buffers, front for already rendered colors an the back one in order to avoid artifacts.

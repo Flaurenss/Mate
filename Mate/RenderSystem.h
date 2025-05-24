@@ -2,28 +2,22 @@
 #include "ECS.h"
 #include "Shader.h"
 #include "Mesh.h"
+#include "RenderContext.h"
 
 class RenderSystem : public System
 {
 public:
-	RenderSystem(Shader& shader);
-	
-	/// <summary>
-	/// Enables/Disables the debug mode.
-	/// This draws models bounding box (AABB) and the world center axis. 
-	/// </summary>
-	void SetDebugMode(bool status);
+	RenderSystem(Shader& baseShader, Shader& skyboxShader);
 
-	void Update();
+	void Update(RenderContext& renderContext);
 private:
-	Shader shader;
-
-	bool debugMode = true;
+	Shader baseShader;
 
 	bool IsValidEntity(Entity& entity);
 	void ProcessAnimation(Entity& entity, const std::string& jointName, Matrix4& transform);
 
 	void BindTexture(Mesh* mesh);
 	void DrawMesh(Mesh* mesh);
+	void DrawSkybox();
 };
 

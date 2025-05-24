@@ -234,6 +234,9 @@
     <ClCompile Include="AudioComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="RenderContext.h">
+      <Filter>Header Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
