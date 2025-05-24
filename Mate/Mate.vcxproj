@@ -160,6 +160,7 @@
     <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="AudioSystem.cpp" />
     <ClCompile Include="ExternalOzzProcessor.cpp" />
+    <ClCompile Include="IGame.cpp" />
     <ClCompile Include="OzzLoader.cpp" />
     <ClCompile Include="RenderContext.h" />
     <ClCompile Include="Skeleton.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="AudioSettings.h" />
     <ClInclude Include="AudioSystem.h" />
     <ClInclude Include="ExternalOzzProcessor.h" />
+    <ClInclude Include="IGame.h" />
     <ClInclude Include="OzzLoader.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="SkeletonBuilder.h" />
