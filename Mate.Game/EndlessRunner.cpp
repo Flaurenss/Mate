@@ -3,7 +3,7 @@
 #include <random>
 
 
-EndlessRunner::EndlessRunner(Engine& engine) :
+EndlessRunner::EndlessRunner(Engine* engine) :
 	engine(engine)
 {
 	Setup();

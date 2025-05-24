@@ -5,7 +5,7 @@
 class EndlessRunner
 {
 public:
-	EndlessRunner(Engine& engine);
+	EndlessRunner(Engine* engine);
 
 	void Update(float deltaTime);
 	void FixedUpdate();
