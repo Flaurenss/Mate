@@ -17,8 +17,10 @@ public:
 
 	void InitSoundIfNew(const std::string& id, const std::string& path, bool isUnique);
 	void ApplyConfigToSound(const std::string& id, AudioSettings& settings);
+
 private:
-	SoLoud::Soloud soloud; // SoLoud engine core
+	// SoLoud engine core
+	SoLoud::Soloud soloud;
 
 	std::optional<std::reference_wrapper<SoLoud::Wav>> TryGetAudioClip(const std::string& id);
 	std::unordered_map<std::string, std::unique_ptr<SoLoud::Wav>> currentSounds;

@@ -13,6 +13,7 @@ AudioEngine::~AudioEngine()
 {
 	soloud.stopAll();
 	soloud.deinit();
+	currentSounds.clear();
 }
 
 void AudioEngine::InitSoundIfNew(const std::string& id, const std::string& path, bool isUnique)
