@@ -11,8 +11,34 @@ EndlessRunner::EndlessRunner(Engine* engine) :
 
 void EndlessRunner::Setup()
 {
+    CreateCamera();
+    engine->SetSkybox("skybox", {
+        "./Assets/Skybox/right.jpg",
+        "./Assets/Skybox/left.jpg",
+        "./Assets/Skybox/top.jpg",
+        "./Assets/Skybox/bottom.jpg",
+        "./Assets/Skybox/front.jpg",
+        "./Assets/Skybox/back.jpg" });
+
+    AssetManager::GetInstance().LoadAudioClip("bg", "./Assets/Audio/bg.mp3");
+    AssetManager::GetInstance().LoadAudioClip("coin", "./Assets/Audio/coin.wav");
+    AssetManager::GetInstance().LoadAudioClip("hit", "./Assets/Audio/hit.ogg");
+
+    // Audio settings
+    auto bg = engine->CreateEntity();
+    auto& bgComp = bg.AddComponent<AudioComponent>("bg", true, true);
+    bgComp.SetVolume(0.5f);
+    bgComp.SetIsUnique(true);
+    bgComp.SetIsLoop(true);
+
+    auto coinAudio = engine->CreateEntity();
+    auto& coinComp = coinAudio.AddComponent<AudioComponent>("coin", false, false);
+
+    auto hitAudio = engine->CreateEntity();
+    auto& hitComp = hitAudio.AddComponent<AudioComponent>("hit", false, false);
+
 	player = std::make_unique<Entity>(
-		GameAssets::CreatePlayer(engine, Vector3::Up * 0.2f)
+        GameAssets::CreatePlayer(engine, Vector3::Up * 0.3f, Vector3(0, -180, 0), Vector3(0.5f))
 	);
 
     playerStartPos = player.get()->GetComponent<TransformComponent>().Position;
@@ -27,14 +53,26 @@ void EndlessRunner::Setup()
         {
             otherEntity.GetComponent<EnableComponent>().Enabled = false;
             points++;
+            coinComp.Play();
         }
         else if (tag == OBSTACLE_TAG)
         {
             runGame = false;
+            hitComp.Play();
         }
 	};
 
     CreateEnvironment();
+}
+
+Entity EndlessRunner::CreateCamera()
+{
+    auto camera = engine->CreateEntity();
+    camera.AddComponent<TransformComponent>(Vector3(0, 1.5f, 2.5f), Vector3(), Vector3(1));
+    camera.AddComponent<CameraComponent>();
+    TransformComponent& trans = camera.GetComponent<TransformComponent>();
+    trans.LookAt(Vector3(0, 0.65f, 0), trans.GetUp());
+    return camera;
 }
 
 void EndlessRunner::CreateEnvironment()
@@ -176,6 +214,7 @@ void EndlessRunner::RedoEnvironmentPart(EnvironmentPart& part, bool init)
         if (i < newObstacleOffsets.size())
         {
             Vector3 newPos = basePos + newObstacleOffsets[i];
+            newPos.y = 0.2f;
             if (init)
             {
                 part.obstacles[i].transformComponent.SetPosition(newPos);
@@ -228,24 +267,42 @@ void EndlessRunner::ResetEnvironmentPart(EnvironmentPart& part, const Vector3& n
 
 Part EndlessRunner::CreateObstacle(Vector3 pos)
 {
-    auto obstacle = GameAssets::CreateObstacle(engine, pos);
+    Vector3 obstaclePos = pos + Vector3::Up * 2.0f;
+    auto obstacle = GameAssets::CreateObstacle(engine, obstaclePos);
     obstacle.AddComponent<EnableComponent>().Enabled = false;
     auto& phyComponent = obstacle.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phyComponent.SetIsSensor(true);
     phyComponent.SetTag(OBSTACLE_TAG);
-    Part obstaclePart{ obstacle, pos, obstacle.GetComponent<TransformComponent>(), EnvironmentType::Obstacle};
+    Part obstaclePart{ obstacle, obstaclePos, obstacle.GetComponent<TransformComponent>(), EnvironmentType::Obstacle};
     return obstaclePart;
 }
 
 Part EndlessRunner::CreateReward(Vector3 pos)
 {
-    auto reward = GameAssets::CreateReward(engine, pos);
+    Vector3 rewardPos = pos + Vector3::Up * 0.2f;
+    auto reward = GameAssets::CreateReward(engine, rewardPos);
     reward.AddComponent<EnableComponent>().Enabled = false;
     auto& phy = reward.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
     phy.SetIsSensor(true);
     phy.SetTag(REWARD_TAG);
-    Part rewardPart{ reward, pos, reward.GetComponent<TransformComponent>(), EnvironmentType::Reward};
+    Part rewardPart{ reward, rewardPos, reward.GetComponent<TransformComponent>(), EnvironmentType::Reward};
     return rewardPart;
+}
+
+void EndlessRunner::Run()
+{
+    while(engine->IsRunning())
+    {
+        float deltaTime = engine->DeltaTime;
+        if (Input::GetKeyDown(KeyCode::P))
+        {
+            runGame = !runGame;
+            engine->SetSimulationTo(runGame);
+        }
+        Update(deltaTime);
+        FixedUpdate();
+        engine->Update();
+    }
 }
 
 void EndlessRunner::Update(float deltaTime)
@@ -254,14 +311,22 @@ void EndlessRunner::Update(float deltaTime)
     {
        ProcessPlayerInput();
     }
-
+    player->GetComponent<AnimationComponent>().CurrentAnimationIndex = runGame ? 2 : 1;
     accumulator += deltaTime;
 }
 
 void EndlessRunner::FixedUpdate()
 {
-    MovePlayer(fixedDeltaTime);
-    MoveEnvironment(fixedDeltaTime);
+    while (accumulator >= fixedDeltaTime)
+    {
+        if (runGame)
+        {
+            MovePlayer(fixedDeltaTime);
+            MoveEnvironment(fixedDeltaTime);
+            engine->PhysicsUpdate(fixedDeltaTime);
+        }
+        accumulator -= fixedDeltaTime;
+    }
 }
 
 void EndlessRunner::ProcessPlayerInput()

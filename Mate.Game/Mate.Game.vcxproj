@@ -155,21 +155,20 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EndlessRunner.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
-    <ClCompile Include="EnvironmentAssets.cpp" />
-    <ClCompile Include="GameAssets.cpp" />
+    <ClCompile Include="Game\EndlessRunner.cpp" />
+    <ClCompile Include="Game\EnvironmentAssets.cpp" />
+    <ClCompile Include="Game\GameAssets.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Avocado\Avocado.gltf" />
     <None Include="copyDependencies.bat" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EndlessRunner.h" />
     <ClInclude Include="EngineDemo.h" />
-    <ClInclude Include="EnvironmentAssets.h" />
-    <ClInclude Include="GameAssets.h" />
+    <ClInclude Include="Game\EndlessRunner.h" />
+    <ClInclude Include="Game\EnvironmentAssets.h" />
+    <ClInclude Include="Game\GameAssets.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mate\Mate.vcxproj">

@@ -1,6 +1,6 @@
 #include "EngineDemo.h"
 #include <Mate.h>
-#include "GameAssets.h"
+#include "Game/GameAssets.h"
 
 void EngineDemo::CreateBaseFloor(Engine* engine)
 {
