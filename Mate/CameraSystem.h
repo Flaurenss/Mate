@@ -7,15 +7,7 @@
 class CameraSystem : public System
 {
 public:
-	CameraSystem(Shader& shader, Shader& skyboxShader);
+	CameraSystem();
 	
 	void Update(RenderContext& renderContext);
-
-private:
-	unsigned int skyboxVAO;
-	unsigned int skyboxVBO;
-	unsigned int skyboxTextureId;
-
-	Shader shader;
-	Shader skyboxShader;
 };

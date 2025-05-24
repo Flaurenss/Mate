@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "ModelImporter.h"
 #include "AudioClip.h"
+#include <array>
 
 class AssetManager
 {
@@ -18,6 +19,7 @@ public:
 
     std::shared_ptr<Texture> LoadTexture(const std::string& id, const std::string& path);
     std::shared_ptr<Texture> GetTexture(const std::string& id) const;
+    std::shared_ptr<Texture> LoadCubemap(const std::string& id, const std::array<std::string, 6>& faces);
 
     void LoadAudioClip(const std::string& id, const std::string& path);
     AudioClip GetAudioClip(const std::string& id) const;

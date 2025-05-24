@@ -13,6 +13,8 @@
 #include "DebugDraw.h"
 #include "AnimationSystem.h"
 #include "AudioSystem.h"
+#include "AssetManager.h"
+#include "Skybox.h"
 
 float Engine::DeltaTime = 0;
 
@@ -51,7 +53,7 @@ void Engine::Initialize()
 	registry->AddSystem<AnimationSystem>();
 	registry->AddSystem<RenderSystem>(shader, skyboxShader);
 	registry->AddSystem<AudioSystem>();
-	registry->AddSystem<CameraSystem>(shader, skyboxShader);
+	registry->AddSystem<CameraSystem>();
 }
 
 void Engine::CoreInitialize()
@@ -128,7 +130,6 @@ void Engine::Update()
 	Input::Update();
 	testProcessInput(window);
 
-	//PhysicsUpdate();
 	registry->Update();
 	RenderUpdate();
 }
@@ -141,6 +142,16 @@ void Engine::SetSimulationTo(bool status)
 Entity Engine::CreateEntity()
 {
 	return registry->CreateEntity();
+}
+
+void Engine::SetSkybox(const std::string& id, std::array<std::string, 6> faces)
+{
+	auto texture = AssetManager::GetInstance().LoadCubemap(id, faces);
+	auto skybox = std::make_unique<Skybox>(texture);
+	if (registry->HasSystem<RenderSystem>())
+	{
+		registry->GetSystem<RenderSystem>().SetSkybox(std::move(skybox));
+	}
 }
 
 void Engine::SetRenderDebugMode(bool mode)

@@ -2,10 +2,9 @@
 
 ## TODO
 
+- [ ] Implement basic lighting.
 - [ ] Implement parent-children concept.
 - [ ] Implement text rendering.
-- [ ] Implement basic lighting.
-- [ ] Add cubemaps.
 - [ ] Implement UI for debug.
 - [ ] Add more collections to Model concept as: animations, textures...
 - [ ] Refactor Game project
@@ -19,9 +18,11 @@
 - [ ] Pack dependencies as nuget.
 
 ## In progress
-- [ ] Implement [animations](https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_007_Animations.md).
+- [ ] Add cubemaps.
 
 ## DONE
+- [x] Implement sound system;
+- [x] Implement [animations](https://github.com/KhronosGroup/glTF-Tutorials/blob/main/gltfTutorial/gltfTutorial_007_Animations.md).
 - [x] Refactor Render system
 - [x] Implement collision physics engine.
 - [x] Separate Import model behaviour from model concept.

@@ -6,7 +6,9 @@
 #include "DebugDraw.h"
 #include "AnimationComponent.h"
 
-RenderSystem::RenderSystem(Shader& baseShader, Shader& skyboxShader) : baseShader(baseShader)
+RenderSystem::RenderSystem(Shader& baseShader, Shader& skyboxShader) :
+	baseShader(baseShader),
+	skyboxShader(skyboxShader)
 {
 	RequireComponent<TransformComponent>();
 	RequireComponent<MeshComponent>();
@@ -54,7 +56,15 @@ void RenderSystem::Update(RenderContext& renderContext)
 		}
 	}
 
-	DrawSkybox();
+	if (currentSkybox)
+	{
+		DrawSkybox(renderContext);
+	}
+}
+
+void RenderSystem::SetSkybox(std::unique_ptr<Skybox> skybox)
+{
+	currentSkybox = std::move(skybox);
 }
 
 bool RenderSystem::IsValidEntity(Entity& entity)
@@ -126,7 +136,21 @@ void RenderSystem::DrawMesh(Mesh* mesh)
 	glActiveTexture(GL_TEXTURE0);
 }
 
-void RenderSystem::DrawSkybox()
+void RenderSystem::DrawSkybox(RenderContext& renderContext)
 {
+	glDepthFunc(GL_LEQUAL);
 
+	skyboxShader.Use();
+	Matrix4 view = renderContext.View;
+	//view[3] = Vector4(0, 0, 0, 1); // sin traslación
+	skyboxShader.SetMat4("view", view);
+	skyboxShader.SetMat4("projection", renderContext.Projection);
+
+	glBindVertexArray(currentSkybox->GetVAO());
+	currentSkybox->Bind();
+	skyboxShader.SetInt("skybox", 0);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+
+	glDepthFunc(GL_LESS);
 }

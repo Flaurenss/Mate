@@ -47,6 +47,22 @@ public:
 	Entity CreateEntity();
 
 	/// <summary>
+	/// Sets skybox.
+	/// </summary>
+	/// <param name="id">The skybox identifier.</param>
+	/// <param name="faces">
+	/// The 6 faces to compose the skybox.
+	/// With order:
+	/// Right->
+	/// Left->
+	/// Top->
+	/// Bottom->
+	/// Front->
+	/// Back
+	/// </param>
+	void SetSkybox(const std::string& id, std::array<std::string, 6> faces);
+
+	/// <summary>
 	/// Enable render debug mode.
 	/// Enables/Disables the debug mode.
 	/// This draws models bounding box (AABB) and the world center axis.

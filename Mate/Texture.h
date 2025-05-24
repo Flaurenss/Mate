@@ -12,6 +12,7 @@ enum class TextureType
     //Roughness,
     //AO,
     //Emissive,
+    Cubemap,
     Unknown
 };
 
@@ -25,7 +26,6 @@ public:
 
     unsigned int GetID() const;
     bool IsValid() const;
-    const std::string& GetPath() const ;
     TextureType GetType() const;
 
     void SetType(TextureType newType);
@@ -39,8 +39,7 @@ private:
 
     unsigned int id = 0;
     bool valid = false;
-    
-    std::string filePath;
+    unsigned int textureTarget;
     TextureType type = TextureType::Unknown;
 
     static const std::unordered_map<TextureType, std::string> uniformNameMap;

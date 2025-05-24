@@ -2,7 +2,6 @@
 #include "stb_image.h"
 #include <iostream>
 #include "Logger.h"
-
 #include <glad/glad.h>
 
 AssetManager& AssetManager::GetInstance()
@@ -78,8 +77,8 @@ std::shared_ptr<Texture> AssetManager::LoadTexture(const std::string& id, const 
 
     std::shared_ptr<Texture> texture = std::make_shared<Texture>();
     texture->id = textureID;
-    texture->filePath = path;
     texture->valid = true;
+    texture->textureTarget = GL_TEXTURE_2D;
 
     textures[id] = texture;
     return texture;
@@ -89,6 +88,51 @@ std::shared_ptr<Texture> AssetManager::GetTexture(const std::string& id) const
 {
     auto it = textures.find(id);
     return (it != textures.end()) ? it->second : nullptr;
+}
+
+std::shared_ptr<Texture> AssetManager::LoadCubemap(const std::string& id, const std::array<std::string, 6>& faces)
+{
+    // Return if already exists
+    auto it = textures.find(id);
+    if (it != textures.end())
+    {
+        return it->second;
+    }
+
+    unsigned int textireId;
+    glGenTextures(1, &textireId);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textireId);
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < faces.size(); i++)
+    {
+        unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+            );
+            stbi_image_free(data);
+        }
+        else
+        {
+            std::cout << "Cubemap tex failed to load at path: " << faces[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    auto texture = std::make_shared<Texture>();
+    texture->id = textireId;
+    texture->valid = true;
+    texture->type = TextureType::Cubemap;
+    texture->textureTarget = GL_TEXTURE_CUBE_MAP;
+    textures[id] = texture;
+    return texture;
 }
 
 void AssetManager::LoadAudioClip(const std::string& id, const std::string& path)
@@ -115,4 +159,5 @@ void AssetManager::Clear()
 {
     models.clear();
     textures.clear();
+    audioClips.clear();
 }

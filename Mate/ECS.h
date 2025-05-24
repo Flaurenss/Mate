@@ -120,7 +120,7 @@ template<typename TSystem>
 bool ECS::HasSystem() const
 {
 	auto typeIndex = std::type_index(typeid(TSystem));
-	return systems.find(typeIndex != systems.end());
+	return systems.find(typeIndex) != systems.end();
 }
 
 template<typename TSystem>

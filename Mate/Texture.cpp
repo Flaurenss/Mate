@@ -14,7 +14,7 @@ Texture::~Texture()
 void Texture::Bind(unsigned int unit) const
 {
 	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D, id);
+	glBindTexture(textureTarget, id);
 }
 
 unsigned int Texture::GetID() const
@@ -25,11 +25,6 @@ unsigned int Texture::GetID() const
 bool Texture::IsValid() const
 {
 	return valid;
-}
-
-const std::string& Texture::GetPath() const
-{
-	return filePath;
 }
 
 TextureType Texture::GetType() const
