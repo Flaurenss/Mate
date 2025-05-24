@@ -141,7 +141,7 @@ void RenderSystem::DrawSkybox(RenderContext& renderContext)
 	glDepthFunc(GL_LEQUAL);
 
 	skyboxShader.Use();
-	Matrix4 view = renderContext.View;
+	Matrix4 view = renderContext.View.removeTranslation();
 	//view[3] = Vector4(0, 0, 0, 1); // sin traslación
 	skyboxShader.SetMat4("view", view);
 	skyboxShader.SetMat4("projection", renderContext.Projection);

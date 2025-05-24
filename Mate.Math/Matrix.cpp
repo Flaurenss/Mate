@@ -350,6 +350,17 @@ Matrix4 Matrix4::inverse() const
     return inv;
 }
 
+Matrix4 Matrix4::removeTranslation() const
+{
+    Matrix4 result = *this;
+
+    result[12] = 0.0f;
+    result[13] = 0.0f;
+    result[14] = 0.0f;
+
+    return result;
+}
+
 float& Matrix4::operator[](int index)
 {
     return m[index];
