@@ -61,7 +61,7 @@ void GameLoop(Engine* engine)
 
     AssetManager::GetInstance().LoadAudioClip("bg", "./Assets/Audio/bg.mp3");
     AssetManager::GetInstance().LoadAudioClip("coin", "./Assets/Audio/coin.wav");
-    AssetManager::GetInstance().LoadAudioClip("hit", "./Assets/Audio/hit.wav");
+    AssetManager::GetInstance().LoadAudioClip("hit", "./Assets/Audio/hit.ogg");
     
     engine->SetSkybox("skybox", {
         "./Assets/Skybox/right.jpg",

@@ -16,39 +16,37 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 {
 	for (Entity& entity : GetEntities())
 	{
+		if (!phyEngine->IsRegistered(entity.GetId()))
+		{
+			RegisterBody(entity);
+		}
+
 		if (entity.HasComponent<EnableComponent>()
 			&& !entity.GetComponent<EnableComponent>().Enabled)
 		{
 			continue;
 		}
 
-		if (!phyEngine->IsRegistered(entity.GetId()))
+		auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
+		auto& transform = entity.GetComponent<TransformComponent>();
+		if (physicsComponent.IsDirty())
 		{
-			RegisterBody(entity);
-		}
-		else
-		{
-			auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
-			auto& transform = entity.GetComponent<TransformComponent>();
-			if (physicsComponent.IsDirty())
+			if (physicsComponent.BodyMotionType == KINEMATIC)
 			{
-				if (physicsComponent.BodyMotionType == KINEMATIC)
-				{
-					phyEngine->MoveKinematic(
-						entity.GetId(),
-						physicsComponent.GetActualTargetPosition(),
-						transform.EulerAngles,
-						fixedDeltaTime);
-				}
-				else if (physicsComponent.BodyMotionType == STATIC)
-				{
-					phyEngine->SetPositionAndRotation(
-						entity.GetId(),
-						transform.Position,
-						transform.EulerAngles);
-				}
-				physicsComponent.Reset();
+				phyEngine->MoveKinematic(
+					entity.GetId(),
+					physicsComponent.GetActualTargetPosition(),
+					transform.EulerAngles,
+					fixedDeltaTime);
 			}
+			else if (physicsComponent.BodyMotionType == STATIC)
+			{
+				phyEngine->SetPositionAndRotation(
+					entity.GetId(),
+					transform.Position,
+					transform.EulerAngles);
+			}
+			physicsComponent.Reset();
 		}
 	}
 
