@@ -16,7 +16,7 @@ float lastX = 0;
 float lastY = 0;
 float fixedDeltaTime = 1.0f / 60.0f;
 bool firstMouse = true;
-const int ROAD_LENGHT = 3;
+const int ROAD_LENGHT = 5;
 const int START_COINS = 10;
 const int START_OBSTACLES = 3;
 const std::string REWARD_TAG = "COIN";
@@ -136,7 +136,7 @@ void GameLoop(Engine* engine)
             accumulator -= fixedDeltaTime;
         }
 
-        ManageFreeCamera(cameraComponent, cameraTransform, engine->DeltaTime);
+        //ManageFreeCamera(cameraComponent, cameraTransform, engine->DeltaTime);
 
         engine->Update();
     }

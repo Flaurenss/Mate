@@ -7,13 +7,11 @@
 AudioEngine::AudioEngine()
 {
 	soloud.init();
-	//wav.load("./Assets/Audio/bg.mp3");
-	//wav.setLooping(true);
-	//auto handle = soloud.play(wav);
 }
 
 AudioEngine::~AudioEngine()
 {
+	soloud.stopAll();
 	soloud.deinit();
 }
 
