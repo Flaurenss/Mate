@@ -30,8 +30,7 @@ private:
 	float accumulator = 0.0f;
 	int points = 0;
 	float environmentSpeed = 7.5f;
-	float maxEnvironmentSpeed = 20.0f;
-	float secondsResetPhase = 1.0f;
+	float maxEnvironmentSpeed = 10.0f;
 	float actualResetTime = 0.0f;
 
 	const std::string REWARD_TAG = "COIN";
@@ -62,5 +61,5 @@ private:
 	void IncreaseDifficulty();
 	
 	void PauseGame();
-	void ResetEnvironmentToStart();
+	void ResetEnvironmentToStart(float fixedDeltaTime);
 };

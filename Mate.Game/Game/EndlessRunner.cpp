@@ -113,7 +113,7 @@ void EndlessRunner::FixedUpdate(float fixedDeltaTime)
     }
     if (reset)
     {
-        ResetEnvironmentToStart();
+        ResetEnvironmentToStart(fixedDeltaTime);
     }
 }
 
@@ -469,7 +469,7 @@ void EndlessRunner::PauseGame()
     }
 }
 
-void EndlessRunner::ResetEnvironmentToStart()
+void EndlessRunner::ResetEnvironmentToStart(float fixedDeltaTime)
 {
     isPaused = true;
     if (gameOver)
@@ -500,7 +500,7 @@ void EndlessRunner::ResetEnvironmentToStart()
         }
     }
 
-    if (secondsResetPhase > actualResetTime)
+    if (fixedDeltaTime > actualResetTime)
     {
         actualResetTime += fixedDeltaTime;
     }
