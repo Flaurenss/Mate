@@ -58,6 +58,8 @@ public:
 	void RmoveAndDestroyAll();
 
 private:
+	// Since the following data structures are not thread safe, we must guard them to avoid data races issues
+	std::mutex collisionMutex;
 	std::vector<CollisionData> collisions;
 	std::unordered_map<int, PhysicsData> entityPhysicsDataMap;
 

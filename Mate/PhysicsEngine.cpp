@@ -191,8 +191,8 @@ void PhysicsEngine::MoveKinematic(int entityId, Vector3 targetPosition, Vector3 
 
 void PhysicsEngine::AddNewCollision(int entityA, int entityB)
 {
-	CollisionData newCollision {entityA, entityB};
-	collisions.push_back(newCollision);
+    std::lock_guard<std::mutex> lock(collisionMutex);
+    collisions.push_back({entityA, entityB});
 }
 
 bool PhysicsEngine::IsRegistered(int entityId)

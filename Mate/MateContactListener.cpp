@@ -23,10 +23,11 @@ void MateContactListener::OnContactAdded(const JPH::Body& inBody1, const JPH::Bo
 	int id1 = static_cast<int>(inBody1.GetUserData());
 	int id2 = static_cast<int>(inBody2.GetUserData());
 
-	if (physicsEngine->IsRegistered(id1) && physicsEngine->IsRegistered(id2))
+	/*if (physicsEngine->IsRegistered(id1) && physicsEngine->IsRegistered(id2))
 	{
 		physicsEngine->AddNewCollision(id1, id2);
-	}
+	}*/
+	physicsEngine->AddNewCollision(id1, id2);
 }
 
 void MateContactListener::OnContactPersisted(const JPH::Body& inBody1, const JPH::Body& inBody2, const JPH::ContactManifold& inManifold, JPH::ContactSettings& ioSettings)
