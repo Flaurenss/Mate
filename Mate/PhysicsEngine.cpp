@@ -51,12 +51,15 @@ PhysicsEngine::PhysicsEngine()
 PhysicsEngine::~PhysicsEngine()
 {
 	RmoveAndDestroyAll();
+	entityPhysicsDataMap.clear();
 
 	JPH::UnregisterTypes();
 
 	delete JPH::Factory::sInstance;
 	JPH::Factory::sInstance = nullptr;
 	
+	contactListener = nullptr;
+
 	tempAllocator = nullptr;
 	jobSystem = nullptr;
 	system = nullptr;
@@ -257,6 +260,7 @@ void PhysicsEngine::RmoveAndDestroyAll()
 		RmoveAndDestroy(physicalDataMap.first);
 	}
 }
+
 
 JPH::Quat PhysicsEngine::EulerToQuat(Vector3 eulerAngles)
 {
