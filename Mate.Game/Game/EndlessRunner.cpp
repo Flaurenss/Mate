@@ -54,6 +54,7 @@ void EndlessRunner::Setup()
             otherEntity.GetComponent<EnableComponent>().Enabled = false;
             points++;
             coinComp.Play();
+            IncreaseDifficulty();
         }
         else if (tag == OBSTACLE_TAG)
         {
@@ -65,6 +66,46 @@ void EndlessRunner::Setup()
     CreateEnvironment();
 }
 
+void EndlessRunner::Run()
+{
+    while (engine->IsRunning())
+    {
+        float deltaTime = engine->DeltaTime;
+        if (Input::GetKeyDown(KeyCode::P))
+        {
+            runGame = !runGame;
+            engine->SetSimulationTo(runGame);
+        }
+        Update(deltaTime);
+        FixedUpdate();
+        engine->Update();
+    }
+}
+
+void EndlessRunner::Update(float deltaTime)
+{
+    if (runGame)
+    {
+        ProcessPlayerInput();
+    }
+    player->GetComponent<AnimationComponent>().CurrentAnimationIndex = runGame ? 2 : 1;
+    accumulator += deltaTime;
+}
+
+void EndlessRunner::FixedUpdate()
+{
+    while (accumulator >= fixedDeltaTime)
+    {
+        if (runGame)
+        {
+            MovePlayer(fixedDeltaTime);
+            MoveEnvironment(fixedDeltaTime);
+            engine->PhysicsUpdate(fixedDeltaTime);
+        }
+        accumulator -= fixedDeltaTime;
+    }
+}
+
 Entity EndlessRunner::CreateCamera()
 {
     auto camera = engine->CreateEntity();
@@ -73,6 +114,52 @@ Entity EndlessRunner::CreateCamera()
     TransformComponent& trans = camera.GetComponent<TransformComponent>();
     trans.LookAt(Vector3(0, 0.65f, 0), trans.GetUp());
     return camera;
+}
+
+void EndlessRunner::ProcessPlayerInput()
+{
+    if (Input::GetKeyDown(KeyCode::D) && railState.currentRail < 1)
+    {
+        railState.currentRail++;
+        railState.targetX = railState.currentRail * playerRailSpace;
+    }
+
+    if (Input::GetKeyDown(KeyCode::A) && railState.currentRail > -1)
+    {
+        railState.currentRail--;
+        railState.targetX = railState.currentRail * playerRailSpace;
+    }
+}
+
+void EndlessRunner::MovePlayer(float fixedDeltaTime)
+{
+    const float speed = 10.0f;
+    const float epsilon = 0.01f;
+
+    auto& transform = player->GetComponent<TransformComponent>();
+    auto& physicsComponent = player->GetComponent<PhysicsComponent>();
+    float currentX = transform.Position.x;
+    float deltaX = railState.targetX - currentX;
+
+    if (std::abs(deltaX) > epsilon)
+    {
+        float direction = (deltaX > 0) ? 1.0f : -1.0f;
+        float move = speed * fixedDeltaTime;
+
+        if (std::abs(deltaX) <= move)
+        {
+            physicsComponent.MoveKinematic(Vector3(railState.targetX, transform.Position.y, transform.Position.z));
+        }
+        else
+        {
+            Vector3 moveVec = Vector3::Right * move * direction;
+            physicsComponent.MoveKinematic(transform.Position + moveVec);
+        }
+    }
+    else
+    {
+        physicsComponent.MoveKinematic(Vector3(railState.targetX, transform.Position.y, transform.Position.z));
+    }
 }
 
 void EndlessRunner::CreateEnvironment()
@@ -92,35 +179,64 @@ EnvironmentPart EndlessRunner::CreateEnvironmentPart(int i)
     auto road = engine->CreateEntity();
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
-    road.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
+    road.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_COLLIDING);
     road.AddComponent<MeshComponent>("road");
-    //road.AddComponent<PhysicsComponent>();
     Part floorPart{ road, roadPos, roadTrans, EnvironmentType::Floor };
 
     std::vector<Part> rewards;
     std::vector<Part> obstacles;
-    if (i != 0)
-    {
-        for (auto i = 0; i < START_OBSTACLES; i++)
-        {
-            auto boxPart = CreateObstacle(roadPos);
-            obstacles.push_back(boxPart);
-        }
 
-        for (auto i = 0; i < START_COINS; i++)
-        {
-            auto coinPart = CreateReward(roadPos);
-            rewards.push_back(coinPart);
-        }
+    for (auto i = 0; i < START_OBSTACLES; i++)
+    {
+        auto boxPart = CreateObstacle(roadPos);
+        obstacles.push_back(boxPart);
     }
 
-    EnvironmentPart envPart{ floorPart, obstacles, rewards };
+    for (auto i = 0; i < START_COINS; i++)
+    {
+        auto coinPart = CreateReward(roadPos);
+        rewards.push_back(coinPart);
+    }
+
+    EnvironmentPart envPart{ i == 0 , floorPart, obstacles, rewards };
     return envPart;
+}
+
+Part EndlessRunner::CreateObstacle(Vector3 pos)
+{
+    Vector3 obstaclePos = pos + Vector3::Up * 2.0f;
+    auto obstacle = GameAssets::CreateObstacle(engine, obstaclePos);
+    obstacle.AddComponent<EnableComponent>().Enabled = false;
+    auto& phyComponent = obstacle.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
+    phyComponent.SetIsSensor(true);
+    phyComponent.SetTag(OBSTACLE_TAG);
+    Part obstaclePart{ obstacle, obstaclePos, obstacle.GetComponent<TransformComponent>(), EnvironmentType::Obstacle};
+    return obstaclePart;
+}
+
+Part EndlessRunner::CreateReward(Vector3 pos)
+{
+    Vector3 rewardPos = pos + Vector3::Up * 0.2f;
+    auto reward = GameAssets::CreateReward(engine, rewardPos);
+    reward.AddComponent<EnableComponent>().Enabled = false;
+    auto& phy = reward.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
+    phy.SetIsSensor(true);
+    phy.SetTag(REWARD_TAG);
+    Part rewardPart{ reward, rewardPos, reward.GetComponent<TransformComponent>(), EnvironmentType::Reward};
+    return rewardPart;
+}
+
+void EndlessRunner::ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos)
+{
+    part.floorPart.entity.GetComponent<PhysicsComponent>().MoveKinematic(newFloorPos);
+    part.floorPart.originalPos = newFloorPos;
+
+    RedoEnvironmentPart(part);
 }
 
 void EndlessRunner::RedoEnvironmentPart(EnvironmentPart& part, bool init)
 {
-    if (part.obstacles.empty() && part.rewards.empty())
+    if (part.firstBlock && init || (part.obstacles.empty() && part.rewards.empty()))
     {
         return;
     }
@@ -211,6 +327,7 @@ void EndlessRunner::RedoEnvironmentPart(EnvironmentPart& part, bool init)
     int i = 0;
     for (; i < part.obstacles.size(); i++)
     {
+        auto& boxPhy = part.obstacles[i].entity.GetComponent<PhysicsComponent>();
         if (i < newObstacleOffsets.size())
         {
             Vector3 newPos = basePos + newObstacleOffsets[i];
@@ -221,7 +338,7 @@ void EndlessRunner::RedoEnvironmentPart(EnvironmentPart& part, bool init)
             }
             else
             {
-                part.obstacles[i].entity.GetComponent<PhysicsComponent>().MoveKinematic(newPos);
+                boxPhy.MoveKinematic(newPos);
             }
             part.obstacles[i].originalPos = newPos;
             part.obstacles[i].entity.GetComponent<EnableComponent>().Enabled = true;
@@ -236,6 +353,7 @@ void EndlessRunner::RedoEnvironmentPart(EnvironmentPart& part, bool init)
     i = 0;
     for (; i < part.rewards.size(); i++)
     {
+        auto& coinPhy = part.rewards[i].entity.GetComponent<PhysicsComponent>();
         if (i < newRewardOffsets.size())
         {
             Vector3 newPos = basePos + newRewardOffsets[i];
@@ -245,7 +363,7 @@ void EndlessRunner::RedoEnvironmentPart(EnvironmentPart& part, bool init)
             }
             else
             {
-                part.rewards[i].entity.GetComponent<PhysicsComponent>().MoveKinematic(newPos);
+                coinPhy.MoveKinematic(newPos);
             }
             part.rewards[i].originalPos = newPos;
             part.rewards[i].entity.GetComponent<EnableComponent>().Enabled = true;
@@ -257,130 +375,12 @@ void EndlessRunner::RedoEnvironmentPart(EnvironmentPart& part, bool init)
     }
 }
 
-void EndlessRunner::ResetEnvironmentPart(EnvironmentPart& part, const Vector3& newFloorPos)
-{
-    part.floorPart.entity.GetComponent<PhysicsComponent>().MoveKinematic(newFloorPos);
-    part.floorPart.originalPos = newFloorPos;
-
-    RedoEnvironmentPart(part);
-}
-
-Part EndlessRunner::CreateObstacle(Vector3 pos)
-{
-    Vector3 obstaclePos = pos + Vector3::Up * 2.0f;
-    auto obstacle = GameAssets::CreateObstacle(engine, obstaclePos);
-    obstacle.AddComponent<EnableComponent>().Enabled = false;
-    auto& phyComponent = obstacle.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
-    phyComponent.SetIsSensor(true);
-    phyComponent.SetTag(OBSTACLE_TAG);
-    Part obstaclePart{ obstacle, obstaclePos, obstacle.GetComponent<TransformComponent>(), EnvironmentType::Obstacle};
-    return obstaclePart;
-}
-
-Part EndlessRunner::CreateReward(Vector3 pos)
-{
-    Vector3 rewardPos = pos + Vector3::Up * 0.2f;
-    auto reward = GameAssets::CreateReward(engine, rewardPos);
-    reward.AddComponent<EnableComponent>().Enabled = false;
-    auto& phy = reward.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_MOVING);
-    phy.SetIsSensor(true);
-    phy.SetTag(REWARD_TAG);
-    Part rewardPart{ reward, rewardPos, reward.GetComponent<TransformComponent>(), EnvironmentType::Reward};
-    return rewardPart;
-}
-
-void EndlessRunner::Run()
-{
-    while(engine->IsRunning())
-    {
-        float deltaTime = engine->DeltaTime;
-        if (Input::GetKeyDown(KeyCode::P))
-        {
-            runGame = !runGame;
-            engine->SetSimulationTo(runGame);
-        }
-        Update(deltaTime);
-        FixedUpdate();
-        engine->Update();
-    }
-}
-
-void EndlessRunner::Update(float deltaTime)
-{
-    if (runGame)
-    {
-       ProcessPlayerInput();
-    }
-    player->GetComponent<AnimationComponent>().CurrentAnimationIndex = runGame ? 2 : 1;
-    accumulator += deltaTime;
-}
-
-void EndlessRunner::FixedUpdate()
-{
-    while (accumulator >= fixedDeltaTime)
-    {
-        if (runGame)
-        {
-            MovePlayer(fixedDeltaTime);
-            MoveEnvironment(fixedDeltaTime);
-            engine->PhysicsUpdate(fixedDeltaTime);
-        }
-        accumulator -= fixedDeltaTime;
-    }
-}
-
-void EndlessRunner::ProcessPlayerInput()
-{
-    if (Input::GetKeyDown(KeyCode::D) && railState.currentRail < 1)
-    {
-        railState.currentRail++;
-        railState.targetX = railState.currentRail * playerRailSpace;
-    }
-
-    if (Input::GetKeyDown(KeyCode::A) && railState.currentRail > -1)
-    {
-        railState.currentRail--;
-        railState.targetX = railState.currentRail * playerRailSpace;
-    }
-}
-
-void EndlessRunner::MovePlayer(float fixedDeltaTime)
-{
-    const float speed = 10.0f;
-    const float epsilon = 0.01f;
-
-    auto& transform = player->GetComponent<TransformComponent>();
-    auto& physicsComponent = player->GetComponent<PhysicsComponent>();
-    float currentX = transform.Position.x;
-    float deltaX = railState.targetX - currentX;
-
-    if (std::abs(deltaX) > epsilon)
-    {
-        float direction = (deltaX > 0) ? 1.0f : -1.0f;
-        float move = speed * fixedDeltaTime;
-
-        if (std::abs(deltaX) <= move)
-        {
-            physicsComponent.MoveKinematic(Vector3(railState.targetX, transform.Position.y, transform.Position.z));
-        }
-        else
-        {
-            Vector3 moveVec = Vector3::Right * move * direction;
-            physicsComponent.MoveKinematic(transform.Position + moveVec);
-        }
-    }
-    else
-    {
-        physicsComponent.MoveKinematic(Vector3(railState.targetX, transform.Position.y, transform.Position.z));
-    }
-}
-
 void EndlessRunner::MoveEnvironment(float fixedDeltaTime)
 {
     const float blockLength = 10.0f;
 
     // Movement Params
-    const float speed = fixedDeltaTime * 7.5f;
+    const float speed = fixedDeltaTime * environmentSpeed;
     const float rotationSpeed = fixedDeltaTime * 200;
     Vector3 movement = -Vector3::Forward * speed;
 
@@ -418,12 +418,16 @@ void EndlessRunner::MoveEnvironment(float fixedDeltaTime)
     }
 }
 
-bool EndlessRunner::IsGameRunning()
+void EndlessRunner::IncreaseDifficulty()
 {
-    return runGame;
-}
+    static int lastDifficultyLevel = 0;
 
-void EndlessRunner::SetGameRunning(bool status)
-{
-    runGame = status;
+    int currentLevel = points / 10;
+
+    if (currentLevel > lastDifficultyLevel)
+    {
+        lastDifficultyLevel = currentLevel;
+
+        environmentSpeed = std::min(environmentSpeed + 0.5f, maxEnvironmentSpeed);
+    }
 }

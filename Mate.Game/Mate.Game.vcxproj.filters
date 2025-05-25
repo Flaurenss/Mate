@@ -22,6 +22,12 @@
     <Filter Include="Source Files\Game">
       <UniqueIdentifier>{69555334-e740-4192-be73-e5a781661cfc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{6d7f393d-a543-4902-a8cd-e2765f7ebaa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{b3c48a54-920a-4d46-abe3-9dd0e42ece06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -38,6 +44,9 @@
     </ClCompile>
     <ClCompile Include="Game\GameAssets.cpp">
       <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraUtils.cpp">
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +66,9 @@
     </ClInclude>
     <ClInclude Include="Game\EnvironmentAssets.h">
       <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraUtils.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

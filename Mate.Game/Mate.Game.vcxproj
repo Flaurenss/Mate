@@ -155,6 +155,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CameraUtils.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
     <ClCompile Include="Game\EndlessRunner.cpp" />
     <ClCompile Include="Game\EnvironmentAssets.cpp" />
@@ -165,6 +166,7 @@
     <None Include="copyDependencies.bat" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CameraUtils.h" />
     <ClInclude Include="EngineDemo.h" />
     <ClInclude Include="Game\EndlessRunner.h" />
     <ClInclude Include="Game\EnvironmentAssets.h" />

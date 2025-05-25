@@ -3,5 +3,6 @@
 enum PhysicLayer
 {
 	MOVING,
-	NON_MOVING
+	NON_MOVING,
+	NON_COLLIDING
 };

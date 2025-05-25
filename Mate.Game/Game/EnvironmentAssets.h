@@ -19,6 +19,7 @@ struct Part
 
 struct EnvironmentPart
 {
+    bool firstBlock;
     Part floorPart;
     std::vector<Part> obstacles;
     std::vector<Part> rewards;

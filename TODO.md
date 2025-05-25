@@ -9,6 +9,7 @@
 - [ ] Add more collections to Model concept as: animations, textures...
 - [ ] Refactor Game project
 - [ ] Add event system (input at least).
+- [ ] Use event system to clean systems and components updates, registers....
 - [ ] Refactor ECS implementation to follow a more Data Oriented Design including destroy entities and related data.
 - [ ] Implement scripting.
 - [ ] Add quaternions to be used in physics simulation.

@@ -1,12 +1,12 @@
 #include "PhysicsComponent.h"
 
-PhysicsComponent::PhysicsComponent() : BodyMotionType(DYNAMIC), Layer(PhysicLayer::MOVING)
+PhysicsComponent::PhysicsComponent() : BodyMotionType(DYNAMIC), layer(PhysicLayer::MOVING)
 {}
 
-PhysicsComponent::PhysicsComponent(MotionType type) : BodyMotionType(type), Layer(PhysicLayer::MOVING)
+PhysicsComponent::PhysicsComponent(MotionType type) : BodyMotionType(type), layer(PhysicLayer::MOVING)
 {}
 
-PhysicsComponent::PhysicsComponent(MotionType type, PhysicLayer layer) : BodyMotionType(type), Layer(layer)
+PhysicsComponent::PhysicsComponent(MotionType type, PhysicLayer layer) : BodyMotionType(type), layer(layer)
 {}
 
 bool PhysicsComponent::IsDirty() const
@@ -14,9 +14,9 @@ bool PhysicsComponent::IsDirty() const
 	return isDirty;
 }
 
-void PhysicsComponent::SetDirty(bool status)
+bool PhysicsComponent::IsLayerDirty() const
 {
-	isDirty = status;
+	return isLayerDirty;
 }
 
 void PhysicsComponent::MoveKinematic(Vector3 newTargetPosition)
@@ -33,6 +33,7 @@ Vector3 PhysicsComponent::GetActualTargetPosition() const
 void PhysicsComponent::Reset()
 {
 	isDirty = false;
+	isLayerDirty = false;
 	targetPosition = Vector3::Zero;
 }
 
@@ -44,6 +45,17 @@ bool PhysicsComponent::IsSensor() const
 void PhysicsComponent::SetIsSensor(bool status)
 {
 	isSensor = status;
+}
+
+void PhysicsComponent::SetLayer(PhysicLayer newLayer)
+{
+	layer = newLayer;
+	isLayerDirty = true;
+}
+
+PhysicLayer PhysicsComponent::GetLayer() const
+{
+	return layer;
 }
 
 std::string PhysicsComponent::GetTag() const

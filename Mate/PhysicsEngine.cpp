@@ -87,7 +87,7 @@ void PhysicsEngine::RegisterBody(
 	auto rotationQuat = EulerToQuat(eulerAngles);
 	auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
 	auto eMotionType = MotionTypeToEMotionType(physicsComponent.BodyMotionType);
-	auto layer = LayerToObjectLayer(physicsComponent.Layer);
+	auto layer = LayerToObjectLayer(physicsComponent.GetLayer());
 	
 	JPH::BodyCreationSettings settings(
 		shape,
@@ -122,6 +122,13 @@ Vector3 PhysicsEngine::GetEulerAngles(int entityId)
 		MathUtils::degrees(euler.GetX()),
 		MathUtils::degrees(euler.GetY()),
 		MathUtils::degrees(euler.GetZ()));
+}
+
+void PhysicsEngine::SetLayer(int entityId, PhysicLayer layer)
+{
+	JPH::BodyID bodyId = GetBodyId(entityId);
+	auto objLayer = LayerToObjectLayer(layer);
+	bodyInterface->SetObjectLayer(bodyId, objLayer);
 }
 
 void PhysicsEngine::SetPosition(int entityId, Vector3 position)

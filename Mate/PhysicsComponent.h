@@ -12,7 +12,6 @@ struct PhysicsComponent
 {
 public:
 	MotionType BodyMotionType;
-	PhysicLayer Layer;
 	std::function<void(Entity otherPhysicsData)> OnCollide;
 
 	PhysicsComponent();
@@ -20,8 +19,9 @@ public:
 	PhysicsComponent(MotionType type, PhysicLayer layer);
 
 	bool IsDirty() const;
-	void SetDirty(bool status = true);
 	
+	bool IsLayerDirty() const;
+
 	void MoveKinematic(Vector3 newTargetPosition);
 	Vector3 GetActualTargetPosition() const;
 	
@@ -30,12 +30,17 @@ public:
 	bool IsSensor() const;
 	void SetIsSensor(bool status = true);
 
+	void SetLayer(PhysicLayer newLayer);
+	PhysicLayer GetLayer() const;
+
 	std::string GetTag() const;
 	void SetTag(std::string newTag);
 
 private:
 	std::string tag;
+	PhysicLayer layer;
 	bool isDirty = false;
+	bool isLayerDirty = false;
 	bool isSensor = false;
 	Vector3 targetPosition = Vector3::Zero;
 };

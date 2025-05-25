@@ -29,9 +29,12 @@ public:
 		Vector3 position,
 		Vector3 eulerAngles,
 		Entity entity);
+	
 	Vector3 GetPosition(int entityId);
 	Vector3 GetEulerAngles(int entityId);
-	
+
+	void SetLayer(int entityId, PhysicLayer layer);
+
 	void SetPosition(int entityId, Vector3 position);
 	void SetPositionAndRotation(int entityId, Vector3 position, Vector3 eulerAngles);
 	void MoveKinematic(int entityId, Vector3 targetPosition, Vector3 targetRotation, float deltaTime);

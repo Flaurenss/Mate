@@ -13,6 +13,7 @@ public:
 		// Create a mapping table from object to broad phase layer
 		mObjectToBroadPhase[Layers::NON_MOVING] = BroadPhaseLayers::NON_MOVING;
 		mObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
+		mObjectToBroadPhase[Layers::NON_COLLIDING] = BroadPhaseLayers::NON_COLLIDING;
 	}
 
 	virtual unsigned int GetNumBroadPhaseLayers() const override
@@ -35,6 +36,8 @@ public:
 				return "NON_MOVING";
 			case (JPH::BroadPhaseLayer::Type)BroadPhaseLayers::MOVING:
 				return "MOVING";
+			case (JPH::BroadPhaseLayer::Type)BroadPhaseLayers::NON_COLLIDING:
+				return "NON_COLLIDING";
 			default: JPH_ASSERT(false); return "INVALID";
 		}
 	}

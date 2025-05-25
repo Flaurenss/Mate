@@ -29,6 +29,12 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 
 		auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
 		auto& transform = entity.GetComponent<TransformComponent>();
+		
+		if (physicsComponent.IsLayerDirty())
+		{
+			phyEngine->SetLayer(entity.GetId(), physicsComponent.GetLayer());
+		}
+		
 		if (physicsComponent.IsDirty())
 		{
 			if (physicsComponent.BodyMotionType == KINEMATIC)
@@ -46,8 +52,8 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 					transform.Position,
 					transform.EulerAngles);
 			}
-			physicsComponent.Reset();
 		}
+		physicsComponent.Reset();
 	}
 
 	phyEngine->Update(fixedDeltaTime);
@@ -86,13 +92,9 @@ void PhysicsSystem::RegisterBody(Entity& entity)
 	auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
 	auto& transform = entity.GetComponent<TransformComponent>();
 	Vector3 extents = Vector3::One;
-	Vector3 center = Vector3::Zero;
-	Vector3 min = Vector3::Zero;
 	if (entity.HasComponent<MeshComponent>())
 	{
 		extents = entity.GetComponent<MeshComponent>().GetExtents();
-		center = entity.GetComponent<MeshComponent>().GetCenter();
-		min = entity.GetComponent<MeshComponent>().GetMin();
 	}
 	auto halfExtents = (extents / 2 ) * transform.Scale;
 	halfExtents.x = std::max(halfExtents.x, 0.05f);
@@ -112,6 +114,13 @@ void PhysicsSystem::CallOnCollisionData(int selfId, int otherId)
 	auto physicsDataA = phyEngine->GetEntityPhysicsData(selfId);
 	auto physicsDataB = phyEngine->GetEntityPhysicsData(otherId);
 	auto& entityCallBack = physicsDataA.GetPhysicsComponent().OnCollide;
+
+	if(physicsDataB.GetEntity().HasComponent<EnableComponent>()
+		&& !physicsDataB.GetEntity().GetComponent<EnableComponent>().Enabled)
+	{
+		return;
+	}
+
 	if (entityCallBack)
 	{
 		entityCallBack(physicsDataB.GetEntity());

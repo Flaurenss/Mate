@@ -14,9 +14,10 @@ public:
 		case Layers::NON_MOVING:
 			return inLayer2 == BroadPhaseLayers::MOVING;
 		case Layers::MOVING:
-			return true;
+			return inLayer2 != BroadPhaseLayers::NON_COLLIDING;
+		case Layers::NON_COLLIDING:
+			return false;
 		default:
-			JPH_ASSERT(false);
 			return false;
 		}
 	}

@@ -14,6 +14,7 @@ namespace Layers
 {
 	static constexpr JPH::ObjectLayer NON_MOVING = 0;
 	static constexpr JPH::ObjectLayer MOVING = 1;
+	static constexpr JPH::ObjectLayer NON_COLLIDING = 2;
 	static constexpr JPH::ObjectLayer NUM_LAYERS = 3;
 };
 
@@ -26,7 +27,8 @@ namespace BroadPhaseLayers
 {
 	static constexpr JPH::BroadPhaseLayer NON_MOVING(0);
 	static constexpr JPH::BroadPhaseLayer MOVING(1);
-	static constexpr unsigned int NUM_LAYERS(2);
+	static constexpr JPH::BroadPhaseLayer NON_COLLIDING(2);
+	static constexpr unsigned int NUM_LAYERS(3);
 };
 
 inline JPH::EMotionType MotionTypeToEMotionType(MotionType motionType)
@@ -52,6 +54,8 @@ inline JPH::ObjectLayer LayerToObjectLayer(PhysicLayer layer)
 		return Layers::MOVING;
 	case PhysicLayer::NON_MOVING:
 		return Layers::NON_MOVING;
+	case PhysicLayer::NON_COLLIDING:
+		return Layers::NON_COLLIDING;
 	default:
 		return Layers::MOVING;
 	}
