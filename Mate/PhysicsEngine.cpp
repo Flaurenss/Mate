@@ -16,7 +16,7 @@
 #include <thread>
 #include <cassert>
 
-//JPH_SUPPRESS_WARNINGS
+JPH_SUPPRESS_WARNINGS
 
 PhysicsEngine::PhysicsEngine()
 {
@@ -104,6 +104,24 @@ void PhysicsEngine::RegisterBody(
 	entityPhysicsDataMap.insert(std::make_pair(entityId, physicsData));
 }
 
+void PhysicsEngine::ActivateBody(int entityId)
+{
+	JPH::BodyID bodyId = GetBodyId(entityId);
+	if (!bodyInterface->IsActive(bodyId))
+	{
+		bodyInterface->ActivateBody(bodyId);
+	}
+}
+
+void PhysicsEngine::DeactivateBody(int entityId)
+{
+	JPH::BodyID bodyId = GetBodyId(entityId);
+	if (bodyInterface->IsActive(bodyId))
+	{
+		bodyInterface->DeactivateBody(bodyId);
+	}
+}
+
 Vector3 PhysicsEngine::GetPosition(int entityId)
 {
 	JPH::BodyID bodyId = GetBodyId(entityId);
@@ -129,6 +147,12 @@ void PhysicsEngine::SetLayer(int entityId, PhysicLayer layer)
 	JPH::BodyID bodyId = GetBodyId(entityId);
 	auto objLayer = LayerToObjectLayer(layer);
 	bodyInterface->SetObjectLayer(bodyId, objLayer);
+}
+
+void PhysicsEngine::ResetBodyForces(int entityId)
+{
+	JPH::BodyID bodyId = GetBodyId(entityId);
+	bodyInterface->SetLinearAndAngularVelocity(bodyId, JPH::Vec3::sZero(), JPH::Vec3::sZero());
 }
 
 void PhysicsEngine::SetPosition(int entityId, Vector3 position)

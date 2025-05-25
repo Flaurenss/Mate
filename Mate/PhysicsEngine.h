@@ -30,10 +30,15 @@ public:
 		Vector3 eulerAngles,
 		Entity entity);
 	
+	void ActivateBody(int entityId);
+	void DeactivateBody(int entityId);
+
 	Vector3 GetPosition(int entityId);
 	Vector3 GetEulerAngles(int entityId);
 
 	void SetLayer(int entityId, PhysicLayer layer);
+
+	void ResetBodyForces(int entityId);
 
 	void SetPosition(int entityId, Vector3 position);
 	void SetPositionAndRotation(int entityId, Vector3 position, Vector3 eulerAngles);

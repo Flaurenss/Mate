@@ -19,11 +19,16 @@ public:
 	PhysicsComponent(MotionType type, PhysicLayer layer);
 
 	bool IsDirty() const;
-	
 	bool IsLayerDirty() const;
+	bool IsResetForcesDirty() const;
+	bool IsMoveToPositionDirty() const;
+	bool IsInstantMoveToPositionDirty() const;
 
 	void MoveKinematic(Vector3 newTargetPosition);
-	Vector3 GetActualTargetPosition() const;
+	void SetPosition(Vector3 newTargetPosition);
+	void ResetForces();
+	Vector3 GetActualKinematicTargetPosition() const;
+	Vector3 GetActualInstantTargetPosition() const;
 	
 	void Reset();
 	
@@ -41,6 +46,10 @@ private:
 	PhysicLayer layer;
 	bool isDirty = false;
 	bool isLayerDirty = false;
+	bool isResetForcesDirty = false;
+	bool isMoveToPositionDirty = false;
+	bool isInstantMoveToPositionDirty = false;
 	bool isSensor = false;
-	Vector3 targetPosition = Vector3::Zero;
+	Vector3 kinematicTargetPosition = Vector3::Zero;
+	Vector3 instantTargetPosition = Vector3::Zero;
 };

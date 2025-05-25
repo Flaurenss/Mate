@@ -159,6 +159,32 @@ void Engine::SetRenderDebugMode(bool mode)
 	renderContext.DebugMode = mode;
 }
 
+void Engine::Run(IGame& game)
+{
+	game.Start();
+	float accumulator = 0.0f;
+
+	while (isRunning && game.IsGameRunning())
+	{
+		ComputeDelta();
+		accumulator += DeltaTime;
+
+		Input::Update();
+
+		game.Update(DeltaTime);
+
+		while (accumulator >= fixedDeltaTime)
+		{
+			game.FixedUpdate(fixedDeltaTime);
+			PhysicsUpdate(fixedDeltaTime);
+			accumulator -= fixedDeltaTime;
+		}
+
+		registry->Update();
+		RenderUpdate();
+	}
+}
+
 void Engine::ComputeDelta()
 {
 	float currentFrame = static_cast<float>(glfwGetTime());

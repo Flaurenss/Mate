@@ -8,7 +8,8 @@ Entity GameAssets::CreatePlayer(Engine* engine, Vector3 basePos, Vector3 baseRot
     auto player = engine->CreateEntity();
     player.AddComponent<TransformComponent>(basePos, baseRot, baseScale);
     player.AddComponent<MeshComponent>("player");
-    player.AddComponent<PhysicsComponent>(MotionType::KINEMATIC);
+    auto& phyComp = player.AddComponent<PhysicsComponent>(MotionType::KINEMATIC);
+    phyComp.SetTag("Player");
     player.AddComponent<AnimationComponent>();
     return player;
 }

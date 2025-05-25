@@ -5,6 +5,7 @@
 #include "ECS.h"
 #include "Vector.h"
 #include "RenderContext.h"
+#include "IGame.h"
 
 class Engine
 {
@@ -71,6 +72,8 @@ public:
 	/// The boolean status to set.
 	/// </param>
 	void SetRenderDebugMode(bool mode);
+
+	void Run(IGame& game);
 
 private:
 	const float fixedDeltaTime = 1.0f / 60.0f;

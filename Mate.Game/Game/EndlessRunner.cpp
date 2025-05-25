@@ -58,7 +58,9 @@ void EndlessRunner::Setup()
         }
         else if (tag == OBSTACLE_TAG)
         {
-            runGame = false;
+            gameOver = true;
+            isPaused = true;
+            reset = true;
             hitComp.Play();
         }
 	};
@@ -66,44 +68,58 @@ void EndlessRunner::Setup()
     CreateEnvironment();
 }
 
-void EndlessRunner::Run()
+void EndlessRunner::Start()
 {
-    while (engine->IsRunning())
-    {
-        float deltaTime = engine->DeltaTime;
-        if (Input::GetKeyDown(KeyCode::P))
-        {
-            runGame = !runGame;
-            engine->SetSimulationTo(runGame);
-        }
-        Update(deltaTime);
-        FixedUpdate();
-        engine->Update();
-    }
+
 }
 
 void EndlessRunner::Update(float deltaTime)
 {
-    if (runGame)
+    if (Input::GetKeyDown(KeyCode::P) && !reset)
+    {
+        isPaused = !isPaused;
+        engine->SetSimulationTo(isPaused);
+    }
+
+    if (Input::GetKeyDown(KeyCode::Escape))
+    {
+        isGameRunning = false;
+    }
+
+    if (Input::GetKeyDown(KeyCode::R))
+    {
+        reset = !reset;
+        isPaused = !isPaused;
+    }
+
+    if (!isPaused)
     {
         ProcessPlayerInput();
     }
-    player->GetComponent<AnimationComponent>().CurrentAnimationIndex = runGame ? 2 : 1;
+    player->GetComponent<AnimationComponent>().CurrentAnimationIndex = isPaused ? 1 : 2;
     accumulator += deltaTime;
 }
 
-void EndlessRunner::FixedUpdate()
+void EndlessRunner::FixedUpdate(float fixedDeltaTime)
 {
-    while (accumulator >= fixedDeltaTime)
+    if (isPaused)
     {
-        if (runGame)
-        {
-            MovePlayer(fixedDeltaTime);
-            MoveEnvironment(fixedDeltaTime);
-            engine->PhysicsUpdate(fixedDeltaTime);
-        }
-        accumulator -= fixedDeltaTime;
+        PauseGame();
     }
+    else
+    {
+        MovePlayer(fixedDeltaTime);
+        MoveEnvironment(fixedDeltaTime);
+    }
+    if (reset)
+    {
+        ResetEnvironmentToStart();
+    }
+}
+
+bool EndlessRunner::IsGameRunning() const
+{
+    return isGameRunning;
 }
 
 Entity EndlessRunner::CreateCamera()
@@ -429,5 +445,68 @@ void EndlessRunner::IncreaseDifficulty()
         lastDifficultyLevel = currentLevel;
 
         environmentSpeed = std::min(environmentSpeed + 0.5f, maxEnvironmentSpeed);
+    }
+}
+
+void EndlessRunner::PauseGame()
+{
+    for (auto& environmentPart : environmentParts)
+    {
+        auto posToMove = environmentPart.floorPart.transformComponent.Position;
+        environmentPart.floorPart.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
+
+        for (auto& coll : environmentPart.obstacles)
+        {
+            auto posToMove = coll.transformComponent.Position;
+            coll.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
+        }
+
+        for (auto& reward : environmentPart.rewards)
+        {
+            auto posToMove = reward.transformComponent.Position;
+            reward.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
+        }
+    }
+}
+
+void EndlessRunner::ResetEnvironmentToStart()
+{
+    isPaused = true;
+    if (gameOver)
+    {
+        gameOver = false;
+        Logger::Log("End of the game with " + std::to_string(points) + " points.");
+    }
+
+    player->GetComponent<PhysicsComponent>().MoveKinematic(playerStartPos);
+    railState.targetX = 0.0f;
+    railState.currentRail = 0;
+
+    for (auto& environmentPart : environmentParts)
+    {
+        auto posToMove = environmentPart.floorPart.transformComponent.Position;
+        environmentPart.floorPart.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
+
+        for (auto& coll : environmentPart.obstacles)
+        {
+            auto posToMove = coll.transformComponent.Position;
+            coll.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
+        }
+
+        for (auto& reward : environmentPart.rewards)
+        {
+            auto posToMove = reward.transformComponent.Position;
+            reward.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
+        }
+    }
+
+    if (secondsResetPhase > actualResetTime)
+    {
+        actualResetTime += fixedDeltaTime;
+    }
+    else
+    {
+        actualResetTime = 0;
+        reset = false;
     }
 }

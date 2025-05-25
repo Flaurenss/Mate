@@ -40,6 +40,7 @@ int Input::MapToGLFWKey(KeyCode keyCode)
         case KeyCode::Space: return GLFW_KEY_SPACE;
         case KeyCode::LeftShift: return GLFW_KEY_LEFT_SHIFT;
         case KeyCode::LeftControl: return GLFW_KEY_LEFT_CONTROL;
+        case KeyCode::Escape: return GLFW_KEY_ESCAPE;
 
         default: return -1;
     }

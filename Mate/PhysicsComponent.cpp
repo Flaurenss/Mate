@@ -19,22 +19,54 @@ bool PhysicsComponent::IsLayerDirty() const
 	return isLayerDirty;
 }
 
+bool PhysicsComponent::IsResetForcesDirty() const
+{
+	return isResetForcesDirty;
+}
+
+bool PhysicsComponent::IsMoveToPositionDirty() const
+{
+	return isMoveToPositionDirty;
+}
+
+bool PhysicsComponent::IsInstantMoveToPositionDirty() const
+{
+	return isInstantMoveToPositionDirty;
+}
+
 void PhysicsComponent::MoveKinematic(Vector3 newTargetPosition)
 {
-	targetPosition = newTargetPosition;
+	kinematicTargetPosition = newTargetPosition;
 	isDirty = true;
 }
 
-Vector3 PhysicsComponent::GetActualTargetPosition() const
+void PhysicsComponent::SetPosition(Vector3 newTargetPosition)
 {
-	return targetPosition;
+	isInstantMoveToPositionDirty = true;
+}
+
+void PhysicsComponent::ResetForces()
+{
+	isResetForcesDirty = true;
+}
+
+Vector3 PhysicsComponent::GetActualKinematicTargetPosition() const
+{
+	return kinematicTargetPosition;
+}
+
+Vector3 PhysicsComponent::GetActualInstantTargetPosition() const
+{
+	return instantTargetPosition;
 }
 
 void PhysicsComponent::Reset()
 {
 	isDirty = false;
 	isLayerDirty = false;
-	targetPosition = Vector3::Zero;
+	isResetForcesDirty = false;
+	kinematicTargetPosition = Vector3::Zero;
+	instantTargetPosition = Vector3::Zero;
 }
 
 bool PhysicsComponent::IsSensor() const

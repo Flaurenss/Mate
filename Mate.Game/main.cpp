@@ -9,5 +9,5 @@ int main()
     auto engine = std::make_unique<Engine>();
     engine->SetRenderDebugMode(true);
     auto game = EndlessRunner(engine.get());
-    game.Run();
+    engine->Run(game);
  }

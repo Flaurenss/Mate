@@ -9,6 +9,18 @@ MateContactListener::MateContactListener(PhysicsEngine* engine)
 JPH::ValidateResult MateContactListener::OnContactValidate(const JPH::Body& inBody1, const JPH::Body& inBody2, JPH::RVec3Arg inBaseOffset, const JPH::CollideShapeResult& inCollisionResult)
 {
 	// Allows you to ignore a contact before it is created (using layers to not make objects collide is cheaper!)
+	/*auto data = physicsEngine->GetEntityPhysicsData(inBody1.GetUserData());
+	auto phy = data.GetEntity().GetComponent<PhysicsComponent>();
+
+	auto data2 = physicsEngine->GetEntityPhysicsData(inBody2.GetUserData());
+	auto phy2 = data2.GetEntity().GetComponent<PhysicsComponent>();*/
+
+	if (!inBody1.IsActive() || !inBody2.IsActive())
+	{
+		// If any of them are inactive we reject the collision:
+		return JPH::ValidateResult::RejectAllContactsForThisBodyPair;
+	}
+
 	return JPH::ValidateResult::AcceptAllContactsForThisBodyPair;
 }
 

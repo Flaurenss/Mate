@@ -3,12 +3,15 @@
 #include <deque>
 #include "EnvironmentAssets.h"
 
-class EndlessRunner
+class EndlessRunner : public IGame
 {
 public:
 	EndlessRunner(Engine* engine);
 
-	void Run();
+	void Start() override;
+	void Update(float deltaTime) override;
+	void FixedUpdate(float fixedDeltaTime) override;
+	bool IsGameRunning() const override;
 
 private:
 	static constexpr float fixedDeltaTime = 1.0f / 60.0f;
@@ -20,22 +23,25 @@ private:
 	Vector3 playerStartPos;
 	PlayerRailState railState;
 
-	bool runGame = false;
+	bool gameOver = false;
+	bool reset = false;
+	bool isGameRunning = true;
+	bool isPaused = true;
 	float accumulator = 0.0f;
 	int points = 0;
 	float environmentSpeed = 7.5f;
 	float maxEnvironmentSpeed = 20.0f;
+	float secondsResetPhase = 1.0f;
+	float actualResetTime = 0.0f;
 
 	const std::string REWARD_TAG = "COIN";
 	const std::string OBSTACLE_TAG = "BOX";
-	const int ROAD_LENGHT = 1;
+	const int ROAD_LENGHT = 5;
 	const int START_COINS = 6;
 	const int START_OBSTACLES = 3;
 	const float playerRailSpace = 1.5f;
 
 	void Setup();
-	void Update(float deltaTime);
-	void FixedUpdate();
 	Entity CreateCamera();
 	void ProcessPlayerInput();
 	void MovePlayer(float fixedDeltaTime);
@@ -54,4 +60,7 @@ private:
 	/// Increase difficulty every X coins picked.
 	/// </summary>
 	void IncreaseDifficulty();
+	
+	void PauseGame();
+	void ResetEnvironmentToStart();
 };

@@ -24,24 +24,22 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 		if (entity.HasComponent<EnableComponent>()
 			&& !entity.GetComponent<EnableComponent>().Enabled)
 		{
+			phyEngine->DeactivateBody(entity.GetId());
 			continue;
 		}
 
+		phyEngine->ActivateBody(entity.GetId());
+
 		auto& physicsComponent = entity.GetComponent<PhysicsComponent>();
 		auto& transform = entity.GetComponent<TransformComponent>();
-		
-		if (physicsComponent.IsLayerDirty())
-		{
-			phyEngine->SetLayer(entity.GetId(), physicsComponent.GetLayer());
-		}
-		
+
 		if (physicsComponent.IsDirty())
 		{
 			if (physicsComponent.BodyMotionType == KINEMATIC)
 			{
 				phyEngine->MoveKinematic(
 					entity.GetId(),
-					physicsComponent.GetActualTargetPosition(),
+					physicsComponent.GetActualKinematicTargetPosition(),
 					transform.EulerAngles,
 					fixedDeltaTime);
 			}
@@ -53,6 +51,24 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 					transform.EulerAngles);
 			}
 		}
+		if (physicsComponent.IsResetForcesDirty())
+		{
+			phyEngine->ResetBodyForces(entity.GetId());
+		}
+		if (physicsComponent.IsInstantMoveToPositionDirty())
+		{
+			phyEngine->ResetBodyForces(entity.GetId());
+			phyEngine->SetPositionAndRotation(
+				entity.GetId(),
+				transform.Position,
+				transform.EulerAngles);
+		}
+
+		if (physicsComponent.IsLayerDirty())
+		{
+			phyEngine->SetLayer(entity.GetId(), physicsComponent.GetLayer());
+		}
+
 		physicsComponent.Reset();
 	}
 
@@ -114,12 +130,6 @@ void PhysicsSystem::CallOnCollisionData(int selfId, int otherId)
 	auto physicsDataA = phyEngine->GetEntityPhysicsData(selfId);
 	auto physicsDataB = phyEngine->GetEntityPhysicsData(otherId);
 	auto& entityCallBack = physicsDataA.GetPhysicsComponent().OnCollide;
-
-	if(physicsDataB.GetEntity().HasComponent<EnableComponent>()
-		&& !physicsDataB.GetEntity().GetComponent<EnableComponent>().Enabled)
-	{
-		return;
-	}
 
 	if (entityCallBack)
 	{
