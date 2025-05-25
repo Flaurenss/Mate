@@ -61,5 +61,5 @@ private:
 	void IncreaseDifficulty();
 	
 	void PauseGame();
-	void ResetEnvironmentToStart(float fixedDeltaTime);
+	void ResetAll(float fixedDeltaTime);
 };

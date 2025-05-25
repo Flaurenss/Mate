@@ -113,7 +113,7 @@ void EndlessRunner::FixedUpdate(float fixedDeltaTime)
     }
     if (reset)
     {
-        ResetEnvironmentToStart(fixedDeltaTime);
+        ResetAll(fixedDeltaTime);
     }
 }
 
@@ -254,6 +254,16 @@ void EndlessRunner::RedoEnvironmentPart(EnvironmentPart& part, bool init)
 {
     if (part.firstBlock && init || (part.obstacles.empty() && part.rewards.empty()))
     {
+        for (auto& box : part.obstacles)
+        {
+            box.entity.GetComponent<EnableComponent>().Enabled = false;
+        }
+
+        for (auto& coin : part.rewards)
+        {
+            coin.entity.GetComponent<EnableComponent>().Enabled = false;
+        }
+
         return;
     }
 
@@ -469,11 +479,22 @@ void EndlessRunner::PauseGame()
     }
 }
 
-void EndlessRunner::ResetEnvironmentToStart(float fixedDeltaTime)
+void EndlessRunner::ResetAll(float fixedDeltaTime)
 {
-    isPaused = true;
     if (gameOver)
     {
+        const float blockLength = 10.0f;
+        Vector3 basePosition = Vector3::Zero;
+        for (size_t i = 0; i < environmentParts.size(); ++i)
+        {
+            auto& part = environmentParts[i];
+            Vector3 partPos = basePosition + Vector3::Forward * (i * blockLength);
+            ResetEnvironmentPart(part, partPos);
+
+            part.firstBlock = (i == 0);
+
+            RedoEnvironmentPart(part, (i == 0));
+        }
         gameOver = false;
         Logger::Log("End of the game with " + std::to_string(points) + " points.");
     }
@@ -482,23 +503,23 @@ void EndlessRunner::ResetEnvironmentToStart(float fixedDeltaTime)
     railState.targetX = 0.0f;
     railState.currentRail = 0;
 
-    for (auto& environmentPart : environmentParts)
-    {
-        auto posToMove = environmentPart.floorPart.transformComponent.Position;
-        environmentPart.floorPart.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
+    //for (auto& environmentPart : environmentParts)
+    //{
+    //    auto posToMove = environmentPart.floorPart.transformComponent.Position;
+    //    environmentPart.floorPart.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
 
-        for (auto& coll : environmentPart.obstacles)
-        {
-            auto posToMove = coll.transformComponent.Position;
-            coll.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
-        }
+    //    for (auto& coll : environmentPart.obstacles)
+    //    {
+    //        auto posToMove = coll.transformComponent.Position;
+    //        coll.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
+    //    }
 
-        for (auto& reward : environmentPart.rewards)
-        {
-            auto posToMove = reward.transformComponent.Position;
-            reward.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
-        }
-    }
+    //    for (auto& reward : environmentPart.rewards)
+    //    {
+    //        auto posToMove = reward.transformComponent.Position;
+    //        reward.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
+    //    }
+    //}
 
     if (fixedDeltaTime > actualResetTime)
     {
