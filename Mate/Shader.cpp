@@ -15,7 +15,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     try
     {
         // open files
-        std::cout << "Current working directory: " << std::filesystem::current_path() << std::endl;
+        Logger::Log("Loading SHADER "+ std::string(vertexPath) + " & " + std::string(fragmentPath) + " from:");
+        Logger::Log("Current working directory:" + std::filesystem::current_path().string());
         vertexShaderFile.open(vertexPath);
         fragmentShaderFile.open(fragmentPath);
         std::stringstream vertexShaderStream, fragmentShaderStream;
@@ -31,10 +32,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     }
     catch (std::ifstream::failure e)
     {
-        // TODO: use custom LOGGER
         Logger::Err(std::string("ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: ") + e.what());
         return;
-        //std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
     }
 
     // Create and compile VERTEX shader:
@@ -100,11 +99,11 @@ void Shader::checkShaderErrors(unsigned int id, std::string vertexType)
     glGetShaderInfoLog(id, 512, NULL, infoLog);
     if (!success)
     {
-        std::cout << "ERROR::SHADER::"<< vertexType <<"::COMPILATION_FAILED\n" << infoLog << std::endl;
+        Logger::Err("ERROR::SHADER::" + vertexType + "::COMPILATION_FAILED " + infoLog);
     }
     else
     {
-        std::cout << "GG::SHADER::" << vertexType << "::COMPILATION_SUCCESSFULL\n" << infoLog << std::endl;
+        Logger::Log("GG::SHADER::" + vertexType + "::COMPILATION_SUCCESSFULL " + infoLog);
     }
 }
 
@@ -116,10 +115,14 @@ void Shader::checkShaderProgramErrors(unsigned int id)
     glGetProgramInfoLog(id, 512, NULL, infoLog);
     if (!success)
     {
-        std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+        std::string msg = "ERROR::SHADER::PROGRAM::COMPILATION_FAILED: ";
+        msg = +infoLog;
+        Logger::Err(msg);
     }
     else
     {
-        std::cout << "GG::SHADER::PROGRAM::COMPILATION_SUCCESSFULL" << infoLog << std::endl;
+        std::string msg = "GG::SHADER::PROGRAM::COMPILATION_SUCCESSFULL: ";
+        msg = +infoLog;
+        Logger::Log(msg);
     }
 }

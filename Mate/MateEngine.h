@@ -7,11 +7,11 @@
 #include "RenderContext.h"
 #include "IGame.h"
 
-class Engine
+class MateEngine
 {
 public:
-	Engine(int width = 1920, int height = 1080, std::string title = "Mate.Engine");
-	~Engine();
+	MateEngine(int width = 1920, int height = 1080, std::string title = "Mate.Engine");
+	~MateEngine();
 
 	/// <summary>
 	/// The actual delta time between frames.
@@ -19,27 +19,10 @@ public:
 	static float DeltaTime;
 
 	/// <summary>
-	/// Checks if the engine is running.
+	/// Enable show FPS logger.
 	/// </summary>
-	/// <returns>Engine actual running status.</returns>
-	bool IsRunning();
-	
-	/// <summary>
-	/// Updates the engine systems like ECS (systems), input and render.
-	/// </summary>
-	void Update();
-
-	/// <summary>
-	/// Updates the physics simulation.
-	/// </summary>
-	/// <param name="fixedDeltaTime">The step of time tu simulate.</param>
-	void PhysicsUpdate(float fixedDeltaTime);
-	
-	/// <summary>
-	/// Sets simulation to desired status (on/off).
-	/// </summary>
-	/// <param name="status">The acitve status.</param>
-	void SetSimulationTo(bool status);
+	/// <param name="activate">The status to activate.</param>
+	void ShowFrames(bool activate = true);
 
 	/// <summary>
 	/// Adds a new entity to the scene.
@@ -71,33 +54,35 @@ public:
 	/// <param name="mode">
 	/// The boolean status to set.
 	/// </param>
-	void SetRenderDebugMode(bool mode);
+	void SetRenderDebugMode(bool mode = true);
 
+	/// <summary>
+	/// Runs the game.
+	/// </summary>
+	/// <param name="game">The game instance to run.</param>
 	void Run(IGame& game);
 
 private:
 	const float fixedDeltaTime = 1.0f / 60.0f;
-
-	bool runSimulation;
-	bool isRunning;
+	
 	std::string title;
-	float lastFrame;
-
+	bool isRunning;
+	GLFWwindow* window;
+	std::unique_ptr<ECS> registry;
 	RenderContext renderContext;
+	
+	bool showFps = false;
+	float lastFrame = 0.0f;
+	int frameCount = 0;
+	float frameTimeAccumulator = 0.0f;
 
 	void Initialize();
 	void CoreInitialize();
+	void DebugFps(float deltaTime);
 
 	void ComputeDelta();
 	void RenderUpdate();
-
-	GLFWwindow* window;
-	std::unique_ptr<ECS> registry;
-
-	float frameTimeAccumulator = 0.0f;
-	int frameCount = 0;
-	void DebugFps(float deltaTime);
+	void PhysicsUpdate(float fixedDeltaTime);
 
 	static void Framebuffer_size_callback(GLFWwindow* window, int width, int height);
-	void testProcessInput(GLFWwindow* window);
 };

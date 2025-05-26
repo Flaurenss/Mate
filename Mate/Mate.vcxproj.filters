@@ -104,9 +104,6 @@
     <ClCompile Include="ECS.cpp">
       <Filter>Source Files\Core\ECS</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="ComponentRegistry.cpp">
       <Filter>Source Files\Core\ECS</Filter>
     </ClCompile>
@@ -239,6 +236,9 @@
     <ClCompile Include="Vendors\ufbx.c">
       <Filter>Source Files\Vendors</Filter>
     </ClCompile>
+    <ClCompile Include="MateEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="docs.md">
@@ -287,9 +287,6 @@
     </ClInclude>
     <ClInclude Include="ECS.h">
       <Filter>Header Files\Core\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="ComponentRegistry.h">
       <Filter>Header Files\Core\ECS</Filter>
@@ -428,6 +425,9 @@
     </ClInclude>
     <ClInclude Include="Vendors\ufbx.h">
       <Filter>Header Files\Vendors</Filter>
+    </ClInclude>
+    <ClInclude Include="MateEngine.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

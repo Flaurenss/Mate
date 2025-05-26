@@ -6,7 +6,7 @@
 class EndlessRunner : public IGame
 {
 public:
-	EndlessRunner(Engine* engine);
+	EndlessRunner(MateEngine* engine);
 
 	void Start() override;
 	void Update(float deltaTime) override;
@@ -15,7 +15,7 @@ public:
 
 private:
 	static constexpr float fixedDeltaTime = 1.0f / 60.0f;
-	Engine* engine;
+	MateEngine* engine;
 
 	std::unique_ptr<Entity> player;
 	std::deque<EnvironmentPart> environmentParts;

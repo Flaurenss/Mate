@@ -19,7 +19,7 @@ Skybox::~Skybox()
     }
 }
 
-unsigned int Skybox::GetVAO()
+unsigned int Skybox::GetVAO() const
 {
     return VAO;
 }

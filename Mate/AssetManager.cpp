@@ -115,7 +115,9 @@ std::shared_ptr<Texture> AssetManager::LoadCubemap(const std::string& id, const 
         }
         else
         {
-            std::cout << "Cubemap tex failed to load at path: " << faces[i] << std::endl;
+            std::string msg = "Cubemap tex failed to load at path: ";
+            msg += faces[i];
+            Logger::Err(msg);
             stbi_image_free(data);
         }
     }

@@ -1,4 +1,4 @@
-#include "Engine.h"
+#include "MateEngine.h"
 #include <iostream>
 #include "Logger.h"
 #include "ECS.h"
@@ -16,9 +16,9 @@
 #include "Skybox.h"
 #include "Vendors/stb_image.h"
 
-float Engine::DeltaTime = 0;
+float MateEngine::DeltaTime = 0;
 
-Engine::Engine(int w, int h, std::string title) :
+MateEngine::MateEngine(int w, int h, std::string title) :
 	isRunning(false),
 	lastFrame(0),
 	title(title)
@@ -37,13 +37,13 @@ Engine::Engine(int w, int h, std::string title) :
 	Initialize();
 }
 
-Engine::~Engine()
+MateEngine::~MateEngine()
 {
 	delete window;
 	window = nullptr;
 }
 
-void Engine::Initialize()
+void MateEngine::Initialize()
 {
 	CoreInitialize();
 	DebugDraw::Init();
@@ -56,7 +56,7 @@ void Engine::Initialize()
 	registry->AddSystem<CameraSystem>();
 }
 
-void Engine::CoreInitialize()
+void MateEngine::CoreInitialize()
 {
 	glfwInit();
 	// OpenGl version to use, if user don't have it set it, will fail.
@@ -71,7 +71,7 @@ void Engine::CoreInitialize()
 
 	if (window == NULL)
 	{
-		std::cerr << "Failed to create GLFW widnow" << std::endl;
+		Logger::Err("Failed to create GLFW widnow.");
 		glfwTerminate();
 		return;
 	}
@@ -79,7 +79,7 @@ void Engine::CoreInitialize()
 	// Initialize GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cerr << "Failed to initialize GLAD" << std::endl;
+		Logger::Err("Failed to initialize GLAD.");
 		return;
 	}
 
@@ -88,7 +88,6 @@ void Engine::CoreInitialize()
 
 	int nrAttributes;
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-	Logger::Log("Maximum nr of vertex attributes supported: " + std::to_string(nrAttributes));
 
 	stbi_set_flip_vertically_on_load(false);
 
@@ -99,8 +98,6 @@ void Engine::CoreInitialize()
 	// Set rendering viewport callback
 	glfwSetFramebufferSizeCallback(window, Framebuffer_size_callback);
 
-	//glfwSetCursorPosCallback(window, mouse_callback);
-
 	// Draw primitives configuration
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -108,43 +105,26 @@ void Engine::CoreInitialize()
 	isRunning = true;
 }
 
-void Engine::Framebuffer_size_callback(GLFWwindow* window, int w, int h)
+void MateEngine::Framebuffer_size_callback(GLFWwindow* window, int w, int h)
 {
-	Logger::Log(std::to_string(w) + "x" + std::to_string(h));
-	Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
+	//Logger::Log(std::to_string(w) + "x" + std::to_string(h));
+	MateEngine* engine = static_cast<MateEngine*>(glfwGetWindowUserPointer(window));
 	engine->renderContext.Width = w;
 	engine->renderContext.Height = h;
 	glViewport(0, 0, w, h);
 }
 
-bool Engine::IsRunning()
+void MateEngine::ShowFrames(bool activate)
 {
-	return isRunning;
+	showFps = activate;
 }
 
-void Engine::Update()
-{
-	ComputeDelta();
-	DebugFps(DeltaTime);
-	
-	Input::Update();
-	testProcessInput(window);
-
-	registry->Update();
-	RenderUpdate();
-}
-
-void Engine::SetSimulationTo(bool status)
-{
-	runSimulation = status;
-}
-
-Entity Engine::CreateEntity()
+Entity MateEngine::CreateEntity()
 {
 	return registry->CreateEntity();
 }
 
-void Engine::SetSkybox(const std::string& id, std::array<std::string, 6> faces)
+void MateEngine::SetSkybox(const std::string& id, std::array<std::string, 6> faces)
 {
 	auto texture = AssetManager::GetInstance().LoadCubemap(id, faces);
 	auto skybox = std::make_unique<Skybox>(texture);
@@ -154,12 +134,12 @@ void Engine::SetSkybox(const std::string& id, std::array<std::string, 6> faces)
 	}
 }
 
-void Engine::SetRenderDebugMode(bool mode)
+void MateEngine::SetRenderDebugMode(bool mode)
 {
 	renderContext.DebugMode = mode;
 }
 
-void Engine::Run(IGame& game)
+void MateEngine::Run(IGame& game)
 {
 	game.Start();
 	float accumulator = 0.0f;
@@ -168,6 +148,11 @@ void Engine::Run(IGame& game)
 	{
 		ComputeDelta();
 		accumulator += DeltaTime;
+
+		if (showFps)
+		{
+			DebugFps(DeltaTime);
+		}
 
 		Input::Update();
 
@@ -185,19 +170,19 @@ void Engine::Run(IGame& game)
 	}
 }
 
-void Engine::ComputeDelta()
+void MateEngine::ComputeDelta()
 {
 	float currentFrame = static_cast<float>(glfwGetTime());
 	DeltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 }
 
-void Engine::PhysicsUpdate(float fixedDeltaTime)
+void MateEngine::PhysicsUpdate(float fixedDeltaTime)
 {
 	registry->GetSystem<PhysicsSystem>().Update(fixedDeltaTime);
 }
 
-void Engine::RenderUpdate()
+void MateEngine::RenderUpdate()
 {
 	isRunning = !glfwWindowShouldClose(window);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -214,24 +199,17 @@ void Engine::RenderUpdate()
 	glfwPollEvents();
 }
 
-void Engine::DebugFps(float deltaTime)
+void MateEngine::DebugFps(float deltaTime)
 {
 	float smoothedFPS = 0.0f;
 
 	frameTimeAccumulator += DeltaTime;
 	frameCount++;
-	if (frameTimeAccumulator >= 1.0f) {
+	if (frameTimeAccumulator >= 1.0f)
+	{
 		smoothedFPS = frameCount / frameTimeAccumulator;
 		frameTimeAccumulator = 0.0f;
 		frameCount = 0;
 		Logger::War("FPS: " + std::to_string(smoothedFPS));
-	}
-}
-
-void Engine::testProcessInput(GLFWwindow* window)
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(window, true);
 	}
 }

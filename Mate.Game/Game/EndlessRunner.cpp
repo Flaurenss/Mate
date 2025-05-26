@@ -3,7 +3,7 @@
 #include <random>
 
 
-EndlessRunner::EndlessRunner(Engine* engine) :
+EndlessRunner::EndlessRunner(MateEngine* engine) :
 	engine(engine)
 {
 	Setup();
@@ -70,7 +70,11 @@ void EndlessRunner::Setup()
 
 void EndlessRunner::Start()
 {
-
+    Logger::Log("=== Game Instructions ===");
+    Logger::Log("Use 'A' and 'D' to move the character left and right.");
+    Logger::Log("Press 'P' to pause or resume the game.");
+    Logger::Log("Avoid obstacles and collect rewards!");
+    Logger::Log("==========================");
 }
 
 void EndlessRunner::Update(float deltaTime)
@@ -78,18 +82,11 @@ void EndlessRunner::Update(float deltaTime)
     if (Input::GetKeyDown(KeyCode::P) && !reset)
     {
         isPaused = !isPaused;
-        engine->SetSimulationTo(isPaused);
     }
 
     if (Input::GetKeyDown(KeyCode::Escape))
     {
         isGameRunning = false;
-    }
-
-    if (Input::GetKeyDown(KeyCode::R))
-    {
-        reset = !reset;
-        isPaused = !isPaused;
     }
 
     if (!isPaused)

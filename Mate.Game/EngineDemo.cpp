@@ -2,7 +2,7 @@
 #include <Mate.h>
 #include "Game/GameAssets.h"
 
-void EngineDemo::CreateBaseFloor(Engine* engine)
+void EngineDemo::CreateBaseFloor(MateEngine* engine)
 {
     auto floorModel = PrimitivesHelper::CreatePlane();
     AssetManager::GetInstance().RegisterModel("primitive::floor", floorModel);
@@ -14,7 +14,7 @@ void EngineDemo::CreateBaseFloor(Engine* engine)
     floorTrans.Scale = Vector3(20, 1, 20);
 }
 
-void EngineDemo::PhysicsCubeDemo(Engine* engine)
+void EngineDemo::PhysicsCubeDemo(MateEngine* engine)
 {
     CreateBaseFloor(engine);
 

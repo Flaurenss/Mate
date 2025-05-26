@@ -9,7 +9,7 @@ public:
 	~Skybox();
 
 	void Bind();
-	unsigned int GetVAO();
+	unsigned int GetVAO() const;
 private:
 	std::shared_ptr<Texture> cubeMap;
 

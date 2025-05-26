@@ -1,7 +1,7 @@
 #include "GameAssets.h"
 #include <AnimationComponent.h>
 
-Entity GameAssets::CreatePlayer(Engine* engine, Vector3 basePos, Vector3 baseRot, Vector3 baseScale)
+Entity GameAssets::CreatePlayer(MateEngine* engine, Vector3 basePos, Vector3 baseRot, Vector3 baseScale)
 {
     auto playerModel = "./Assets/Player/character.glb";
     AssetManager::GetInstance().LoadModel("player", playerModel);
@@ -14,7 +14,7 @@ Entity GameAssets::CreatePlayer(Engine* engine, Vector3 basePos, Vector3 baseRot
     return player;
 }
 
-Entity GameAssets::CreateReward(Engine* engine, Vector3 basePos, Vector3 baseRot, Vector3 baseScale)
+Entity GameAssets::CreateReward(MateEngine* engine, Vector3 basePos, Vector3 baseRot, Vector3 baseScale)
 {
     auto coinModelPath = "./Assets/Environment/Misc/coin.glb";
     AssetManager::GetInstance().LoadModel("coin", coinModelPath);
@@ -24,7 +24,7 @@ Entity GameAssets::CreateReward(Engine* engine, Vector3 basePos, Vector3 baseRot
     return coin;
 }
 
-Entity GameAssets::CreateObstacle(Engine* engine, Vector3 basePos, Vector3 baseRot, Vector3 baseScale)
+Entity GameAssets::CreateObstacle(MateEngine* engine, Vector3 basePos, Vector3 baseRot, Vector3 baseScale)
 {
     auto boxModelPath = "./Assets/Environment/Misc/crate-color.glb";
     AssetManager::GetInstance().LoadModel("box", boxModelPath);

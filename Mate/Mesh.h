@@ -6,17 +6,10 @@
 #include "Shader.h"
 #include "Texture.h"
 
-#define MAX_BONE_INFLUENCE 4
-
 struct Vertex {
 	Vector3 Position;
 	Vector3 Normal;
 	Vector2 TexureCoordinate;
-
-	//bone indexes which will influence this vertex
-	int m_BoneIDs[MAX_BONE_INFLUENCE];
-	//weights from each bone
-	float m_Weights[MAX_BONE_INFLUENCE];
 };
 
 class Mesh
@@ -34,8 +27,8 @@ public:
 
 	void SetupMesh();
 
-	unsigned int GetVAO();
-	int GetIndexCount();
+	unsigned int GetVAO() const;
+	int GetIndexCount() const;
 
 private:
 

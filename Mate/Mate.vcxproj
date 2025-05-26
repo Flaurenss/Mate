@@ -174,7 +174,7 @@
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="EnableComponent.cpp" />
-    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="MateEngine.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FbxImporterExperimental.cpp" />
     <ClCompile Include="GltfImporter.cpp" />
@@ -240,7 +240,7 @@
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="EnableComponent.h" />
-    <ClInclude Include="Engine.h" />
+    <ClInclude Include="MateEngine.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FbxImporterExperimental.h" />
     <ClInclude Include="GltfImporter.h" />
