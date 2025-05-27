@@ -15,7 +15,7 @@ public:
 	AudioEngine();
 	~AudioEngine();
 
-	void InitSoundIfNew(const std::string& id, const std::string& path, bool isUnique);
+	void InitSoundIfNew(const std::string& id, const std::string& path, bool isUnique, float volume);
 	void ApplyConfigToSound(const std::string& id, AudioSettings& settings);
 
 private:

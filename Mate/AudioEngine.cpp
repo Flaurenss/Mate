@@ -16,7 +16,7 @@ AudioEngine::~AudioEngine()
 	currentSounds.clear();
 }
 
-void AudioEngine::InitSoundIfNew(const std::string& id, const std::string& path, bool isUnique)
+void AudioEngine::InitSoundIfNew(const std::string& id, const std::string& path, bool isUnique, float volume)
 {
 	auto it = currentSounds.find(id);
 	if (it == currentSounds.end())
@@ -24,6 +24,7 @@ void AudioEngine::InitSoundIfNew(const std::string& id, const std::string& path,
 		auto sound = std::make_unique<SoLoud::Wav>();
 		sound.get()->setSingleInstance(isUnique);
 		sound->load(path.c_str());
+		sound->setVolume(volume);
 		currentSounds.emplace(std::make_pair(id, std::move(sound)));
 	}
 }

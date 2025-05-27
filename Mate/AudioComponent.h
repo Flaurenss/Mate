@@ -57,11 +57,13 @@ public:
 private:
 	std::string audioId;
 	unsigned int handleId;
-	bool isPlaying;
+	
 	bool playRequest;
 	bool stopRequest;
 	bool volumeRequest;
+	
 	bool unique;
+	bool isPlaying;
 	bool playOnAwake;
 	bool loop;
 	float audioVolume;

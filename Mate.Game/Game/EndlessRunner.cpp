@@ -33,6 +33,7 @@ void EndlessRunner::Setup()
 
     auto coinAudio = engine->CreateEntity();
     auto& coinComp = coinAudio.AddComponent<AudioComponent>("coin", false, false);
+    coinComp.SetVolume(0.3f);
 
     auto hitAudio = engine->CreateEntity();
     auto& hitComp = hitAudio.AddComponent<AudioComponent>("hit", false, false);

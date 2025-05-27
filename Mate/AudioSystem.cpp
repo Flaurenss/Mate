@@ -1,4 +1,5 @@
 #define NOMINMAX
+
 #include "AudioSystem.h"
 #include "AssetManager.h"
 #include "EnableComponent.h"
@@ -18,8 +19,6 @@ void AudioSystem::Update()
 			auto& audioComponent = entity.GetComponent<AudioComponent>();
 			auto audioId = audioComponent.GetAudioId();
 			auto audioClip = AssetManager::GetInstance().GetAudioClip(audioId);
-			audioEngine->InitSoundIfNew(audioId, audioClip.GetAudioPath(), audioComponent.unique);
-
 			auto audioSettings = AudioSettings
 				{
 					audioComponent.handleId,
@@ -30,6 +29,9 @@ void AudioSystem::Update()
 					audioComponent.volumeRequest,
 					audioComponent.audioVolume
 				};
+
+			audioEngine->InitSoundIfNew(audioId, audioClip.GetAudioPath(), audioComponent.unique, audioComponent.audioVolume);
+
 			audioEngine->ApplyConfigToSound(audioId, audioSettings);
 			UpdateAudioComponent(audioComponent, audioSettings);
 		}

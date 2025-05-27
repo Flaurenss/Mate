@@ -2,13 +2,15 @@
 
 AudioComponent::AudioComponent(std::string id, bool isPlayOnAwake, bool isLoop) : 
 	audioId(id),
+	handleId(-1),
 	playOnAwake(isPlayOnAwake),
 	loop(isLoop),
-	isPlaying(false),
-	handleId(-1),
 	playRequest(false),
 	stopRequest(false),
-	unique(false)
+	volumeRequest(false),
+	unique(false),
+	isPlaying(false),
+	audioVolume(1.0f)
 { }
 
 std::string AudioComponent::GetAudioId() const
