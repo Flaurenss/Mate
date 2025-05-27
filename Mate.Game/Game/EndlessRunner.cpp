@@ -22,7 +22,7 @@ void EndlessRunner::Setup()
 
     AssetManager::GetInstance().LoadAudioClip("bg", "./Assets/Audio/bg.mp3");
     AssetManager::GetInstance().LoadAudioClip("coin", "./Assets/Audio/coin.wav");
-    AssetManager::GetInstance().LoadAudioClip("hit", "./Assets/Audio/hit.ogg");
+    AssetManager::GetInstance().LoadAudioClip("hit", "./Assets/Audio/hitCustom.wav");
 
     // Audio settings
     auto bg = engine->CreateEntity();
@@ -495,6 +495,7 @@ void EndlessRunner::ResetAll(float fixedDeltaTime)
         }
         gameOver = false;
         Logger::Log("End of the game with " + std::to_string(points) + " points.");
+        points = 0;
     }
 
     player->GetComponent<PhysicsComponent>().MoveKinematic(playerStartPos);
