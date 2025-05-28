@@ -78,6 +78,9 @@
     <Filter Include="Source Files\Vendors">
       <UniqueIdentifier>{a265b476-6e7a-43b8-be9b-925348d1ed8f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="docs\Notes">
+      <UniqueIdentifier>{db40ab56-9e87-4676-b13d-58622e703eec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GltfImporter.cpp">
@@ -241,10 +244,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="docs.md">
-      <Filter>docs</Filter>
-    </None>
-    <None Include="rendering_main_objects.md">
+    <None Include="HOWTO-USE.md">
       <Filter>docs</Filter>
     </None>
     <None Include="ECS.inl">
@@ -264,6 +264,9 @@
     </None>
     <None Include="Assets\vsSkybox.shader">
       <Filter>Assets</Filter>
+    </None>
+    <None Include="rendering_main_objects.md">
+      <Filter>docs\Notes</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

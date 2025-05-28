@@ -209,7 +209,7 @@
     <None Include="Assets\fsSkybox.shader" />
     <None Include="Assets\vertexShader.shader" />
     <None Include="Assets\vsSkybox.shader" />
-    <None Include="docs.md" />
+    <None Include="HOWTO-USE.md" />
     <None Include="ECS.inl" />
     <None Include="Entity.inl" />
     <None Include="rendering_main_objects.md" />
