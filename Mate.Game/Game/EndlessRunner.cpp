@@ -502,24 +502,6 @@ void EndlessRunner::ResetAll(float fixedDeltaTime)
     railState.targetX = 0.0f;
     railState.currentRail = 0;
 
-    //for (auto& environmentPart : environmentParts)
-    //{
-    //    auto posToMove = environmentPart.floorPart.transformComponent.Position;
-    //    environmentPart.floorPart.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
-
-    //    for (auto& coll : environmentPart.obstacles)
-    //    {
-    //        auto posToMove = coll.transformComponent.Position;
-    //        coll.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
-    //    }
-
-    //    for (auto& reward : environmentPart.rewards)
-    //    {
-    //        auto posToMove = reward.transformComponent.Position;
-    //        reward.entity.GetComponent<PhysicsComponent>().MoveKinematic(posToMove);
-    //    }
-    //}
-
     if (fixedDeltaTime > actualResetTime)
     {
         actualResetTime += fixedDeltaTime;

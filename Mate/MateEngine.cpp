@@ -16,7 +16,6 @@
 #include "Skybox.h"
 #include "Vendors/stb_image.h"
 
-float MateEngine::DeltaTime = 0;
 
 MateEngine::MateEngine(int w, int h, std::string title) :
 	isRunning(false),
@@ -147,16 +146,16 @@ void MateEngine::Run(IGame& game)
 	while (isRunning && game.IsGameRunning())
 	{
 		ComputeDelta();
-		accumulator += DeltaTime;
+		accumulator += deltaTime;
 
 		if (showFps)
 		{
-			DebugFps(DeltaTime);
+			DebugFps(deltaTime);
 		}
 
 		Input::Update();
 
-		game.Update(DeltaTime);
+		game.Update(deltaTime);
 
 		while (accumulator >= fixedDeltaTime)
 		{
@@ -173,7 +172,7 @@ void MateEngine::Run(IGame& game)
 void MateEngine::ComputeDelta()
 {
 	float currentFrame = static_cast<float>(glfwGetTime());
-	DeltaTime = currentFrame - lastFrame;
+	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 }
 
@@ -189,7 +188,7 @@ void MateEngine::RenderUpdate()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	registry->GetSystem<CameraSystem>().Update(renderContext);
-	registry->GetSystem<AnimationSystem>().Update(DeltaTime);
+	registry->GetSystem<AnimationSystem>().Update(deltaTime);
 	registry->GetSystem<RenderSystem>().Update(renderContext);
 	registry->GetSystem<AudioSystem>().Update();
 
@@ -203,7 +202,7 @@ void MateEngine::DebugFps(float deltaTime)
 {
 	float smoothedFPS = 0.0f;
 
-	frameTimeAccumulator += DeltaTime;
+	frameTimeAccumulator += deltaTime;
 	frameCount++;
 	if (frameTimeAccumulator >= 1.0f)
 	{

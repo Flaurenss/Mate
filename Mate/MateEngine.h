@@ -10,13 +10,15 @@
 class MateEngine
 {
 public:
-	MateEngine(int width = 1920, int height = 1080, std::string title = "Mate.Engine");
-	~MateEngine();
-
 	/// <summary>
-	/// The actual delta time between frames.
+	/// Engine constructor.
 	/// </summary>
-	static float DeltaTime;
+	/// <param name="width">The widtht to start the window.</param>
+	/// <param name="height">The height to start the window.</param>
+	/// <param name="title">The title to appear on the window.</param>
+	MateEngine(int width = 1920, int height = 1080, std::string title = "Mate.Engine");
+	
+	~MateEngine();
 
 	/// <summary>
 	/// Enable show FPS logger.
@@ -64,7 +66,8 @@ public:
 
 private:
 	const float fixedDeltaTime = 1.0f / 60.0f;
-	
+	float deltaTime;
+
 	std::string title;
 	bool isRunning;
 	GLFWwindow* window;
