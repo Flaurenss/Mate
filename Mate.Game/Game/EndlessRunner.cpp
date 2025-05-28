@@ -20,9 +20,9 @@ void EndlessRunner::Setup()
         "./Assets/Skybox/front.jpg",
         "./Assets/Skybox/back.jpg" });
 
-    AssetManager::GetInstance().LoadAudioClip("bg", "./Assets/Audio/bg.mp3");
+    AssetManager::GetInstance().LoadAudioClip("bg", "./Assets/Audio/bg.wav");
     AssetManager::GetInstance().LoadAudioClip("coin", "./Assets/Audio/coin.wav");
-    AssetManager::GetInstance().LoadAudioClip("hit", "./Assets/Audio/hitCustom.wav");
+    AssetManager::GetInstance().LoadAudioClip("hit", "./Assets/Audio/hit.wav");
 
     // Audio settings
     auto bg = engine.CreateEntity();
