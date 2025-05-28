@@ -3,7 +3,7 @@
 #include <random>
 
 
-EndlessRunner::EndlessRunner(MateEngine* engine) :
+EndlessRunner::EndlessRunner(MateEngine& engine) :
 	engine(engine)
 {
 	Setup();
@@ -12,7 +12,7 @@ EndlessRunner::EndlessRunner(MateEngine* engine) :
 void EndlessRunner::Setup()
 {
     CreateCamera();
-    engine->SetSkybox("skybox", {
+    engine.SetSkybox("skybox", {
         "./Assets/Skybox/right.jpg",
         "./Assets/Skybox/left.jpg",
         "./Assets/Skybox/top.jpg",
@@ -25,17 +25,17 @@ void EndlessRunner::Setup()
     AssetManager::GetInstance().LoadAudioClip("hit", "./Assets/Audio/hitCustom.wav");
 
     // Audio settings
-    auto bg = engine->CreateEntity();
+    auto bg = engine.CreateEntity();
     auto& bgComp = bg.AddComponent<AudioComponent>("bg", true, true);
     bgComp.SetVolume(0.5f);
     bgComp.SetIsUnique(true);
     bgComp.SetIsLoop(true);
 
-    auto coinAudio = engine->CreateEntity();
+    auto coinAudio = engine.CreateEntity();
     auto& coinComp = coinAudio.AddComponent<AudioComponent>("coin", false, false);
     coinComp.SetVolume(0.3f);
 
-    auto hitAudio = engine->CreateEntity();
+    auto hitAudio = engine.CreateEntity();
     auto& hitComp = hitAudio.AddComponent<AudioComponent>("hit", false, false);
 
 	player = std::make_unique<Entity>(
@@ -122,7 +122,7 @@ bool EndlessRunner::IsGameRunning() const
 
 Entity EndlessRunner::CreateCamera()
 {
-    auto camera = engine->CreateEntity();
+    auto camera = engine.CreateEntity();
     camera.AddComponent<TransformComponent>(Vector3(0, 1.5f, 2.5f), Vector3(), Vector3(1));
     camera.AddComponent<CameraComponent>();
     TransformComponent& trans = camera.GetComponent<TransformComponent>();
@@ -190,7 +190,7 @@ EnvironmentPart EndlessRunner::CreateEnvironmentPart(int i)
 {
     auto roadModelPath = "./Assets/Environment/Road/road-straight.glb";
     AssetManager::GetInstance().LoadModel("road", roadModelPath);
-    auto road = engine->CreateEntity();
+    auto road = engine.CreateEntity();
     auto roadPos = Vector3(0, 0, 0 + (-i * 10));
     auto& roadTrans = road.AddComponent<TransformComponent>(roadPos, Vector3::Zero, Vector3(5, 1, 10));
     road.AddComponent<PhysicsComponent>(MotionType::KINEMATIC, PhysicLayer::NON_COLLIDING);

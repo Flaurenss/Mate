@@ -7,8 +7,8 @@
    > Add some logic to it. The interface follows a similar pattern than other game engines. e.g. `Monobehavior from Unity.`
 4. Send it to [`MateEngine`](./MateEngine.h):
    ```
-    auto engine = new MateEngine();
+    MateEngine engine;
     auto game = IGameImplementation(engine);
-    engine->Run(game);
+    engine.Run(game);
    ```
 4. `Enjoy!`

@@ -3,9 +3,9 @@
 
 int main()
 {
-    auto engine = std::make_unique<MateEngine>();
+    MateEngine engine;
     //engine->SetRenderDebugMode();
     //engine->ShowFrames();
-    auto game = EndlessRunner(engine.get());
-    engine->Run(game);
+    auto game = EndlessRunner(engine);
+    engine.Run(game);
  }
