@@ -48,6 +48,8 @@ public:
     /// <param name="value">The value.</param>
     void SetFloat(const std::string& name, float value) const;
 
+    void SetVec3(const std::string& name, const Vector3& value) const;
+
     void SetVec4(const std::string& name, const Vector4& value) const;
 
     void SetMat4(const std::string& name, const Matrix4& value);

@@ -39,6 +39,11 @@ void RenderSystem::Update(RenderContext& renderContext)
 					ProcessAnimation(entity, mesh->attachedJointName, finalModelTransform);
 				}
 
+				// TODO: This should be changed for the real light source pos:
+				baseShader.SetVec3("lightPos", renderContext.cameraPos);
+
+				baseShader.SetVec3("viewPos", renderContext.cameraPos);
+
 				baseShader.SetMat4("view", renderContext.View);
 				baseShader.SetMat4("projection", renderContext.Projection);
 				baseShader.SetMat4("model", finalModelTransform);
@@ -122,7 +127,10 @@ void RenderSystem::BindTexture(Mesh* mesh)
 	}
 	else
 	{
+		baseShader.SetBool("valid", false);
 		baseShader.SetVec4("defaultColor", Texture::DefaultColor);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }
 
@@ -131,9 +139,6 @@ void RenderSystem::DrawMesh(Mesh* mesh)
 	glBindVertexArray(mesh->GetVAO());
 	glDrawElements(GL_TRIANGLES, mesh->GetIndexCount(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
-
-	// Reset
-	glActiveTexture(GL_TEXTURE0);
 }
 
 void RenderSystem::DrawSkybox(RenderContext& renderContext)

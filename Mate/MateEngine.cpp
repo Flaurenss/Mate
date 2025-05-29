@@ -26,6 +26,7 @@ MateEngine::MateEngine(int w, int h, std::string title) :
 	{
 		Matrix4(),
 		Matrix4(),
+		Vector3(),
 		w,
 		h
 	};

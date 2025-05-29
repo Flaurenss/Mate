@@ -33,5 +33,6 @@ void CameraSystem::Update(RenderContext& renderContext)
 
         renderContext.View = view;
         renderContext.Projection = projection;
+        renderContext.cameraPos = position;
     }
 }
