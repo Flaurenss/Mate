@@ -4,14 +4,13 @@
 
 
 EndlessRunner::EndlessRunner(MateEngine& engine) :
-	engine(engine)
-{
+	engine(engine), cameraUtils(CameraUtils(CreateCamera()))
+{   
 	Setup();
 }
 
 void EndlessRunner::Setup()
 {
-    CreateCamera();
     engine.SetSkybox("skybox", {
         "./Assets/Skybox/right.jpg",
         "./Assets/Skybox/left.jpg",
@@ -80,6 +79,8 @@ void EndlessRunner::Start()
 
 void EndlessRunner::Update(float deltaTime)
 {
+    //cameraUtils.ManageFreeCamera(deltaTime);
+
     if (Input::GetKeyDown(KeyCode::P) && !reset)
     {
         isPaused = !isPaused;

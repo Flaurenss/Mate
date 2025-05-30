@@ -4,7 +4,6 @@
 
 ## TODO
 
-- [ ] Implement basic lighting.
 - [ ] Implement parent-children concept.
 - [ ] Implement text rendering.
 - [ ] Implement UI for debug.
@@ -18,6 +17,7 @@
 - [ ] Pack dependencies as nuget.
 
 ## In progress
+- [ ] Implement basic lighting.
 
 ## DONE
 - [x] Refactor Game project

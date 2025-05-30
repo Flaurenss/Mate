@@ -1,10 +1,15 @@
 #include "CameraUtils.h"
 
-void CameraUtils::ManageFreeCamera(CameraComponent& cameraComponent, TransformComponent& cameraTransform, float deltaTime)
+CameraUtils::CameraUtils(Entity theCamera) : camera(theCamera)
+{ }
+
+void CameraUtils::ManageFreeCamera(float deltaTime)
 {
     float xPos = Input::MousePosition.x;
     float yPos = Input::MousePosition.y;
     float sensitivity = 0.1f;
+
+    auto& cameraTransform = camera.GetComponent<TransformComponent>();
 
     if (firstMouse)
     {

@@ -14,12 +14,10 @@ void EngineDemo::CreateBaseFloor(MateEngine& engine)
     floorTrans.Scale = Vector3(20, 1, 20);
 }
 
-void EngineDemo::PhysicsCubeDemo(MateEngine& engine)
+void EngineDemo::PhysicsCubeDemo(MateEngine& engine, int cubeNum)
 {
-    CreateBaseFloor(engine);
-
     const float spacing = 1;
-    const int cubeNumber = 2;
+    const int cubeNumber = cubeNum;
     for (int x = 0; x < cubeNumber; x++)
     {
         for (int y = 0; y < cubeNumber; y++)
@@ -32,7 +30,7 @@ void EngineDemo::PhysicsCubeDemo(MateEngine& engine)
                     (z - 1) * spacing 
                 );
 
-                auto box = GameAssets::CreateObstacle(engine, pos);
+                auto box = GameAssets::CreateObstacle(engine, pos, Vector3(45, 0, 0));
                 box.AddComponent<PhysicsComponent>();
             }
         }

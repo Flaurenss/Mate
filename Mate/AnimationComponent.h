@@ -6,7 +6,6 @@
 class AnimationComponent
 {
 public:
-    std::string ModelId;
     int CurrentAnimationIndex = 0;
 
     /// <summary>

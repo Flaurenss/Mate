@@ -2,6 +2,7 @@
 
 #include <deque>
 #include "EnvironmentAssets.h"
+#include "../CameraUtils.h"
 
 class EndlessRunner : public IGame
 {
@@ -18,6 +19,7 @@ private:
 	MateEngine& engine;
 
 	std::unique_ptr<Entity> player;
+	CameraUtils cameraUtils;
 	std::deque<EnvironmentPart> environmentParts;
 
 	Vector3 playerStartPos;

@@ -91,13 +91,20 @@ void PhysicsSystem::Update(float fixedDeltaTime)
 		}
 
 		auto& phyComponent = entity.GetComponent<PhysicsComponent>();
-		if (phyComponent.BodyMotionType != STATIC)
+		if (phyComponent.BodyMotionType == DYNAMIC)
 		{
 			auto& transformComponent = entity.GetComponent<TransformComponent>();
 			Vector3 newPosition = phyEngine->GetPosition(entity.GetId());
 			Vector3 newEulerRotation = phyEngine->GetEulerAngles(entity.GetId());
 			transformComponent.Position = newPosition;
-			//transformComponent.EulerAngles = newEulerRotation;
+			transformComponent.EulerAngles = newEulerRotation;
+		}
+
+		if (phyComponent.BodyMotionType == KINEMATIC)
+		{
+			auto& transformComponent = entity.GetComponent<TransformComponent>();
+			Vector3 newPosition = phyEngine->GetPosition(entity.GetId());
+			transformComponent.Position = newPosition;
 		}
 	}
 }

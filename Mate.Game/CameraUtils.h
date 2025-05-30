@@ -4,11 +4,12 @@
 class CameraUtils
 {
 public:
+	CameraUtils(Entity theCamera);
 	void ManageFreeCamera(
-		CameraComponent& cameraComponent,
-		TransformComponent& cameraTransform,
 		float deltaTime);
 private:
+	Entity camera;
+
 	bool firstMouse = true;
 	float yaw = 45.0f;
 	float pitch = 0;

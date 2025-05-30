@@ -6,5 +6,5 @@ class EngineDemo
 {
 public:
 	static void CreateBaseFloor(MateEngine& engine);
-	static void PhysicsCubeDemo(MateEngine& engine);
+	static void PhysicsCubeDemo(MateEngine& engine, int cubeNum = 2);
 };

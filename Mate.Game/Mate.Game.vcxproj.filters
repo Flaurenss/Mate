@@ -25,6 +25,12 @@
     <Filter Include="Header Files\Utils">
       <UniqueIdentifier>{b3c48a54-920a-4d46-abe3-9dd0e42ece06}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Demos">
+      <UniqueIdentifier>{b9eaa660-a58a-4daa-8f64-11b32f7948fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Demos">
+      <UniqueIdentifier>{83ea4032-1439-4d50-aa49-dad00e247141}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -44,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="CameraUtils.cpp">
       <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Demos.cpp">
+      <Filter>Source Files\Demos</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +75,9 @@
     </ClInclude>
     <ClInclude Include="CameraUtils.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Demos.h">
+      <Filter>Header Files\Demos</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

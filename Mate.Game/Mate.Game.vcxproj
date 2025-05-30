@@ -161,6 +161,7 @@
     <ClCompile Include="Game\EnvironmentAssets.cpp" />
     <ClCompile Include="Game\GameAssets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Demos.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="copyDependencies.bat" />
@@ -171,6 +172,7 @@
     <ClInclude Include="Game\EndlessRunner.h" />
     <ClInclude Include="Game\EnvironmentAssets.h" />
     <ClInclude Include="Game\GameAssets.h" />
+    <ClInclude Include="Demos.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mate\Mate.vcxproj">
