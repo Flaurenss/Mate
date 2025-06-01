@@ -6,8 +6,8 @@ int main()
 {
     MateEngine engine;
     //engine.SetRenderDebugMode();
-    engine.ShowFrames();
-    //auto game = EndlessRunner(engine);
-    auto demos = Demos(engine);
-    engine.Run(demos);
+    //engine.ShowFrames();
+    auto game = EndlessRunner(engine);
+    //auto demos = Demos(engine);
+    engine.Run(game);
  }
