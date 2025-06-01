@@ -4,8 +4,8 @@
 int main()
 {
     MateEngine engine;
-    //engine->SetRenderDebugMode();
-    //engine->ShowFrames();
+    //engine.SetRenderDebugMode();
+    //engine.ShowFrames();
     auto game = EndlessRunner(engine);
     engine.Run(game);
  }
